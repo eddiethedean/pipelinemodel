@@ -1,0 +1,127 @@
+# Plugin SDK Overview
+
+The PipelineModel Plugin SDK defines the public interfaces used to extend
+PipelineModel without modifying its core.
+
+The core framework is responsible for modeling, validation, planning, and
+contract management. Plugins provide concrete runtime behavior for execution,
+storage, orchestration, resources, registries, and other extension points.
+
+## Purpose
+
+The Plugin SDK exists to:
+
+- Keep the core framework small and stable.
+- Enable independent plugin development.
+- Support multiple execution technologies.
+- Preserve portable pipeline semantics.
+- Encourage a healthy ecosystem of community plugins.
+
+## Architecture
+
+```text
+PipelineModel Core
+        │
+        ▼
+Validation
+        │
+        ▼
+Planning
+        │
+        ▼
+Pipeline Plan (IR)
+        │
+        ▼
+Plugin SDK
+        │
+ ┌──────┼────────────────────────────────────────┐
+ ▼      ▼         ▼         ▼         ▼          ▼
+Execution Dataframe Storage Resource Registry Orchestration
+ Plugins   Plugins   Plugins  Plugins  Plugins    Plugins
+```
+
+Every plugin consumes or contributes to the execution of a validated
+`PipelinePlan`. No plugin changes the meaning of the pipeline.
+
+## Core Principles
+
+The SDK is built around a few simple principles:
+
+- **Stable interfaces** — Public APIs evolve carefully.
+- **Capability driven** — Plugins declare what they support.
+- **Portable semantics** — Plugins preserve ODCS, DTCS, and DPCS semantics.
+- **Independent versioning** — Plugins evolve independently of the core.
+- **Loose coupling** — Plugins depend on the SDK, not each other.
+
+## Plugin Lifecycle
+
+Every plugin follows the same high-level lifecycle:
+
+1. Discovery
+2. Registration
+3. Capability declaration
+4. Validation
+5. Planning participation
+6. Runtime execution or service provision
+7. Diagnostics
+8. Cleanup
+
+## Plugin Categories
+
+PipelineModel currently defines several plugin categories:
+
+- Execution Plugins
+- Dataframe Plugins
+- Orchestration Plugins
+- Storage Plugins
+- Resource Plugins
+- Registry Plugins
+
+Additional categories may be introduced without changing the architecture.
+
+## Capability Matching
+
+Planning selects plugins based on declared capabilities.
+
+Examples include:
+
+- Async execution
+- Parallel execution
+- Streaming
+- Retry support
+- Transactions
+- Checkpoints
+- Approval workflows
+
+If a plugin cannot satisfy mandatory requirements, planning fails before
+execution.
+
+## Version Compatibility
+
+Plugins should publish compatibility information for:
+
+- PipelineModel
+- ODCS
+- DTCS
+- DPCS
+
+This allows the ecosystem to evolve while maintaining predictable behavior.
+
+## Best Practices
+
+- Build plugins against the public SDK only.
+- Keep implementations focused on one responsibility.
+- Preserve observable pipeline behavior.
+- Emit structured diagnostics.
+- Document capabilities clearly.
+
+## Key Principle
+
+> PipelineModel provides the portable execution model. The Plugin SDK enables
+> implementations to extend that model while preserving its semantics and
+> interoperability.
+
+## Next Step
+
+Continue with **PLUGIN_ARCHITECTURE.md** to explore the SDK's internal design
+and extension interfaces.

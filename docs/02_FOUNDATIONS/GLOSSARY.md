@@ -1,0 +1,178 @@
+# Glossary
+
+This glossary defines the core terminology used throughout the
+PipelineModel documentation. Unless otherwise noted, these definitions
+reflect PipelineModel's architecture and may differ from how similar
+terms are used in other ETL frameworks.
+
+## Artifact
+
+A generated output derived from a pipeline model, such as an ODCS, DTCS,
+or DPCS document, documentation, diagrams, or an execution plan.
+
+## Binding
+
+A configuration that connects a logical pipeline component to a concrete
+runtime implementation, such as a Polars transformation, an Airflow
+orchestrator, or a storage provider.
+
+## Callback
+
+A user-defined function invoked in response to a lifecycle event, such
+as invalid data, execution failure, or pipeline completion.
+
+## Contract
+
+A portable, declarative description of part of a data pipeline.
+PipelineModel recognizes three primary contract types:
+
+-   Data Contract
+-   Transformation Contract
+-   Pipeline Contract
+
+## ContractModel
+
+The companion library responsible for operationalizing data contracts.
+It provides the `DataContractModel` base class used to define typed
+datasets.
+
+## DPCS
+
+**Data Pipeline Contract Standard.**
+
+A portable specification describing the logical topology of a pipeline:
+sources, transformations, sinks, and their relationships.
+
+## DTCS
+
+**Data Transformation Contract Standard.**
+
+A portable specification describing the interface of a transformation,
+including its inputs, outputs, parameters, and metadata.
+
+## Data Contract
+
+A typed description of a dataset. In PipelineModel, data contracts are
+authored as ContractModel-compatible Pydantic models and can be
+represented as ODCS documents.
+
+## Data Contract Model
+
+A Python class derived from `DataContractModel` that serves as the
+source of truth for a dataset's schema and constraints.
+
+## Execution Engine
+
+The technology that performs actual work, such as Polars, Pandas, Spark,
+or a remote processing service.
+
+## Execution Plan
+
+A resolved representation of a logical pipeline that identifies
+dependencies, runtime bindings, and the order of execution. An execution
+plan is produced by PipelineModel but executed by plugins.
+
+## Hook
+
+A specialized callback associated with a pipeline lifecycle event.
+
+## Input
+
+A typed input port declared by a transformation using `Input[T]`.
+
+## Intermediate Representation (IR)
+
+The internal logical graph created by PipelineModel after type
+introspection and validation. The IR is the basis for planning,
+visualization, and compilation.
+
+## Node
+
+A logical element within a pipeline graph, such as a source,
+transformation step, or sink.
+
+## ODCS
+
+**Open Data Contract Standard.**
+
+The open specification used to represent data contracts.
+
+## Output
+
+A typed output port declared by a transformation using `Output[T]`.
+
+## Parameter
+
+A typed configuration value declared by a transformation using
+`Parameter[T]`. Parameters influence transformation behavior without
+becoming part of the pipeline graph.
+
+## Pipeline
+
+A logical description of how transformations and data contracts are
+connected. A pipeline models intent rather than execution.
+
+## PipelineModel
+
+The framework described by this documentation. PipelineModel models,
+validates, documents, and plans pipelines while delegating execution to
+external plugins.
+
+## Plugin
+
+An extension that provides runtime functionality not implemented by the
+PipelineModel core, such as dataframe processing, orchestration,
+storage, or compilation.
+
+## Profile
+
+A named runtime configuration that selects bindings, resources, and
+execution settings for a pipeline without changing its logical
+definition.
+
+## Resource
+
+An external dependency provided at runtime, such as a database
+connection, object storage client, or API client.
+
+## Sink
+
+A pipeline node that receives data produced by upstream transformations
+and writes or publishes it through an execution plugin.
+
+## Source
+
+A pipeline node that introduces data into a pipeline from an external
+system.
+
+## Step
+
+An instantiated transformation within a pipeline graph.
+
+## Transformation
+
+A typed, declarative description of a data operation. A transformation
+specifies inputs, outputs, and parameters, but not a particular
+execution technology.
+
+## Validation
+
+The process of verifying contracts, pipeline wiring, parameters, and
+implementation compatibility before execution.
+
+## Visualization
+
+A generated representation of a pipeline, such as Mermaid, Graphviz,
+HTML, or lineage diagrams, derived from the logical model.
+
+## Summary
+
+PipelineModel intentionally distinguishes between:
+
+-   **Modeling** --- describing pipelines with typed Python classes.
+-   **Planning** --- validating and preparing those models for
+    execution.
+-   **Execution** --- performing work through interchangeable plugins.
+
+Keeping these concepts separate is fundamental to the architecture and
+developer experience of PipelineModel.

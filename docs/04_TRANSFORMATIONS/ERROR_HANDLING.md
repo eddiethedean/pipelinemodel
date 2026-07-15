@@ -1,0 +1,159 @@
+# Error Handling
+
+Error handling in PipelineModel is designed to make failures predictable,
+typed, and portable across execution backends.
+
+PipelineModel distinguishes between **modeling errors**, **planning errors**,
+and **runtime errors**. The core framework coordinates how errors are reported,
+while execution plugins provide backend-specific details.
+
+## Goals
+
+Error handling should:
+
+- Produce clear, actionable diagnostics.
+- Fail early whenever possible.
+- Preserve typed context.
+- Remain execution-engine independent.
+- Support synchronous and asynchronous execution.
+- Integrate with callbacks and retry policies.
+
+## Error Categories
+
+### Model Errors
+
+Detected while defining contracts, transformations, or pipelines.
+
+Examples:
+
+- Invalid type annotations
+- Duplicate transformation outputs
+- Missing required inputs
+- Invalid contract metadata
+
+These should be reported before planning.
+
+### Planning Errors
+
+Detected while building an execution plan.
+
+Examples:
+
+- Incompatible contracts
+- Missing implementation
+- Unsupported plugin capability
+- Circular pipeline dependencies
+- Missing runtime resources
+
+Planning errors prevent execution.
+
+### Runtime Errors
+
+Occur while executing a valid plan.
+
+Examples:
+
+- Transformation exceptions
+- Database failures
+- Network timeouts
+- Filesystem errors
+- Unexpected plugin failures
+
+Runtime errors may trigger retries or callbacks.
+
+## Typed Error Context
+
+Errors should be exposed through structured context objects instead of raw
+exceptions.
+
+Typical context includes:
+
+- Pipeline ID
+- Transformation ID
+- Contract identity
+- Execution profile
+- Run ID
+- Original exception
+- Diagnostics
+- Timestamp
+
+## Error Flow
+
+```text
+Failure
+   │
+   ▼
+Categorize
+   │
+   ▼
+Create Typed Context
+   │
+   ▼
+Invoke Callbacks
+   │
+   ▼
+Determine Action
+   │
+   ▼
+Plugin Executes Action
+```
+
+## Retry
+
+Retry decisions should be declarative.
+
+Conceptually:
+
+```python
+from pipelinemodel import RetryAction
+
+return RetryAction.retry(max_attempts=3)
+```
+
+The execution backend performs the retry according to the active profile.
+
+## Diagnostics
+
+Errors should provide:
+
+- Stable error code
+- Human-readable message
+- Severity
+- Suggested remediation
+- Related contract or transformation
+- Stack trace (when appropriate)
+
+## Logging
+
+PipelineModel should emit structured logs.
+
+Sensitive values should be redacted according to contract metadata and profile
+settings.
+
+## Best Practices
+
+- Prefer typed exceptions and diagnostics.
+- Fail during planning instead of execution when possible.
+- Keep retry logic declarative.
+- Use callbacks for operational responses.
+- Preserve original exceptions for debugging.
+
+## Anti-Patterns
+
+Avoid:
+
+- Raising untyped exceptions from public APIs.
+- Hiding planning failures until runtime.
+- Logging sensitive data by default.
+- Embedding backend-specific exceptions in transformation contracts.
+
+## Key Principle
+
+> Errors are part of the execution model, not the transformation contract.
+> PipelineModel standardizes how failures are represented while plugins
+> determine how backend-specific failures are handled.
+
+## Next Step
+
+Continue with **VALIDATION.md** to learn how PipelineModel prevents many runtime
+errors by validating contracts and transformation interfaces before execution.

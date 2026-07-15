@@ -1,0 +1,223 @@
+# Pipeline
+
+A `Pipeline` defines the logical composition of a complete data workflow.
+
+A pipeline connects typed sources, transformations, and sinks into a directed
+graph. Like FastAPI's application object, a `Pipeline` is primarily declarative:
+it describes the workflow, while execution is delegated to pluggable runtime
+engines.
+
+## Purpose
+
+A pipeline answers one question:
+
+> How are transformations connected to produce a complete workflow?
+
+PipelineModel uses pipeline definitions to:
+
+- Validate graph structure
+- Verify contract compatibility
+- Generate DPCS artifacts
+- Build execution plans
+- Produce lineage
+- Generate documentation
+
+## Basic Example
+
+```python
+from pipelinemodel import Pipeline
+
+class CustomerPipeline(Pipeline):
+    raw = CsvSource[RawCustomer](path="customers.csv")
+
+    normalized = NormalizeCustomers.step(
+        customers=raw,
+        minimum_age=18,
+    )
+
+    warehouse = SqlSink[Customer](
+        input=normalized.result,
+    )
+```
+
+The pipeline definition is the source of truth. It does not specify scheduling,
+threading, orchestration, or execution engines.
+
+## Building Blocks
+
+A pipeline consists of:
+
+- Sources
+- Transformations
+- Sinks
+
+```text
+Source
+   │
+   ▼
+Transformation
+   │
+   ▼
+Transformation
+   │
+   ▼
+Sink
+```
+
+Each connection is typed through data contracts.
+
+## Graph Semantics
+
+Pipelines form directed acyclic graphs (DAGs).
+
+PipelineModel derives graph topology from typed references rather than requiring
+developers to construct graph objects manually.
+
+The planner identifies:
+
+- Nodes
+- Edges
+- Dependencies
+- Execution order
+- Parallel opportunities
+
+## Sources
+
+Sources introduce data into the graph.
+
+```python
+customers = CsvSource[RawCustomer](
+    path="customers.csv",
+)
+```
+
+Every source declares the contract of the data it produces.
+
+## Transformations
+
+Transformations consume and produce typed contracts.
+
+```python
+normalized = NormalizeCustomers.step(
+    customers=customers,
+)
+```
+
+Each transformation becomes a graph node.
+
+## Sinks
+
+Sinks publish data outside the pipeline.
+
+```python
+warehouse = SqlSink[Customer](
+    input=normalized.result,
+)
+```
+
+PipelineModel validates sink compatibility before execution.
+
+## Planning
+
+Planning occurs before execution.
+
+Planning resolves:
+
+- Graph topology
+- Contract compatibility
+- Implementation selection
+- Validation policy
+- Execution profile
+- Runtime bindings
+
+Planning should fail before execution whenever possible.
+
+## Execution Independence
+
+Pipeline definitions never depend on a specific execution framework.
+
+The same pipeline may execute using different plugins, including:
+
+- Local Python
+- Polars
+- Pandas
+- Airflow
+- Dagster
+- Prefect
+- Future execution engines
+
+The logical pipeline remains unchanged.
+
+## Relationship to DPCS
+
+Every pipeline has a portable DPCS representation.
+
+```text
+Python Pipeline
+      │
+      ▼
+DPCS Pipeline Contract
+```
+
+The Python class is the preferred authoring surface.
+
+The generated DPCS artifact is the portable representation.
+
+## Validation
+
+PipelineModel validates:
+
+- Graph correctness
+- Required sources
+- Required sinks
+- Contract compatibility
+- Version compatibility
+- Transformation implementations
+- Execution profile capabilities
+
+## Lineage
+
+Because every node and edge is typed, PipelineModel can automatically derive:
+
+- End-to-end lineage
+- Dataset dependencies
+- Transformation dependencies
+- Impact analysis
+- Documentation
+
+No additional lineage configuration is required.
+
+## Reusability
+
+Pipelines should be composable.
+
+Future versions may support sub-pipelines and reusable pipeline modules while
+preserving DPCS compatibility.
+
+## Best Practices
+
+- Keep pipelines declarative.
+- Separate modeling from execution.
+- Reuse transformations.
+- Use explicit contracts at every boundary.
+- Validate before execution.
+- Generate DPCS artifacts in CI.
+
+## Anti-Patterns
+
+Avoid:
+
+- Embedding execution logic in pipeline definitions.
+- Depending on orchestrator-specific APIs.
+- Bypassing contract validation.
+- Hard-coding runtime implementations into pipeline classes.
+
+## Key Principle
+
+> A `Pipeline` describes the logical flow of data through typed transformations.
+> Execution engines decide how that flow is carried out.
+
+## Next Step
+
+Continue with **SOURCES.md** to learn how typed sources introduce data into a
+pipeline.
