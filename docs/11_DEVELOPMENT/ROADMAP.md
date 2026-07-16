@@ -502,40 +502,201 @@ corrupting shared artifacts.
 
 ## 0.6 — SQL-Native Execution
 
+### Outcome
+
+Run eligible relational pipelines inside a database from source relation to
+published relation, without materializing intermediate rows in Python and
+without introducing a SQL-specific pipeline authoring model.
+
+The milestone proves one production-shaped reference dialect end to end. Other
+dialects may implement the same protocols, but broad database coverage is not
+an exit condition for 0.6.
+
+### Scope boundary
+
+0.6 owns relational planning, safe SQL compilation, database execution, and
+normalized evidence. The core package owns portable relation, expression,
+write-intent, capability, and plan models. Independently installable plugins
+own drivers, dialect syntax, catalog access, transaction behavior, and
+dialect-specific optimization.
+
+The following are not part of this milestone:
+
+- A general-purpose ORM, query builder, migration framework, or database
+  administration layer
+- Arbitrary user SQL parsing, rewriting, or claims of safety for untrusted raw
+  SQL
+- Distributed Spark execution, streaming execution, or Airflow compilation
+- Transparent cross-database joins or distributed transactions
+- Automatic schema migration beyond explicitly planned create-table behavior
+- Silent emulation of unsupported merge, transaction, isolation, or locking
+  semantics
+
 ### Deliver
 
-- SQL implementation and relation protocols
-- SQL plugin, compiler, provider, and dialect capability model
-- SQL-to-SQL execution without Python materialization
-- Parameter binding and identifier validation
-- Transaction, retry, and materialization boundaries
-- Portable append, replace, merge, create-table-as, and insert-select intents
-- Replace-partition, insert-only, snapshot, delete-propagation, and slowly
-  changing dimension write intents
-- SQL-native reconciliation and write-result evidence
-- Predicate, projection, join, and aggregation pushdown
-- Safe adjacent-step query fusion
-- SQL lineage and query-plan explanation
-- SQL catalog, relation, and result-schema inspection with dialect-specific
-  metadata preserved separately from the logical schema
-- Optional SQLModel table descriptors translated into ordinary SQL relation
-  metadata without ORM instance materialization
-- Dialect conformance suite
+#### Portable relational model
+
+- Versioned protocols for SQL implementations, relations, expressions,
+  compilers, executors, catalogs, connections, and dialect plugins
+- Logical relation references that identify catalog, namespace, object, and
+  optional version without containing credentials or live connection objects
+- A closed, typed expression model for column references, literals,
+  parameters, predicates, projections, joins, grouping, aggregation, ordering,
+  limits, and supported scalar operations
+- Explicit escape hatch for trusted SQL fragments, disabled by production
+  policy unless the selected plugin declares and enforces a safe usage model
+- Optional SQLModel table descriptors translated into ordinary relation and
+  schema metadata without sessions, ORM instance materialization, or a
+  SQLModel dependency in the core package
+
+#### Planning and capability negotiation
+
+- SQL plugin, driver, compiler, catalog, transaction, and dialect capability
+  vocabulary with declared core, protocol, and plan-schema compatibility
+- Planner selection of SQL implementations and formation of maximal compatible
+  SQL regions without crossing engine, connection, security-domain,
+  validation, retry, or publication boundaries
+- Planned Python/dataframe-to-SQL and SQL-to-Python/dataframe materialization
+  boundaries with format, ownership, validation, and size policy recorded
+- Pre-execution diagnostics for unsupported expressions, types, write modes,
+  isolation levels, identifier rules, parameter styles, and catalog features
+- Deterministic compiled-statement identities and logical-to-physical mappings
+  that retain every source, step, output port, and sink identity after fusion
+
+#### Safe compilation and execution
+
+- SQL-to-SQL execution whose eligible intermediate relations remain in the
+  database and are never fetched into the Pipelantic process
+- Dialect-owned identifier quoting and validation; values use driver parameter
+  binding and are never interpolated into statement text
+- Separate compiled statement text, redacted parameter metadata, and runtime
+  parameter values so plans, logs, diagnostics, and reports remain secret-free
+- Connection acquisition at runtime through provider references, with bounded
+  concurrency, cancellation, timeouts, cleanup, and normalized driver errors
+- Transaction scopes aligned with declared atomicity and publication
+  boundaries, including explicit behavior for dialects with transactional DDL
+  limitations
+- Retry decisions gated by retry-safety, idempotency, transaction outcome, and
+  write-intent evidence; an unknown commit outcome must not be retried blindly
+
+#### Relational optimization and semantic preservation
+
+- Predicate, projection, join, and aggregation pushdown for operations
+  represented by the portable expression model
+- Safe adjacent-step query fusion when implementation, validation,
+  observability, retry, security, and materialization semantics remain intact
+- Deterministic fallback to separate statements or materialized relations when
+  fusion is unsupported or would erase an observable boundary
+- SQL lineage and plan explanation showing pushed operations, fused logical
+  steps, materialization points, parameter sources, capability decisions, and
+  fallback reasons
+- Optional database query-plan capture as runtime evidence, bounded and
+  disabled by default where explain operations may execute or lock data
+
+#### Publication and reliability
+
+- Portable append, replace, insert-select, create-table-as, and merge intents,
+  with insert-only, snapshot, replace-partition, delete-propagation, and slowly
+  changing dimension semantics represented explicitly where supported
+- A required atomic-publication strategy for replace and snapshot operations;
+  plugins must diagnose when rename, swap, staging, or transactional guarantees
+  cannot preserve it
+- Contract-aware target compatibility checks before writes, with schema drift
+  policy applied to observed catalog metadata rather than inferred sample rows
+- SQL-native row-count, affected-row, reconciliation, uniqueness, freshness,
+  partition-completeness, and write-result evidence normalized into the run
+  report
+- Idempotency keys, target identities, statement identities, transaction
+  outcomes, and reconciliation results recorded without query values or
+  credentials
+
+#### Inspection, plugins, and assurance
+
+- Catalog, relation, and result-schema inspection through metadata APIs, with
+  dialect-specific details preserved separately from normalized logical schema
+- One independently installable reference SQL plugin and reference dialect,
+  with driver dependencies kept out of the core package
+- Plugin conformance kit covering discovery, planning, compilation, binding,
+  identifiers, catalogs, transactions, cancellation, writes, evidence,
+  diagnostics, cleanup, and compatibility rejection
+- Golden plan, compiled-SQL, lineage, diagnostic, and run-report fixtures whose
+  dialect-sensitive portions are explicitly separated from portable semantics
+- Correctness, injection-resistance, transaction-failure, concurrency, and
+  bounded-resource tests against an isolated database environment
+
+### Required execution paths
+
+The release must support and test these paths:
+
+| Path | Required behavior |
+|---|---|
+| SQL relation → SQL steps → SQL sink | No intermediate Python row materialization |
+| SQL source → Python or dataframe step | Planned, validated materialization at the region boundary |
+| Python or dataframe source → SQL region | Planned load into an explicitly managed staging relation |
+| Fused SQL region | Preserve logical identities, lineage, diagnostics, and validation boundaries |
+| Non-fusible adjacent SQL steps | Emit separate statements or an explicit materialization boundary |
+| Append or insert-select | Bind values and report affected-row evidence |
+| Replace or snapshot | Publish atomically or fail capability negotiation |
+| Merge or replace-partition | Execute native declared semantics or fail before mutation |
+| Transaction failure before commit | Roll back and report a known non-committed outcome |
+| Connection loss during commit | Report an unknown outcome and suppress unsafe automatic retry |
+| Catalog schema inspection | Use metadata facilities without reading source rows |
 
 ### Acceptance scenarios
 
-- An eligible SQL-to-SQL pipeline executes entirely in the database.
-- Values are bound rather than interpolated into SQL strings.
-- Fusion preserves logical step identities, diagnostics, validation gates,
-  lineage, and security boundaries.
-- Unsupported merge or transaction semantics fail before execution or use an
-  explicitly documented fallback.
-- Catalog-supported inspection does not execute arbitrary queries or read
-  source rows merely to discover schema metadata.
+- The same data, transformation, and pipeline contracts used by the local and
+  dataframe runtimes select SQL implementations through a profile; no
+  SQL-specific `Pipeline` subclass is required.
+- An eligible source-to-sink relational pipeline executes entirely inside the
+  reference database, and instrumentation proves that intermediate rows were
+  not fetched into Python.
+- Malicious or malformed parameter values cannot alter statement structure;
+  identifiers outside the dialect policy fail before execution, and generated
+  statements contain placeholders rather than interpolated values.
+- Fusion and pushdown produce the same contract-valid logical results as an
+  unfused reference execution while preserving step attribution, lineage,
+  validation gates, retry boundaries, and security domains.
+- Every fusion, pushdown, materialization, transaction, write strategy, and
+  capability fallback is visible in plan explanation or run evidence.
+- Unsupported merge, replace-partition, isolation, transactional DDL, or
+  atomic-publication requirements fail during validation or planning before
+  the target is mutated.
+- A failure before commit rolls back all writes in its declared atomic scope;
+  a lost connection during commit produces an explicit unknown-outcome report
+  and does not trigger an unsafe retry.
+- Catalog-backed schema inspection normalizes supported types without
+  executing arbitrary queries or reading rows; ambiguous, lossy, and unknown
+  types produce structured diagnostics instead of guessed compatibility.
+- Plans, logs, diagnostics, compiled artifacts, and reports contain no
+  credentials or bound secret values, including on driver and compiler failure
+  paths.
+- Installing `pipelantic` alone installs and imports no SQL driver, ORM, or
+  database client; the reference plugin passes the published dialect
+  conformance suite in a clean environment.
+
+### Release artifacts
+
+- Versioned SQL execution, relation, expression, compiler, and dialect protocol
+  documentation
+- Reference SQL plugin with declared driver, database, core, and protocol
+  compatibility ranges
+- Dialect conformance suite reusable by third-party SQL plugins
+- Runnable SQL-to-SQL, mixed-boundary, transactional-write, and failure-recovery
+  examples
+- Security test corpus for values, identifiers, trusted fragments, redaction,
+  connection failures, and bounded query-plan inspection
+- Known-limitations page covering supported operations and types, transaction
+  guarantees, write modes, catalog behavior, fusion barriers, and fallback
+  costs
 
 ### Exit gate
 
-SQL is a first-class execution backend rather than a special pipeline type.
+The reference plugin passes the protocol conformance, semantic-equivalence,
+injection-resistance, transaction-failure, security, and resource-bounding
+gates; a complete eligible pipeline runs inside the database with explainable
+planning and normalized evidence; and unsupported semantics fail before target
+mutation. SQL is thereby proven as a first-class realization of the shared
+logical pipeline, not a special pipeline type.
 
 ## 0.7 — Distributed Spark Execution
 
