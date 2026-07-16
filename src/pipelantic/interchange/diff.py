@@ -14,8 +14,18 @@ from pipelantic.contracts import DataContractModel, is_data_contract_type
 from pipelantic.diagnostics import Diagnostic, Severity, ValidationReport
 from pipelantic.interchange.diagnostics import map_toolkit_diagnostics
 from pipelantic.interchange.dpcs import pipeline_to_dpcs
-from pipelantic.interchange.dtcs import transformation_to_dtcs
+from pipelantic.interchange.dtcs import DtcsError, transformation_to_dtcs
 from pipelantic.interchange.security import read_text_bounded
+
+_COMPATIBLE_DPCS_CATEGORIES = frozenset(
+    {
+        "compatible",
+        "identical",
+        "backwardcompatible",
+        "forwardcompatible",
+        "fullcompatible",
+    }
+)
 
 
 def diff_data_contracts(
@@ -84,25 +94,42 @@ def diff_pipelines(
     left = _as_dpcs_yaml(previous)
     right = _as_dpcs_yaml(current)
     result = dpcs.compare_contract_yaml(left, right)
-    if isinstance(result, dict):
-        return map_toolkit_diagnostics(
-            result.get("diagnostics"),
-            default_code="PMGEN311",
-            path=("dpcs", "diff"),
+    if not isinstance(result, dict):
+        return ValidationReport.from_diagnostics(
+            [
+                Diagnostic(
+                    code="PMGEN311",
+                    severity=Severity.ERROR,
+                    message=f"Unexpected DPCS compare result: {result!r}",
+                    path=("dpcs", "diff"),
+                )
+            ]
         )
-    # Some bindings return a plain summary string/bool.
-    if result:
-        return ValidationReport()
-    return ValidationReport.from_diagnostics(
-        [
-            Diagnostic(
-                code="PMGEN311",
-                severity=Severity.ERROR,
-                message="DPCS documents are not compatible.",
-                path=("dpcs", "diff"),
-            )
-        ]
+
+    report = map_toolkit_diagnostics(
+        result.get("diagnostics"),
+        default_code="PMGEN311",
+        path=("dpcs", "diff"),
     )
+    category = str(result.get("category") or "").replace("_", "").lower()
+    if category and category not in _COMPATIBLE_DPCS_CATEGORIES and report.valid:
+        return report.merge(
+            ValidationReport.from_diagnostics(
+                [
+                    Diagnostic(
+                        code="PMGEN311",
+                        severity=Severity.ERROR,
+                        message=(
+                            f"DPCS documents are not compatible "
+                            f"(category={result.get('category')!r})."
+                        ),
+                        path=("dpcs", "diff"),
+                        metadata={"category": result.get("category")},
+                    )
+                ]
+            )
+        )
+    return report
 
 
 def _as_data_contract(value: type[DataContractModel] | DataContract) -> DataContract:
@@ -117,8 +144,31 @@ def _as_dtcs_doc(value: type[Any] | dict[str, Any] | str | Path) -> dict[str, An
     if isinstance(value, dict):
         return dict(value)
     if isinstance(value, (str, Path)):
-        _path, text = read_text_bounded(value)
+        path, text = read_text_bounded(value)
         parsed = dtcs.parse(text)
+        if not isinstance(parsed, dict) or not isinstance(parsed.get("contract"), dict):
+            parse_report = map_toolkit_diagnostics(
+                (parsed or {}).get("report", {}).get("diagnostics")
+                if isinstance(parsed, dict)
+                else None,
+                default_code="PMGEN203",
+                source_path=str(path),
+            )
+            raise DtcsError(
+                "DTCS parse did not return a contract document.",
+                report=parse_report
+                if not parse_report.valid
+                else ValidationReport.from_diagnostics(
+                    [
+                        Diagnostic(
+                            code="PMGEN203",
+                            severity=Severity.ERROR,
+                            message="DTCS parse did not return a contract document.",
+                            path=("dtcs", "diff"),
+                        )
+                    ]
+                ),
+            )
         return dict(parsed["contract"])
     return transformation_to_dtcs(value)
 

@@ -21,10 +21,11 @@ Documents use these conceptual stability levels:
 | Normative | A requirement defined by a contract specification |
 | Example | Illustrative code that expresses intended UX |
 
-Unless a chapter says otherwise, user-guide code beyond the 0.1 modeling
-kernel should be read as an **accepted design example**, not as evidence of a
-published package API. The 0.1 surface is defined by the package,
-[API reference](../10_REFERENCE/API_REFERENCE.md), tests, and changelog.
+Unless a chapter says otherwise, user-guide code beyond the shipped 0.2
+modeling and interchange surface should be read as an **accepted design
+example**, not as evidence of a published package API. The 0.2 surface is
+defined by the package, [API reference](../10_REFERENCE/API_REFERENCE.md),
+tests, and changelog.
 
 ## Normative Authority
 

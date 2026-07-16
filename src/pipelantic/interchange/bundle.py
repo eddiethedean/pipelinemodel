@@ -77,6 +77,8 @@ def generate_contracts(pipeline_cls: type[Any]) -> ContractBundle:
                 if port.contract_type is not None:
                     _remember_data_contract(data_contracts, port.contract_type)
 
+    _assert_unique_artifact_names(data_contracts, transformations)
+
     data_locations = {
         cid: f"data/{odcs_filename(model)}" for cid, model in data_contracts.items()
     }
@@ -250,4 +252,82 @@ def _remember_data_contract(
     model: type[Any],
 ) -> None:
     cid = published_contract_id(model) or model.__name__.lower()
+    existing = store.get(cid)
+    if existing is not None and existing is not model:
+        raise BundleError(
+            f"Published data-contract id {cid!r} maps to multiple Python types "
+            f"({existing.__module__}:{existing.__qualname__} and "
+            f"{model.__module__}:{model.__qualname__}).",
+            report=ValidationReport.from_diagnostics(
+                [
+                    Diagnostic(
+                        code="PMGEN232",
+                        severity=Severity.ERROR,
+                        message=(
+                            f"Published data-contract id {cid!r} collides across "
+                            "distinct Python types."
+                        ),
+                        path=("bundle", "data", cid),
+                        help=(
+                            "Assign unique ContractModel identities or explicit "
+                            "__published_id__ values before generating contracts."
+                        ),
+                    )
+                ]
+            ),
+        )
     store[cid] = model
+
+
+def _assert_unique_artifact_names(
+    data_contracts: dict[str, type[Any]],
+    transformations: dict[str, type[Any]],
+) -> None:
+    """Fail closed when distinct identities collapse to the same filename slug."""
+    odcs_names: dict[str, str] = {}
+    for cid, model in data_contracts.items():
+        name = odcs_filename(model)
+        prior = odcs_names.get(name)
+        if prior is not None and prior != cid:
+            raise BundleError(
+                f"ODCS filename collision: {name!r} for {prior!r} and {cid!r}.",
+                report=ValidationReport.from_diagnostics(
+                    [
+                        Diagnostic(
+                            code="PMGEN233",
+                            severity=Severity.ERROR,
+                            message=(
+                                f"ODCS filename collision: {name!r} for "
+                                f"{prior!r} and {cid!r}."
+                            ),
+                            path=("bundle", "data", name),
+                            help="Use published ids that slug to unique filenames.",
+                        )
+                    ]
+                ),
+            )
+        odcs_names[name] = cid
+
+    dtcs_names: dict[str, str] = {}
+    for tid, transform in transformations.items():
+        name = dtcs_filename(transform)
+        prior = dtcs_names.get(name)
+        if prior is not None and prior != tid:
+            raise BundleError(
+                f"DTCS filename collision: {name!r} for {prior!r} and {tid!r}.",
+                report=ValidationReport.from_diagnostics(
+                    [
+                        Diagnostic(
+                            code="PMGEN233",
+                            severity=Severity.ERROR,
+                            message=(
+                                f"DTCS filename collision: {name!r} for "
+                                f"{prior!r} and {tid!r}."
+                            ),
+                            path=("bundle", "transformations", name),
+                            help="Use published ids that slug to unique filenames.",
+                        )
+                    ]
+                ),
+            )
+        dtcs_names[name] = tid

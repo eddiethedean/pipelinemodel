@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from pipelantic.contracts import is_data_contract_type
 from pipelantic.diagnostics import Diagnostic, Severity, ValidationReport
-from pipelantic.identity import contract_id
+from pipelantic.identity import contract_id, published_contract_id
 from pipelantic.model import LogicalGraph
 from pipelantic.transformation import Step, Transformation
 
@@ -18,6 +18,7 @@ def validate_pipeline(pipeline_cls: type[Pipeline]) -> ValidationReport:
     """Validate a pipeline definition and return a structured report."""
     diagnostics: list[Diagnostic] = []
     diagnostics.extend(_validate_member_definitions(pipeline_cls))
+    diagnostics.extend(_validate_nested_subpipelines(pipeline_cls))
     graph = pipeline_cls.build_graph()
     build_error = getattr(pipeline_cls, "_graph_build_error", None)
     if build_error:
@@ -32,6 +33,31 @@ def validate_pipeline(pipeline_cls: type[Pipeline]) -> ValidationReport:
     diagnostics.extend(_validate_graph(graph, pipeline_cls))
     diagnostics.extend(_validate_port_compatibility(graph, pipeline_cls))
     return ValidationReport.from_diagnostics(diagnostics)
+
+
+def _validate_nested_subpipelines(pipeline_cls: type[Pipeline]) -> list[Diagnostic]:
+    """Recursively validate embedded subpipeline definitions."""
+    from pipelantic.pipeline import SubpipelineInstance
+
+    diagnostics: list[Diagnostic] = []
+    for name, member in pipeline_cls.__pipeline_members__.items():
+        if not isinstance(member, SubpipelineInstance):
+            continue
+        child_report = validate_pipeline(member.pipeline_cls)
+        for diagnostic in child_report.diagnostics:
+            diagnostics.append(
+                Diagnostic(
+                    code=diagnostic.code,
+                    severity=diagnostic.severity,
+                    message=diagnostic.message,
+                    path=("pipeline", name, *diagnostic.path),
+                    help=diagnostic.help,
+                    related=diagnostic.related,
+                    source=diagnostic.source,
+                    metadata={**diagnostic.metadata, "subpipeline": name},
+                )
+            )
+    return diagnostics
 
 
 def _validate_member_definitions(pipeline_cls: type[Pipeline]) -> list[Diagnostic]:
@@ -350,7 +376,7 @@ def _validate_port_compatibility(
         if prod_type is None or cons_type is None:
             continue
 
-        if prod_type is not cons_type:
+        if not _contracts_compatible(prod_type, cons_type):
             diagnostics.append(
                 Diagnostic(
                     code="PMPIPE210",
@@ -370,11 +396,27 @@ def _validate_port_compatibility(
                     metadata={
                         "producer_contract": contract_id(prod_type),
                         "consumer_contract": contract_id(cons_type),
+                        "producer_published_id": published_contract_id(prod_type),
+                        "consumer_published_id": published_contract_id(cons_type),
                     },
                 )
             )
 
     return diagnostics
+
+
+def _contracts_compatible(producer: type[Any], consumer: type[Any]) -> bool:
+    """Return True when producer/consumer contracts are the same logical type.
+
+    Exact Python identity remains the primary check. Distinct classes that share
+    the same published ODCS/CCM identity (common after ODCS load) are also
+    treated as compatible.
+    """
+    if producer is consumer:
+        return True
+    left = published_contract_id(producer)
+    right = published_contract_id(consumer)
+    return bool(left and right and left == right)
 
 
 def validate_transformation(transform: type[Transformation]) -> ValidationReport:

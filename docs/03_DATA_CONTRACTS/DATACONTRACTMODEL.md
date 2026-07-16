@@ -15,7 +15,7 @@ Pipelantic consumes `DataContractModel` classes directly. It does not redefine t
 ## Basic Definition
 
 ```python
-from contractmodel import DataContractModel
+from pipelantic import DataContractModel
 
 
 class Customer(DataContractModel):
@@ -102,7 +102,7 @@ from typing import Annotated
 
 from pydantic import Field
 
-from contractmodel import DataContractModel
+from pipelantic import DataContractModel
 
 
 class Customer(DataContractModel):

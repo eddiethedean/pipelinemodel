@@ -9,12 +9,13 @@ portable contracts.
 
 > **Goal:** Learn the Pipelantic mental model, not every feature.
 >
-> **Status:** This is an accepted design example for the intended 1.0 API.
+> **Status:** Steps 1–5 match the shipped 0.2.0 surface. Planning and
+> execution below describe later milestones.
 
 ## Step 1 --- Define a Data Contract
 
 ``` python
-from contractmodel import DataContractModel
+from pipelantic import DataContractModel
 
 class Customer(DataContractModel):
     id: int
@@ -89,20 +90,17 @@ contracts/
     └── customer-pipeline.dpcs.yaml
 ```
 
-## Step 6 --- Plan
-
-Resolve the logical pipeline for an environment before execution:
+## Step 6 --- Plan (later milestone)
 
 ```python
 plan = CustomerPipeline.plan(profile="local")
 ```
 
-The resulting `PipelinePlan` contains implementation, binding, capability, and
-execution-region decisions without containing resolved secrets.
+Planning is not shipped in 0.2.0. The intended `PipelinePlan` will contain
+implementation, binding, capability, and execution-region decisions without
+resolved secrets.
 
-## Step 7 --- Execute
-
-Choose the execution engine appropriate for your environment.
+## Step 7 --- Execute (later milestone)
 
 ``` python
 CustomerPipeline.run(
@@ -118,8 +116,9 @@ await CustomerPipeline.arun(
 )
 ```
 
-Pipelantic handles synchronous and asynchronous implementations
-transparently while delegating actual execution to plugins.
+Execution plugins are not shipped in 0.2.0. The intended model handles
+synchronous and asynchronous implementations transparently while
+delegating runtime work to plugins.
 
 ## What You've Learned
 
@@ -130,8 +129,7 @@ You have:
 -   Built a pipeline.
 -   Validated the pipeline.
 -   Generated portable contracts.
--   Resolved a deterministic `PipelinePlan`.
--   Executed through a runtime profile.
+-   Seen how later milestones add planning and execution.
 
 ## Where to Go Next
 

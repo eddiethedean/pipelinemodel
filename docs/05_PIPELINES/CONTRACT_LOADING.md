@@ -58,7 +58,7 @@ domain object.
 Conceptually:
 
 ```python
-from contractmodel import DataContractModel
+from pipelantic import DataContractModel
 from pipelantic import Pipeline, Transformation
 
 customer = DataContractModel.from_odcs("customer.odcs.yaml")

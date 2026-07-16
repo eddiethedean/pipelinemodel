@@ -68,7 +68,7 @@ from decimal import Decimal
 from typing import Annotated, Literal
 
 from pydantic import Field
-from contractmodel import DataContractModel
+from pipelantic import DataContractModel
 
 
 class Customer(DataContractModel):

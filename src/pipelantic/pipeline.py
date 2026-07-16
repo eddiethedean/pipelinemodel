@@ -261,6 +261,8 @@ class Pipeline(metaclass=_PipelineMeta):
                 metadata=MappingProxyType({"cyclic_subpipeline": True}),
             )
 
+        # Fresh builds must not inherit a stale cyclic-nesting error flag.
+        cls._graph_build_error = None
         _building_graphs.add(cls)
         try:
             graph = _build_logical_graph(cls)

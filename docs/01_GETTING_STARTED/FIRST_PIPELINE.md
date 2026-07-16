@@ -4,8 +4,9 @@ This tutorial walks through building a complete Pipelantic project
 from start to finish. Rather than focusing on execution details, you'll
 learn how to model a pipeline using typed Python classes.
 
-> **Status:** This tutorial defines the intended code-first developer
-> experience. The package is not yet implemented.
+> **Status:** Steps 1–6 match the shipped 0.2.0 surface (authoring,
+> validation, and contract generation). Planning and execution examples
+> later in this tutorial describe upcoming milestones.
 
 ## Goal
 
@@ -20,7 +21,7 @@ We'll build a simple pipeline that:
 ## Step 1 --- Define the Data Contracts
 
 ``` python
-from contractmodel import DataContractModel
+from pipelantic import DataContractModel
 
 class RawCustomer(DataContractModel):
     customer_id: int
@@ -120,20 +121,18 @@ contracts/
     └── customer-pipeline.dpcs.yaml
 ```
 
-## Step 7 --- Plan
+## Step 7 --- Plan (later milestone)
 
 ```python
 plan = CustomerPipeline.plan(profile="local")
 ```
 
-Planning resolves the Polars implementation, source and sink bindings,
-capabilities, resource references, and the physical execution graph.
+Planning is not shipped in 0.2.0. When available, it will resolve the
+Polars implementation, source and sink bindings, capabilities, resource
+references, and the physical execution graph without reading data or
+executing the transformation.
 
-It does not read data or execute the transformation.
-
-## Step 8 --- Execute
-
-Select the runtime that best fits your environment.
+## Step 8 --- Execute (later milestone)
 
 ``` python
 CustomerPipeline.run(profile="local")
@@ -145,8 +144,9 @@ or
 await CustomerPipeline.arun(profile="production")
 ```
 
-Pipelantic delegates execution to your configured plugins while
-keeping the pipeline definition unchanged.
+Execution plugins are not shipped in 0.2.0. The intended model keeps the
+pipeline definition unchanged while delegating runtime work to configured
+plugins.
 
 ## What You Built
 

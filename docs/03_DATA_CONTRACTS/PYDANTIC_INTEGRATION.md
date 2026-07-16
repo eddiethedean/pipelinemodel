@@ -72,7 +72,7 @@ Pipelantic must not reimplement Pydantic field parsing or validation behavior.
 A Pipelantic-ready data contract is an ordinary ContractModel class:
 
 ```python
-from contractmodel import DataContractModel
+from pipelantic import DataContractModel
 
 
 class Customer(DataContractModel):
@@ -130,7 +130,7 @@ from decimal import Decimal
 from typing import Literal
 from uuid import UUID
 
-from contractmodel import DataContractModel
+from pipelantic import DataContractModel
 
 
 class Order(DataContractModel):

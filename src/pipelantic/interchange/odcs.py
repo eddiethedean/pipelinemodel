@@ -104,30 +104,51 @@ def schema_fields_for_dtcs(model: type[ContractModel]) -> list[dict[str, Any]]:
         fields.append(
             {
                 "name": field.name,
-                "type": _dtcs_type(str(logical)),
+                "type": dtcs_type_for_logical_type(str(logical), field_name=field.name),
                 "nullable": bool(field.nullable) or not bool(field.required),
             }
         )
     return fields
 
 
-def _dtcs_type(logical_type: str) -> str:
+def dtcs_type_for_logical_type(logical_type: str, *, field_name: str = "") -> str:
+    """Map a ContractModel logical type to a DTCS toolkit-accepted type name.
+
+    Raises :class:`ValueError` for composite types the current toolkit cannot
+    represent as a bare logical-type string (array/map/object).
+    """
     mapping = {
         "integer": "integer",
         "long": "integer",
-        "number": "number",
-        "float": "number",
-        "double": "number",
+        "number": "decimal",
+        "float": "decimal",
+        "double": "decimal",
+        "decimal": "decimal",
         "string": "string",
         "boolean": "boolean",
         "bool": "boolean",
         "date": "date",
-        "datetime": "timestamp",
-        "timestamp": "timestamp",
-        "object": "object",
-        "array": "array",
+        "time": "time",
+        "datetime": "datetime",
+        "timestamp": "datetime",
+        "binary": "binary",
     }
-    return mapping.get(logical_type.lower(), "string")
+    key = logical_type.lower()
+    if key in {"array", "map", "object"}:
+        where = f" field {field_name!r}" if field_name else ""
+        raise ValueError(
+            f"Unsupported ContractModel logical type {logical_type!r}{where} "
+            "for DTCS projection; composite array/map/object schemas are not "
+            "emitted as bare DTCS types."
+        )
+    mapped = mapping.get(key)
+    if mapped is None:
+        where = f" field {field_name!r}" if field_name else ""
+        raise ValueError(
+            f"Unsupported ContractModel logical type {logical_type!r}{where} "
+            "for DTCS projection."
+        )
+    return mapped
 
 
 def _odcs_api_version(data_contract: DataContract) -> str | None:

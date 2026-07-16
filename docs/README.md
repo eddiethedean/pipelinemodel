@@ -11,9 +11,9 @@
 
 # Pipelantic Documentation
 
-Pipelantic is a proposed Python framework for defining typed,
-contract-driven data pipelines and coordinating their execution through the
-tools users already choose.
+Pipelantic is a Python framework for defining typed, contract-driven data
+pipelines and coordinating their execution through the tools users already
+choose.
 
 Its central idea is simple:
 
@@ -39,8 +39,15 @@ and the [Roadmap](11_DEVELOPMENT/ROADMAP.md).
 ## Thirty-Second Example
 
 ```python
-from contractmodel import DataContractModel
-from pipelantic import Input, Output, Pipeline, Sink, Source, Transformation
+from pipelantic import (
+    DataContractModel,
+    Input,
+    Output,
+    Pipeline,
+    Sink,
+    Source,
+    Transformation,
+)
 
 
 class RawCustomer(DataContractModel):
@@ -75,8 +82,8 @@ From these declarations, Pipelantic can derive:
 - A DPCS pipeline contract
 - Static wiring and compatibility diagnostics
 - A logical lineage graph
-- A resolved `PipelinePlan` for a selected profile
-- Documentation and visualizations
+
+Planning (`PipelinePlan`) and execution plugins arrive in later milestones.- Documentation and visualizations
 - Backend-specific execution artifacts
 
 The transformation implementation remains separate:

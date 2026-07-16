@@ -55,6 +55,11 @@ class ValidationReport:
         return not any(d.severity is Severity.ERROR for d in self.diagnostics)
 
     @property
+    def has_errors(self) -> bool:
+        """Return True when at least one error-severity diagnostic is present."""
+        return not self.valid
+
+    @property
     def errors(self) -> tuple[Diagnostic, ...]:
         """Return error-severity diagnostics."""
         return tuple(d for d in self.diagnostics if d.severity is Severity.ERROR)

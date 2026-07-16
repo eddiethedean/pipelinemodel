@@ -89,7 +89,7 @@ customer_id,first_name,last_name,email
 from typing import Annotated
 
 from pydantic import Field
-from contractmodel import DataContractModel
+from pipelantic import DataContractModel
 
 
 class RawCustomer(DataContractModel):

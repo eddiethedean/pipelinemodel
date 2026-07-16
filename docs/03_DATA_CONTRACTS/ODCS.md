@@ -66,7 +66,7 @@ Each layer has a different purpose.
 Pipelantic recommends a code-first workflow.
 
 ```python
-from contractmodel import DataContractModel
+from pipelantic import DataContractModel
 
 class Customer(DataContractModel):
     customer_id: int

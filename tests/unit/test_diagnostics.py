@@ -9,6 +9,7 @@ def test_report_valid_when_no_errors() -> None:
         diagnostics=(Diagnostic(code="X", severity=Severity.WARNING, message="warn"),)
     )
     assert report.valid
+    assert not report.has_errors
     assert len(report.warnings) == 1
 
 
@@ -19,6 +20,7 @@ def test_raise_for_errors() -> None:
         )
     )
     assert not report.valid
+    assert report.has_errors
     try:
         report.raise_for_errors()
     except PipelineValidationError as exc:

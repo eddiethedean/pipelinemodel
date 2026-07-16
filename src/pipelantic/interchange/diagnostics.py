@@ -16,6 +16,7 @@ _SEVERITY_MAP = {
     "error": Severity.ERROR,
     "warning": Severity.WARNING,
     "info": Severity.INFO,
+    "information": Severity.INFO,
     "hint": Severity.HINT,
     "note": Severity.INFO,
 }

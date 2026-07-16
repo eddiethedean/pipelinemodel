@@ -1,4 +1,4 @@
-![Pipelantic banner](docs/theme/assets/pipelantic-banner.png)
+![Pipelantic banner](https://raw.githubusercontent.com/eddiethedean/pipelantic/main/docs/theme/assets/pipelantic-banner.png)
 
 # Pipelantic
 

@@ -88,7 +88,7 @@ from typing import Annotated
 
 from pydantic import Field
 
-from contractmodel import DataContractModel
+from pipelantic import DataContractModel
 
 
 class RawCustomer(DataContractModel):

@@ -59,7 +59,22 @@ def transformation_to_dtcs(transformation_cls: type[Any]) -> dict[str, Any]:
     for port in transformation_cls.inputs():
         entry: dict[str, Any] = {"id": port.name}
         if port.contract_type is not None:
-            entry["schema"] = {"fields": schema_fields_for_dtcs(port.contract_type)}
+            try:
+                entry["schema"] = {"fields": schema_fields_for_dtcs(port.contract_type)}
+            except ValueError as exc:
+                raise DtcsError(
+                    str(exc),
+                    report=ValidationReport.from_diagnostics(
+                        [
+                            Diagnostic(
+                                code="PMGEN206",
+                                severity=Severity.ERROR,
+                                message=str(exc),
+                                path=("dtcs", "inputs", port.name),
+                            )
+                        ]
+                    ),
+                ) from exc
             entry["pipelantic:contractId"] = _published_or_authoring_id(
                 port.contract_type
             )
@@ -72,7 +87,22 @@ def transformation_to_dtcs(transformation_cls: type[Any]) -> dict[str, Any]:
     for port in transformation_cls.outputs():
         entry = {"id": port.name}
         if port.contract_type is not None:
-            entry["schema"] = {"fields": schema_fields_for_dtcs(port.contract_type)}
+            try:
+                entry["schema"] = {"fields": schema_fields_for_dtcs(port.contract_type)}
+            except ValueError as exc:
+                raise DtcsError(
+                    str(exc),
+                    report=ValidationReport.from_diagnostics(
+                        [
+                            Diagnostic(
+                                code="PMGEN206",
+                                severity=Severity.ERROR,
+                                message=str(exc),
+                                path=("dtcs", "outputs", port.name),
+                            )
+                        ]
+                    ),
+                ) from exc
             entry["pipelantic:contractId"] = _published_or_authoring_id(
                 port.contract_type
             )
@@ -100,7 +130,9 @@ def transformation_to_dtcs(transformation_cls: type[Any]) -> dict[str, Any]:
         "outputs": outputs,
     }
     if parameters:
-        doc["parameters"] = parameters
+        # DTCS toolkit rejects a top-level `parameters` field; use a namespaced
+        # vendor extension that round-trips through Pipelantic.
+        doc["pipelantic:parameters"] = parameters
     if outputs:
         doc["lineage"] = {
             "mappings": [
@@ -195,7 +227,9 @@ def transformation_from_dtcs(
     for entry in doc.get("outputs") or []:
         name = str(entry["id"])
         annotations[name] = Output[_resolve_port_contract(entry, contract_map)]
-    for entry in doc.get("parameters") or []:
+    for entry in list(doc.get("pipelantic:parameters") or []) + list(
+        doc.get("parameters") or []
+    ):
         name = str(entry["id"])
         py_type = _parameter_python_type(entry.get("type"))
         annotations[name] = Parameter[py_type]
@@ -245,8 +279,9 @@ def _resolve_port_contract(
             ref_id = str(ref["id"])
         elif isinstance(ref, str):
             ref_id = ref
-    if ref_id and ref_id in contracts:
-        return contracts[ref_id]
+    resolved = _lookup_contract(ref_id, contracts) if ref_id else None
+    if resolved is not None:
+        return resolved
     if ref_id:
         raise DtcsError(
             f"Unresolved data-contract reference {ref_id!r}.",
@@ -280,6 +315,26 @@ def _resolve_port_contract(
             "__module__": "pipelantic.interchange.generated",
         },
     )
+
+
+def _lookup_contract(
+    ref_id: str,
+    contracts: dict[str, type[Any]],
+) -> type[Any] | None:
+    """Resolve a contract ref against bare or ``odcs:``-prefixed registry keys."""
+    candidates = [ref_id]
+    if ref_id.startswith("odcs:"):
+        candidates.append(ref_id[5:])
+    else:
+        candidates.append(f"odcs:{ref_id}")
+    for key in candidates:
+        if key in contracts:
+            return contracts[key]
+    for value in contracts.values():
+        published = getattr(value, "__published_id__", None)
+        if published == ref_id or f"odcs:{published}" == ref_id:
+            return value
+    return None
 
 
 def _published_or_authoring_id(contract_type: type[Any]) -> str:

@@ -30,7 +30,7 @@ A data contract describes valid data.
 In the code-first experience, it is a ContractModel-compatible Pydantic class:
 
 ```python
-from contractmodel import DataContractModel
+from pipelantic import DataContractModel
 
 
 class Customer(DataContractModel):

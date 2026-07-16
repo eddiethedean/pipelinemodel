@@ -157,15 +157,19 @@ def pipeline_to_dpcs(
             for port in transform.outputs():
                 _add_odcs_ref(port.contract_type)
             dtcs_ref = _add_dtcs_ref(transform)
-            steps.append(
-                {
-                    "id": node.name,
-                    "type": "dtcs:transform",
-                    "contractRef": dtcs_ref,
-                    "inputs": [{"id": p.name} for p in transform.inputs()],
-                    "outputs": [{"id": p.name} for p in transform.outputs()],
-                }
-            )
+            step_entry: dict[str, Any] = {
+                "id": node.name,
+                "type": "dtcs:transform",
+                "contractRef": dtcs_ref,
+                "inputs": [{"id": p.name} for p in transform.inputs()],
+                "outputs": [{"id": p.name} for p in transform.outputs()],
+            }
+            if member.parameters:
+                step_entry["parameters"] = [
+                    {"id": key, "value": value}
+                    for key, value in sorted(member.parameters.items())
+                ]
+            steps.append(step_entry)
 
     for edge in graph.edges:
         producer_node = graph.node_map()[edge.producer_node]
@@ -273,7 +277,12 @@ def pipeline_from_dpcs(
     for item in flow:
         src = str(item["from"])
         dst = str(item["to"])
-        producer = _parse_endpoint(src, source_nodes=source_nodes, steps=step_bindings)
+        producer = _parse_endpoint(
+            src,
+            source_nodes=source_nodes,
+            transform_types=transform_types,
+            step_defs={str(step["id"]): step for step in doc.get("steps") or []},
+        )
         _apply_binding(
             dst, producer, step_bindings=step_bindings, sink_inputs=sink_inputs
         )
@@ -299,7 +308,8 @@ def pipeline_from_dpcs(
     for step in doc.get("steps") or []:
         step_id = str(step["id"])
         transform = transform_types[str(step["contractRef"])]
-        bindings = step_bindings.get(step_id, {})
+        bindings = dict(step_bindings.get(step_id, {}))
+        bindings.update(_step_parameter_values(step))
         namespace[step_id] = transform.step(**bindings)
 
     for entry in doc.get("interface", {}).get("outputs") or []:
@@ -552,7 +562,8 @@ def _parse_endpoint(
     endpoint: str,
     *,
     source_nodes: dict[str, Source],
-    steps: dict[str, dict[str, Any]],
+    transform_types: dict[str, type[Any]],
+    step_defs: dict[str, dict[str, Any]],
 ) -> Any:
     parts = endpoint.split(".")
     if endpoint.startswith("interface.inputs.") and len(parts) >= 3:
@@ -562,14 +573,37 @@ def _parse_endpoint(
         direction = parts[2]
         port = parts[3]
         if direction == "outputs":
+            contract_type = None
+            step_def = step_defs.get(step_name)
+            if step_def is not None:
+                transform = transform_types.get(str(step_def.get("contractRef")))
+                if transform is not None:
+                    for output in transform.outputs():
+                        if output.name == port:
+                            contract_type = output.contract_type
+                            break
             return OutputRef(
                 node_name=step_name,
                 port_name=port,
-                contract_type=None,
+                contract_type=contract_type,
                 node_kind="step",
             )
         raise DpcsError(f"Cannot use step input endpoint as producer: {endpoint}")
     raise DpcsError(f"Unsupported data-flow endpoint: {endpoint}")
+
+
+def _step_parameter_values(step: dict[str, Any]) -> dict[str, Any]:
+    """Extract step parameter overrides from DPCS step entries."""
+    values: dict[str, Any] = {}
+    raw = step.get("parameters") or []
+    if isinstance(raw, list):
+        for item in raw:
+            if isinstance(item, dict) and item.get("id") is not None:
+                values[str(item["id"])] = item.get("value")
+    vendor = step.get("pipelantic:parameters")
+    if isinstance(vendor, dict):
+        values.update(vendor)
+    return values
 
 
 def _apply_binding(

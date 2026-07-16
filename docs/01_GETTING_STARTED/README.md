@@ -2,8 +2,9 @@
 
 Welcome to Pipelantic!
 
-> **Project status:** 0.1.0 provides the typed modeling kernel. Examples that
-> go beyond authoring, validation, inspection, and Mermaid describe later
+> **Project status:** 0.2.0 provides the typed modeling kernel and contract
+> interoperability (ODCS/DTCS/DPCS). Examples that go beyond authoring,
+> validation, inspection, Mermaid, and contract generate/load describe later
 > milestones. See
 > [Documentation Status](../02_FOUNDATIONS/DOCUMENTATION_STATUS.md).
 
@@ -21,7 +22,7 @@ By the end of this guide you will be able to:
 -   Wire transformations into pipelines
 -   Validate your pipeline before execution
 -   Generate portable contract specifications
--   Execute the pipeline using the runtime of your choice
+-   Understand how later milestones add planning and execution plugins
 
 ## Prerequisites
 
@@ -79,8 +80,13 @@ Execution Plugins
 ## A Preview
 
 ``` python
-from contractmodel import DataContractModel
-from pipelantic import Pipeline, Transformation, Input, Output
+from pipelantic import (
+    DataContractModel,
+    Pipeline,
+    Transformation,
+    Input,
+    Output,
+)
 
 class Customer(DataContractModel):
     id: int
