@@ -55,7 +55,7 @@ Validation should always precede generation so invalid models do not produce mis
 Developers define Python classes:
 
 ```python
-class Customer(DataContractModel):
+class Customer(Data):
     customer_id: int
     email: str
 ```

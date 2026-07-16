@@ -1,5 +1,11 @@
 # Graphviz
 
+!!! warning "Future design—not a Pipelantic 0.5 API guide"
+    Graphviz, HTML, lineage exporters, and generated pipeline docs beyond
+    Mermaid are not shipped in 0.5. For diagrams today, use
+    `Pipeline.to_mermaid()`.
+
+
 Pipelantic can generate **Graphviz** diagrams from a validated Pipeline Plan.
 
 Graphviz is well suited for complex pipeline graphs, detailed lineage views,

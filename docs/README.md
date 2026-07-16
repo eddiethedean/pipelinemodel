@@ -4,7 +4,7 @@
     <p>Typed, contract-driven data pipeline modeling for Python.</p>
     <div class="pipelantic-hero__actions">
       <a class="md-button md-button--primary" href="01_GETTING_STARTED/QUICKSTART/">Quickstart</a>
-      <a class="md-button" href="02_FOUNDATIONS/ARCHITECTURE/">Architecture</a>
+      <a class="md-button" href="01_GETTING_STARTED/CAPABILITIES/">Capabilities</a>
     </div>
   </div>
 </div>
@@ -149,13 +149,21 @@ implementation or runtime concepts—not additional contract standards.
 
 ## Choose Your Path
 
+### I want to run something in five minutes
+
+1. [Capabilities](01_GETTING_STARTED/CAPABILITIES.md)
+2. [Installation](01_GETTING_STARTED/INSTALLATION.md)
+3. [Quickstart](01_GETTING_STARTED/QUICKSTART.md)
+4. Runnable code: `examples/quickstart.py`, `examples/file_storage.py`,
+   `examples/dataframe_parity.py`
+
 ### I want to understand the idea
 
 1. [Manifesto](PIPELANTIC_MANIFESTO.md)
-2. [Vision](02_FOUNDATIONS/VISION.md)
+2. [Evaluator brief](01_GETTING_STARTED/EVALUATOR.md)
 3. [Core Concepts](02_FOUNDATIONS/CORE_CONCEPTS.md)
 4. [Architecture](02_FOUNDATIONS/ARCHITECTURE.md)
-5. [Security Model](02_FOUNDATIONS/SECURITY.md)
+5. [Documentation Status](02_FOUNDATIONS/DOCUMENTATION_STATUS.md)
 
 ### I want to author pipelines
 
@@ -164,40 +172,44 @@ implementation or runtime concepts—not additional contract standards.
 3. [Transformations](04_TRANSFORMATIONS/README.md)
 4. [Pipelines](05_PIPELINES/README.md)
 
-### I want to understand execution
+### I want to understand execution (shipped)
 
 1. [Execution Model](06_EXECUTION/EXECUTION_MODEL.md)
-2. [Run Reports](06_EXECUTION/RUN_REPORTS.md)
-3. [Lifecycle Extensions](06_EXECUTION/LIFECYCLE_EXTENSIONS.md)
-4. [Logging](06_EXECUTION/LOGGING.md)
-5. [Planning](05_PIPELINES/PLANNING.md)
-6. [Profiles](05_PIPELINES/PROFILES.md)
-7. [Plugins](06_EXECUTION/PLUGINS.md)
-8. [Compilation](06_EXECUTION/COMPILATION.md)
+2. [Local Python](06_EXECUTION/LOCAL_PYTHON.md)
+3. [Secrets Management](06_EXECUTION/SECRETS_MANAGEMENT.md) (env + file only)
+4. [Polars](06_EXECUTION/POLARS.md) / [Pandas](06_EXECUTION/PANDAS.md)
+5. [Run Reports](06_EXECUTION/RUN_REPORTS.md)
 
-### I want to build a plugin
+### I want runnable examples
 
-1. [Plugin SDK](07_PLUGIN_SDK/README.md)
-2. [SDK Overview](07_PLUGIN_SDK/OVERVIEW.md)
-3. [Testing Plugins](07_PLUGIN_SDK/TESTING_PLUGINS.md)
-4. [Distribution](07_PLUGIN_SDK/DISTRIBUTION.md)
+- [examples/quickstart.py](https://github.com/eddiethedean/pipelantic/blob/main/examples/quickstart.py) — local runtime
+- [examples/file_storage.py](https://github.com/eddiethedean/pipelantic/blob/main/examples/file_storage.py) — JSON/CSV storage
+- [examples/dataframe_parity.py](https://github.com/eddiethedean/pipelantic/blob/main/examples/dataframe_parity.py) — Polars/Pandas
 
-### I want concrete examples
+### I want design studies (not installable)
 
-- [CSV to CSV](09_EXAMPLES/CSV_TO_CSV.md)
+These pages describe intended 1.0 workflows. They are **not** current API guides:
+
+- [CSV to CSV](09_EXAMPLES/CSV_TO_CSV.md) (design narrative; prefer `examples/file_storage.py`)
 - [SQL to SQL](09_EXAMPLES/SQL_TO_SQL.md)
-- [Polars Pipeline](09_EXAMPLES/POLARS_PIPELINE.md)
 - [Airflow Pipeline](09_EXAMPLES/AIRFLOW_PIPELINE.md)
 - [PySpark to Delta](09_EXAMPLES/PYSPARK_TO_DELTA.md)
-- [End-to-End Pipeline](09_EXAMPLES/END_TO_END.md)
+
+### I want to build a dataframe plugin (0.5)
+
+1. [Dataframe Plugin protocol](07_PLUGIN_SDK/DATAFRAME_PLUGIN.md)
+2. [Dataframe Plugins overview](06_EXECUTION/DATAFRAME_PLUGINS.md)
+3. [Compatibility](10_REFERENCE/COMPATIBILITY.md)
+
+### I want other plugins (future)
+
+1. [Plugin SDK overview](07_PLUGIN_SDK/README.md) (future design)
+2. [Testing Plugins](07_PLUGIN_SDK/TESTING_PLUGINS.md)
 
 ### I am integrating or migrating SparkForge
 
 1. [SparkForge Feature Adoption](11_DEVELOPMENT/SPARKFORGE_ADOPTION.md)
 2. [Roadmap](11_DEVELOPMENT/ROADMAP.md)
-3. [Planning](05_PIPELINES/PLANNING.md)
-4. [PySpark Execution](06_EXECUTION/PYSPARK_EXECUTION.md)
-5. [SQL Execution](06_EXECUTION/SQL_EXECUTION.md)
 
 ## Documentation Map
 
@@ -208,13 +220,13 @@ implementation or runtime concepts—not additional contract standards.
 | [Data Contracts](03_DATA_CONTRACTS/README.md) | Define and operationalize typed datasets |
 | [Transformations](04_TRANSFORMATIONS/README.md) | Define typed transformation interfaces |
 | [Pipelines](05_PIPELINES/README.md) | Compose transformations into portable graphs |
-| [Execution](06_EXECUTION/README.md) | Resolve and delegate runtime behavior |
-| [Plugin SDK](07_PLUGIN_SDK/README.md) | Extend execution and infrastructure support |
-| [Visualization](08_VISUALIZATION/README.md) | Generate lineage, diagrams, and documentation |
-| [Examples](09_EXAMPLES/README.md) | Study complete workflows |
-| [Reference](10_REFERENCE/README.md) | Review proposed CLI, configuration, and Python APIs |
-| [Development](11_DEVELOPMENT/README.md) | Follow roadmap, decisions, testing, and contribution rules |
-| [Specifications](specifications/DTCS_SPEC.md) | Read normative DTCS and DPCS documents |
+| [Execution](06_EXECUTION/README.md) | Local runtime, secrets, dataframe engines |
+| [Future Design](06_EXECUTION/PLUGINS.md) | SQL, Spark, Airflow, and other unshipped plugins |
+| [Visualization](08_VISUALIZATION/README.md) | Mermaid today; Graphviz/HTML are future |
+| [Examples](09_EXAMPLES/README.md) | Runnable pointers + design studies |
+| [Reference](10_REFERENCE/README.md) | CLI, API, compatibility |
+| [Development](11_DEVELOPMENT/README.md) | Contributing, roadmap, release |
+| [Specifications](specifications/DTCS_SPEC.md) | Normative DTCS and DPCS documents |
 
 ## Non-Goals
 

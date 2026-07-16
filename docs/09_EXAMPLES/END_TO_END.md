@@ -1,5 +1,11 @@
-
 # End-to-End Pipeline Example
+
+!!! warning "Future design—not a Pipelantic 0.5 API guide"
+    This page is a design study. It may describe packages, commands, or
+    interfaces that are not installable yet. Use Current Capabilities, the
+    runnable examples under `examples/`, the API reference, and the CLI
+    reference for shipped behavior.
+
 
 This example demonstrates the complete Pipelantic lifecycle from initial
 authoring through execution, validation, documentation, publication, and

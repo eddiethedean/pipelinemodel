@@ -23,7 +23,8 @@ By the end of this guide you will be able to:
 -   Wire transformations into pipelines
 -   Validate your pipeline before execution
 -   Generate portable contract specifications
--   Understand how later milestones add execution plugins
+-   Run pipelines locally (and optionally with Polars/Pandas plugins)
+-   Know which chapters are shipped vs future design
 
 ## Prerequisites
 

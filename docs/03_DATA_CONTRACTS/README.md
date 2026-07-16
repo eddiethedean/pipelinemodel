@@ -26,10 +26,10 @@ from typing import Annotated
 
 from pydantic import Field
 
-from pipelantic import DataContractModel
+from pipelantic import Data, load_data_contract
 
 
-class Customer(DataContractModel):
+class Customer(Data):
     customer_id: Annotated[int, Field(gt=0)]
     first_name: str
     last_name: str
@@ -88,7 +88,7 @@ ODCS is the portable standard representation of a data contract.
 Pipelantic should not invent a competing data-contract format. Instead, ContractModel-compatible classes should generate ODCS-compliant documents whenever possible.
 
 ```text
-Python DataContractModel
+Python Data
           │
           ▼
    ContractModel metadata
@@ -170,7 +170,7 @@ Customer.write_odcs(
 Developers load an existing ODCS document and construct a compatible Python model:
 
 ```python
-Customer = DataContractModel.from_odcs(
+Customer = load_data_contract(
     "contracts/data/customer.odcs.yaml",
 )
 ```

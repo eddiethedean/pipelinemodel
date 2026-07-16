@@ -8,6 +8,44 @@ Pipelantic requires Python 3.11 or newer. Check with:
 python --version
 ```
 
+## Installed version is older than the docs
+
+These docs describe Pipelantic **0.5.0**. Confirm what you installed:
+
+```bash
+python -c "import pipelantic; print(pipelantic.__version__)"
+```
+
+If the version is older, upgrade:
+
+```bash
+python -m pip install --upgrade 'pipelantic>=0.5.0'
+```
+
+If pip still resolves an older release, you may be on a mirror or pin. Check
+`pip index versions pipelantic` (or visit
+[PyPI](https://pypi.org/project/pipelantic/)) and clear conflicting constraints
+in your environment.
+
+## `pip install pipelantic-polars` / `pipelantic-pandas` fails
+
+Those packages ship with Pipelantic 0.5.0. They are separate distributions:
+
+```bash
+python -m pip install --upgrade pipelantic-polars
+python -m pip install --upgrade pipelantic-pandas
+```
+
+If pip reports no matching distribution:
+
+1. Confirm core is already at 0.5.0 or newer.
+2. Confirm Python is 3.11+.
+3. Confirm the package name uses a hyphen (`pipelantic-polars`), not an
+   underscore.
+
+Until 0.5.0 is on PyPI, install from a git checkout with
+`uv sync --group dataframes` instead.
+
 ## A transformation has no implementation
 
 Declaring a `Transformation` defines its contract, not its executable code.

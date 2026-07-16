@@ -31,7 +31,7 @@ The sink declares that it publishes `Customer` records.
 
 ## Relationship to Data Contracts
 
-Every sink references a published `DataContractModel`.
+Every sink references a published `Data`.
 
 ```python
 warehouse: Sink[Customer]

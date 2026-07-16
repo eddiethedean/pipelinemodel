@@ -23,9 +23,10 @@ Airflow or other orchestration plugins.
 
 No.
 
-Pipelantic does not implement dataframe operations, database clients,
-scheduling, or distributed execution. Pipelantic 0.4 does include an
-in-process local runtime with memory, callable, JSON, CSV, and no-write storage.
+Pipelantic does not implement a dataframe engine, database clients,
+scheduling, or distributed execution. It includes an in-process local runtime
+with memory, callable, JSON, CSV, and no-write storage, plus optional Polars
+and Pandas plugins that execute through a versioned dataframe protocol.
 
 Instead, it coordinates existing tools through a common typed model.
 
@@ -47,7 +48,7 @@ Its focus is:
 
 Pipelantic's architecture is designed so future plugins can consume the same
 plans without changing pipeline definitions. External orchestrator compilation
-is not included in 0.4.
+is not included in 0.5.
 
 ------------------------------------------------------------------------
 
@@ -107,11 +108,9 @@ through different runtimes.
 
 Examples include:
 
--   Polars
--   Pandas
--   Airflow
--   local Python
--   future plugins
+- local Python
+- Polars / Pandas (optional plugins)
+- future SQL, Spark, or Airflow backends
 
 Business logic remains unchanged.
 
@@ -178,9 +177,10 @@ Yes.
 
 For example, the same transformation contract may have:
 
--   a Polars implementation
--   a Pandas implementation
--   a Spark implementation
+- a local Python implementation
+- a Polars implementation
+- a Pandas implementation
+- later, a Spark or SQL implementation (future milestones)
 
 The logical transformation remains unchanged.
 
@@ -200,12 +200,11 @@ Cloud-specific integrations are implemented through plugins.
 
 Yes.
 
-Pipelantic 0.4 generates or exposes:
+Pipelantic 0.5 generates or exposes:
 
 -   contract documentation
 -   pipeline documentation
 -   lineage diagrams
--   Mermaid graphs
 -   Mermaid graphs
 -   execution plans
 

@@ -1,9 +1,9 @@
 # Examples
 
-The repository's current runnable examples live in the top-level `examples/`
-directory.
+## Runnable now (0.5)
 
-## Runnable in 0.5
+These scripts live in the repository `examples/` directory and are exercised by
+tests:
 
 ### In-memory quickstart
 
@@ -11,12 +11,16 @@ directory.
 python examples/quickstart.py
 ```
 
-This example covers typed contracts, a local Python implementation, validation,
-planning, execution, a run report, and output inspection. It is executed by
-the test suite.
+Typed contracts, a local Python implementation, validation, planning,
+execution, a run report, and output inspection.
 
-The Getting Started [Quickstart](../01_GETTING_STARTED/QUICKSTART.md) contains
-the same workflow as a copy-pasteable single-file tutorial.
+### JSON and CSV storage
+
+```bash
+python examples/file_storage.py
+```
+
+Runs built-in JSON and CSV storage bindings end-to-end.
 
 ### Dataframe parity (Polars / Pandas)
 
@@ -26,21 +30,21 @@ python examples/dataframe_parity.py polars
 python examples/dataframe_parity.py pandas
 ```
 
-## Future design examples
+## Design studies (not installable)
 
-The remaining pages in this section explore intended integrations and advanced
-workflows. They are retained as design material and may contain APIs, packages,
-or commands that do not exist yet.
+The remaining pages in this section explore intended integrations. Each page
+opens with a Future design warning. They may contain APIs, packages, or
+commands that do not exist yet.
 
 | Topic | 0.5 status |
 |---|---|
-| CSV and JSON through built-in storage | Core capability; use the storage guide |
-| Pandas and Polars pipelines | Available via `pipelantic-pandas` / `pipelantic-polars` |
+| CSV and JSON through built-in storage | Use `examples/file_storage.py` |
+| Pandas and Polars pipelines | Use `examples/dataframe_parity.py` |
 | SQL execution and pushdown | Future plugin design |
 | PySpark and streaming | Future plugin design |
 | Airflow compilation | Future plugin design |
 | Generated Graphviz/HTML documentation | Future design |
 
-Do not use a future design page as an installation or API reference. The
+Do not use a design study as an installation or API reference. The
 [capabilities page](../01_GETTING_STARTED/CAPABILITIES.md) and
 [API reference](../10_REFERENCE/API_REFERENCE.md) define the current boundary.

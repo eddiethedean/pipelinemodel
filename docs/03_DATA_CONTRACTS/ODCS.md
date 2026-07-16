@@ -38,7 +38,7 @@ Pipelantic intentionally separates responsibilities.
 Python Authoring
         │
         ▼
-DataContractModel
+Data
         │
         ▼
 ContractModel
@@ -66,9 +66,9 @@ Each layer has a different purpose.
 Pipelantic recommends a code-first workflow.
 
 ```python
-from pipelantic import DataContractModel
+from pipelantic import Data, load_data_contract
 
-class Customer(DataContractModel):
+class Customer(Data):
     customer_id: int
     email: str
 ```
@@ -91,12 +91,12 @@ truth.
 Existing ODCS contracts may also be loaded.
 
 ```python
-Customer = DataContractModel.from_odcs(
+Customer = load_data_contract(
     "contracts/data/customer.odcs.yaml",
 )
 ```
 
-The resulting class behaves like any authored `DataContractModel` and can be referenced throughout Pipelantic.
+The resulting class behaves like any authored `Data` and can be referenced throughout Pipelantic.
 
 ---
 

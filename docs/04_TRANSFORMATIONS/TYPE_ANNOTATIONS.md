@@ -148,7 +148,7 @@ Pydantic provides:
 - Constraints
 - Metadata
 
-Pipelantic consumes those definitions through `DataContractModel`.
+Pipelantic consumes those definitions through `Data`.
 
 ## Best Practices
 

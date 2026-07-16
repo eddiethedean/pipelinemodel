@@ -38,7 +38,7 @@ The source declares that it produces `RawCustomer` records.
 
 ## Relationship to Data Contracts
 
-Every source is typed with a `DataContractModel`.
+Every source is typed with a `Data`.
 
 ```python
 customers: Source[Customer]
@@ -156,7 +156,7 @@ Avoid:
 
 - Embedding SQL, filesystem paths, or cloud SDK objects directly in source contracts.
 - Returning dataframe types instead of logical contracts.
-- Duplicating schema information already defined by `DataContractModel`.
+- Duplicating schema information already defined by `Data`.
 - Coupling sources to a specific execution engine.
 
 ## Key Principle

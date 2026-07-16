@@ -1,10 +1,18 @@
 # Five-Minute Quickstart
 
-> **Status: Available in Pipelantic 0.4.0.** Every API in this guide is shipped
+> **Status: Available in Pipelantic 0.5.0.** Every API in this guide is shipped
 > and the complete example is tested in CI.
 
 This guide defines, validates, plans, and runs a typed pipeline using only the
 core package and in-memory storage.
+
+## Three terms you need
+
+| Term | Meaning in this guide |
+|---|---|
+| **Binding** | Logical name for a source or sink (`binding="customer_source"`). The runtime resolves it to storage (here, in-memory). |
+| **Profile** | Named environment for planning and running. Use `development` for the built-in local runtime examples. The CLI `plan` command defaults to `local`; `run` defaults to `development`. |
+| **Implementation** | Engine-specific body registered with `@Transformation.implementation("local")` (or `"polars"` / `"pandas"` after installing those plugins). |
 
 ## 1. Install
 
@@ -124,6 +132,9 @@ The same example is available at `examples/quickstart.py`.
 
 ## Next
 
-- Build the example in smaller steps in [Your First Pipeline](FIRST_PIPELINE.md).
-- Review [Current Capabilities and Limitations](CAPABILITIES.md).
-- See [Troubleshooting](TROUBLESHOOTING.md) if the run fails.
+- File-backed JSON/CSV: run `python examples/file_storage.py`
+- Polars or Pandas (after installing plugins):
+  `python examples/dataframe_parity.py polars`
+- Build the example in smaller steps in [Your First Pipeline](FIRST_PIPELINE.md)
+- Review [Current Capabilities and Limitations](CAPABILITIES.md)
+- See [Troubleshooting](TROUBLESHOOTING.md) if the run fails

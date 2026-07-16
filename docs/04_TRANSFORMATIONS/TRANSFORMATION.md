@@ -40,7 +40,7 @@ Inputs describe the logical datasets consumed by the transformation.
 customers: Input[RawCustomer]
 ```
 
-Each input references a `DataContractModel` and is validated during planning.
+Each input references a `Data` and is validated during planning.
 
 ## Outputs
 

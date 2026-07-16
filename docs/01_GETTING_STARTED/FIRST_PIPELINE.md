@@ -1,6 +1,6 @@
 # Your First Pipeline
 
-> **Status: Available in Pipelantic 0.4.0.** This tutorial uses the local
+> **Status: Available in Pipelantic 0.5.0.** This tutorial uses the local
 > Python runtime and in-memory storage. It does not require a dataframe plugin.
 
 This tutorial explains the pieces of the runnable quickstart and shows how to
@@ -140,9 +140,10 @@ async application.
 
 ## Current boundary
 
-Pipelantic 0.4 can run registered Python implementations with memory, callable,
-JSON, CSV, and no-write storage. Pandas, Polars, SQL, Spark, and external
-orchestrators are future plugin designs.
+This tutorial stays on the local Python runtime with memory, callable, JSON,
+CSV, and no-write storage. Optional Polars and Pandas dataframe plugins are
+available in 0.5 via `pipelantic-polars` / `pipelantic-pandas`. SQL, Spark, and
+external orchestrators remain future plugin designs.
 
 Continue with [Project Structure](PROJECT_STRUCTURE.md) or run the complete
 repository example in `examples/quickstart.py`.

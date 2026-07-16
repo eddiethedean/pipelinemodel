@@ -72,7 +72,7 @@ Pipelantic supports complementary authoring paths.
 
 ### Code-first
 
-- `DataContractModel` classes define data contracts.
+- `Data` classes define data contracts.
 - `Transformation` classes define typed interfaces.
 - `Pipeline` classes connect sources, steps, sinks, and subpipelines.
 

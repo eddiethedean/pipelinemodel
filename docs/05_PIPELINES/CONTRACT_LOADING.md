@@ -58,10 +58,10 @@ domain object.
 Conceptually:
 
 ```python
-from pipelantic import DataContractModel
+from pipelantic import Data, load_data_contract
 from pipelantic import Pipeline, Transformation
 
-customer = DataContractModel.from_odcs("customer.odcs.yaml")
+customer = load_data_contract("customer.odcs.yaml")
 
 normalize = Transformation.from_dtcs(
     "normalize.dtcs.yaml",

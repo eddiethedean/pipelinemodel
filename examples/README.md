@@ -1,6 +1,6 @@
 # Runnable Examples
 
-These examples use only APIs and dependencies shipped in Pipelantic 0.4.
+These examples use only APIs and dependencies shipped in Pipelantic 0.5.
 
 ## Quickstart
 
@@ -14,9 +14,23 @@ curated records.
 
 ## JSON and CSV storage
 
-`file_storage.py` contains tested `json_to_json()` and `csv_to_csv()` workflows
-using built-in storage bindings and an explicit planning context.
+```bash
+python examples/file_storage.py
+```
 
-Documentation pages for Pandas, Polars, SQL, Spark, Airflow, and other future
-plugins are design material and are not runnable examples for the current
-release.
+Runs tested `json_to_json()` and `csv_to_csv()` workflows using built-in
+storage bindings.
+
+## Dataframe parity (Polars / Pandas)
+
+```bash
+# requires pipelantic-polars / pipelantic-pandas
+python examples/dataframe_parity.py polars
+python examples/dataframe_parity.py pandas
+```
+
+Runs the same logical pipeline against either dataframe plugin via
+`Profile.dataframe_engine`.
+
+Documentation pages for SQL, Spark, Airflow, and other future plugins are
+design material and are not runnable examples for the current release.

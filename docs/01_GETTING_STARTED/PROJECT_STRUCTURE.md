@@ -28,9 +28,10 @@ customer-pipeline/
 │       │   └── enrich_orders.py
 │       │
 │       ├── implementations/
-│       │   ├── pandas/
-│       │   ├── polars/
-│       │   └── spark/
+│       │   ├── local/
+│       │   ├── polars/          # optional in 0.5
+│       │   └── pandas/          # optional in 0.5
+│       │   # spark/             # future — do not require yet
 │       │
 │       ├── pipelines/
 │       │   ├── customer_pipeline.py
@@ -59,7 +60,7 @@ customer-pipeline/
 
 ### contracts/
 
-Contains `Data` contract models (`DataContractModel` remains as a deprecated
+Contains `Data` contract models (`Data` remains as a deprecated
 alias).
 
 ``` python
@@ -86,11 +87,9 @@ Contains runtime-specific implementations.
 
 Example:
 
--   Pandas
--   Polars
--   Spark
--   DuckDB
--   Remote services
+- Local Python (`"local"`)
+- Polars / Pandas (optional plugins in 0.5)
+- Spark / DuckDB / remote (future)
 
 A single transformation contract may have multiple implementations.
 

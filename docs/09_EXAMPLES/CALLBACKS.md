@@ -1,5 +1,12 @@
 # Callbacks
 
+!!! warning "Future design—not a Pipelantic 0.5 API guide"
+    This page is a design study. It may describe packages, commands, or
+    interfaces that are not installable yet. Use Current Capabilities, the
+    runnable examples under `examples/`, the API reference, and the CLI
+    reference for shipped behavior.
+
+
 This example demonstrates how Pipelantic wires callback functions into a
 typed pipeline for invalid data, source failures, transformation failures, sink
 failures, retries, and final pipeline outcomes.

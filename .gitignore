@@ -18,3 +18,4 @@ venv/
 .coverage
 htmlcov/
 .DS_Store
+examples/_file_storage_out/

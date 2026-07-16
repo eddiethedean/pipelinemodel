@@ -87,3 +87,12 @@ def csv_to_csv(directory: Path) -> Path:
         writer.writerows([{"id": 1, "name": " ada "}, {"id": 2, "name": "grace"}])
     run_files(source, sink, "csv")
     return sink
+
+
+if __name__ == "__main__":
+    root = Path(__file__).resolve().parent / "_file_storage_out"
+    json_out = json_to_json(root / "json")
+    csv_out = csv_to_csv(root / "csv")
+    print("json ->", json_out)
+    print("csv ->", csv_out)
+    print(json_out.read_text(encoding="utf-8"))

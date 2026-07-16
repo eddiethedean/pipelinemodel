@@ -3,27 +3,35 @@
 This section defines how Pipelantic is designed, tested, contributed to, and
 released.
 
+## Contributor essentials
+
+- [Contributing](CONTRIBUTING.md)
+- [Coding Standards](CODING_STANDARDS.md)
+- [Testing](TESTING.md)
+- [Documentation](DOCUMENTATION.md)
+- [Release Process](RELEASE_PROCESS.md)
+- [Migration 0.4 → 0.5](MIGRATION_0_4_TO_0_5.md)
 - [Roadmap](ROADMAP.md)
+- [Dependency Strategy](DEPENDENCY_STRATEGY.md)
+
+## Decisions
+
+- [Design Decisions](DESIGN_DECISIONS.md)
+- [Architecture Decisions](ARCHITECTURE_DECISIONS.md)
+- [Benchmarks](BENCHMARKS.md)
+
+## Maintainer plans (internal)
+
+These pages sequence future work. They are not product user guides:
+
 - [FastAPI Integration Plan](FASTAPI_INTEGRATION_PLAN.md)
 - [Schema Drift and Evolution Plan](SCHEMA_DRIFT_PLAN.md)
 - [ETL Reliability and Recovery Plan](ETL_RELIABILITY_PLAN.md)
 - [SQLModel Integration Plan](SQLMODEL_INTEGRATION_PLAN.md)
-- [Dependency Strategy](DEPENDENCY_STRATEGY.md)
-- [Design Decisions](DESIGN_DECISIONS.md)
-- [Architecture Decisions](ARCHITECTURE_DECISIONS.md)
-- [Testing](TESTING.md)
-- [Benchmarks](BENCHMARKS.md)
-- [Contributing](CONTRIBUTING.md)
-- [Release Process](RELEASE_PROCESS.md)
-- [Coding Standards](CODING_STANDARDS.md)
 - [SparkForge Feature Adoption](SPARKFORGE_ADOPTION.md)
 
 Start with the roadmap for sequencing and the decision records for architectural
 boundaries.
-
-The SparkForge adoption assessment records the legacy capabilities Pipelantic
-must preserve in domain-neutral form before SparkForge can use it as its
-underlying engine.
 
 The [Documentation Status](../02_FOUNDATIONS/DOCUMENTATION_STATUS.md) chapter
 defines how design examples, proposals, and normative requirements should be

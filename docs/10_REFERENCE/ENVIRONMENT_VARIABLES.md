@@ -1,5 +1,11 @@
 # Environment Variables
 
+!!! warning "Future design—not a Pipelantic 0.5 API guide"
+    This page describes a proposed 1.0 configuration surface. Pipelantic 0.5
+    does not load `pipelantic.toml` or these environment variables. Configure
+    profiles and bindings in Python.
+
+
 Environment variables provide deployment-time overrides and references to
 secrets. They should complement, not replace, explicit project configuration.
 

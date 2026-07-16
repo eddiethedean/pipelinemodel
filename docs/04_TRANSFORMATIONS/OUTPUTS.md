@@ -39,7 +39,7 @@ execution.
 
 ## Relationship to Data Contracts
 
-Outputs reference `DataContractModel` classes.
+Outputs reference `Data` classes.
 
 ```python
 result: Output[Customer]

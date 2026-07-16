@@ -1,4 +1,4 @@
-"""Smallest complete Pipelantic 0.4 pipeline.
+"""Smallest complete Pipelantic 0.5 local-runtime pipeline.
 
 Run with:
 

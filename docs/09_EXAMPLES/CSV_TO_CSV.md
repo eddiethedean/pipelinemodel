@@ -1,5 +1,12 @@
 # CSV to CSV
 
+!!! warning "Future design—not a Pipelantic 0.5 API guide"
+    This page is a design study. It may describe packages, commands, or
+    interfaces that are not installable yet. Use Current Capabilities, the
+    runnable examples under `examples/`, the API reference, and the CLI
+    reference for shipped behavior.
+
+
 This example builds a complete Pipelantic pipeline that reads customer data
 from a CSV file, validates it against a data contract, normalizes the records
 with a typed transformation, and writes the curated results to another CSV file.

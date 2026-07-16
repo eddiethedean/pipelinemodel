@@ -47,14 +47,39 @@ def main() -> None:
         "Pandas, Polars, SQL, Spark, and Airflow plugins are not published as part of\nPipelantic 0.4",
         "Future plugins may add Pandas, Polars",
         "Pandas and Polars pipelines | Future plugin design",
+        "Pandas, Polars, SQL, Spark, and Airflow plugins | Not yet available",
+        "These examples use only APIs and dependencies shipped in Pipelantic 0.4",
+        "Available in Pipelantic 0.4.0",
+        "not a Pipelantic 0.4 API guide",
+        "Dataframe, SQL, Spark, and external orchestration chapters remain accepted",
+        "plan.to_mermaid()",
+        "lightweight production workloads",
+        "uv run pyright",
+        "Commands are provisional until the implementation toolchain is committed",
     ]
+    if "| Capability | 0.4 |" in (ROOT / "README.md").read_text(encoding="utf-8"):
+        raise SystemExit("README.md capability table still labels the release as 0.4")
+
     scrub_paths = [
+        ROOT / "README.md",
+        ROOT / "examples/README.md",
         ROOT / "docs/README.md",
         ROOT / "docs/01_GETTING_STARTED/INSTALLATION.md",
         ROOT / "docs/01_GETTING_STARTED/FAQ.md",
         ROOT / "docs/01_GETTING_STARTED/README.md",
+        ROOT / "docs/01_GETTING_STARTED/QUICKSTART.md",
+        ROOT / "docs/01_GETTING_STARTED/FIRST_PIPELINE.md",
+        ROOT / "docs/01_GETTING_STARTED/CAPABILITIES.md",
+        ROOT / "docs/02_FOUNDATIONS/DOCUMENTATION_STATUS.md",
+        ROOT / "docs/06_EXECUTION/LOCAL_PYTHON.md",
+        ROOT / "docs/06_EXECUTION/SECRETS_MANAGEMENT.md",
+        ROOT / "docs/08_VISUALIZATION/MERMAID.md",
         ROOT / "docs/09_EXAMPLES/README.md",
+        ROOT / "docs/10_REFERENCE/API_REFERENCE.md",
+        ROOT / "docs/10_REFERENCE/CLI.md",
         ROOT / "docs/10_REFERENCE/COMPATIBILITY.md",
+        ROOT / "docs/11_DEVELOPMENT/CONTRIBUTING.md",
+        ROOT / "docs/theme/javascripts/status-banner.js",
     ]
     for path in scrub_paths:
         text = path.read_text(encoding="utf-8")
@@ -63,6 +88,40 @@ def main() -> None:
                 raise SystemExit(
                     f"{path} still contains banned stale phrase: {phrase!r}"
                 )
+
+    # Design example pages must carry a future-design admonition
+    for path in (ROOT / "docs/09_EXAMPLES").glob("*.md"):
+        if path.name == "README.md":
+            continue
+        text = path.read_text(encoding="utf-8")
+        if "Future design—not a Pipelantic 0.5 API guide" not in text:
+            raise SystemExit(f"{path} missing Future design admonition")
+
+    banner_js = (ROOT / "docs/theme/javascripts/status-banner.js").read_text(
+        encoding="utf-8"
+    )
+    for shipped in ('"POLARS"', '"PANDAS"', '"DATAFRAME_PLUGINS"'):
+        # Shipped execution pages must not be listed as future in the JS array
+        if shipped in banner_js and "futureExecutionPages" in banner_js:
+            # Allow string only outside the futureExecutionPages array by checking
+            # crude: if POLARS appears between futureExecutionPages = [ and ];
+            start = banner_js.find("futureExecutionPages = [")
+            end = banner_js.find("];", start)
+            block = banner_js[start:end]
+            if shipped.strip('"') in block:
+                raise SystemExit(
+                    f"status-banner.js still lists shipped page {shipped} as future"
+                )
+
+    secrets = (ROOT / "docs/06_EXECUTION/SECRETS_MANAGEMENT.md").read_text(
+        encoding="utf-8"
+    )
+    if "Available in 0.5" not in secrets:
+        raise SystemExit("SECRETS_MANAGEMENT.md missing shipped-in-0.5 banner")
+    if "provider = \"aws-secrets-manager\"" in secrets:
+        raise SystemExit(
+            "SECRETS_MANAGEMENT.md still shows aws-secrets-manager as current config"
+        )
 
     print(f"Documentation consistency checks passed for {package_version}.")
 

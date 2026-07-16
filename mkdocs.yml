@@ -99,6 +99,7 @@ nav:
       - Project Structure: 01_GETTING_STARTED/PROJECT_STRUCTURE.md
       - Troubleshooting: 01_GETTING_STARTED/TROUBLESHOOTING.md
       - FAQ: 01_GETTING_STARTED/FAQ.md
+      - Evaluator Brief: 01_GETTING_STARTED/EVALUATOR.md
   - Foundations:
       - Overview: 02_FOUNDATIONS/README.md
       - Vision: 02_FOUNDATIONS/VISION.md
@@ -155,6 +156,7 @@ nav:
       - Dataframe Plugins: 06_EXECUTION/DATAFRAME_PLUGINS.md
       - Polars: 06_EXECUTION/POLARS.md
       - Pandas: 06_EXECUTION/PANDAS.md
+      - Dataframe Plugin Protocol: 07_PLUGIN_SDK/DATAFRAME_PLUGIN.md
   - Future Design:
       - Execution Plugins:
           - Overview: 06_EXECUTION/PLUGINS.md
@@ -170,10 +172,9 @@ nav:
           - Structured Streaming: 06_EXECUTION/STRUCTURED_STREAMING.md
           - Airflow: 06_EXECUTION/AIRFLOW.md
           - Compilation: 06_EXECUTION/COMPILATION.md
-      - Plugin SDK:
+      - Plugin SDK (future):
           - Overview: 07_PLUGIN_SDK/README.md
           - Architecture: 07_PLUGIN_SDK/OVERVIEW.md
-          - Dataframe Plugin: 07_PLUGIN_SDK/DATAFRAME_PLUGIN.md
           - Orchestrator Plugin: 07_PLUGIN_SDK/ORCHESTRATOR_PLUGIN.md
           - Storage Plugin: 07_PLUGIN_SDK/STORAGE_PLUGIN.md
           - Resource Provider: 07_PLUGIN_SDK/RESOURCE_PROVIDER.md
@@ -185,63 +186,66 @@ nav:
           - Spark Provider: 07_PLUGIN_SDK/SPARK_PROVIDER.md
           - Testing Plugins: 07_PLUGIN_SDK/TESTING_PLUGINS.md
           - Distribution: 07_PLUGIN_SDK/DISTRIBUTION.md
+      - Visualization (beyond Mermaid):
+          - Lineage: 08_VISUALIZATION/LINEAGE.md
+          - Graphviz: 08_VISUALIZATION/GRAPHVIZ.md
+          - HTML: 08_VISUALIZATION/HTML.md
+          - Documentation: 08_VISUALIZATION/DOCUMENTATION.md
+          - Pipeline Interface: 08_VISUALIZATION/OPENAPI_FOR_PIPELINES.md
+      - Proposed configuration:
+          - Configuration: 10_REFERENCE/CONFIGURATION.md
+          - Environment Variables: 10_REFERENCE/ENVIRONMENT_VARIABLES.md
   - Visualization:
       - Overview: 08_VISUALIZATION/README.md
-      - Lineage: 08_VISUALIZATION/LINEAGE.md
       - Mermaid: 08_VISUALIZATION/MERMAID.md
-      - Graphviz: 08_VISUALIZATION/GRAPHVIZ.md
-      - HTML: 08_VISUALIZATION/HTML.md
-      - Documentation: 08_VISUALIZATION/DOCUMENTATION.md
-      - Pipeline Interface: 08_VISUALIZATION/OPENAPI_FOR_PIPELINES.md
-  - Examples and Design Studies:
+  - Examples:
       - Overview: 09_EXAMPLES/README.md
-      - CSV to CSV: 09_EXAMPLES/CSV_TO_CSV.md
-      - CSV to SQL: 09_EXAMPLES/CSV_TO_SQL.md
-      - SQL to SQL: 09_EXAMPLES/SQL_TO_SQL.md
-      - Pandas Pipeline: 09_EXAMPLES/PANDAS_PIPELINE.md
-      - Polars Pipeline: 09_EXAMPLES/POLARS_PIPELINE.md
-      - Airflow Pipeline: 09_EXAMPLES/AIRFLOW_PIPELINE.md
-      - Multi-output: 09_EXAMPLES/MULTI_OUTPUT.md
-      - Callbacks: 09_EXAMPLES/CALLBACKS.md
-      - Async Pipelines: 09_EXAMPLES/ASYNC_PIPELINES.md
-      - Contract First: 09_EXAMPLES/CONTRACT_FIRST.md
-      - Code First: 09_EXAMPLES/CODE_FIRST.md
-      - End to End: 09_EXAMPLES/END_TO_END.md
-      - SQL to PySpark: 09_EXAMPLES/SQL_TO_PYSPARK.md
-      - PySpark to SQL: 09_EXAMPLES/PYSPARK_TO_SQL.md
-      - PySpark to Delta: 09_EXAMPLES/PYSPARK_TO_DELTA.md
-      - Streaming PySpark: 09_EXAMPLES/STREAMING_PYSPARK.md
+      - Design Studies:
+          - CSV to CSV: 09_EXAMPLES/CSV_TO_CSV.md
+          - CSV to SQL: 09_EXAMPLES/CSV_TO_SQL.md
+          - SQL to SQL: 09_EXAMPLES/SQL_TO_SQL.md
+          - Pandas Pipeline: 09_EXAMPLES/PANDAS_PIPELINE.md
+          - Polars Pipeline: 09_EXAMPLES/POLARS_PIPELINE.md
+          - Airflow Pipeline: 09_EXAMPLES/AIRFLOW_PIPELINE.md
+          - Multi-output: 09_EXAMPLES/MULTI_OUTPUT.md
+          - Callbacks: 09_EXAMPLES/CALLBACKS.md
+          - Async Pipelines: 09_EXAMPLES/ASYNC_PIPELINES.md
+          - Contract First: 09_EXAMPLES/CONTRACT_FIRST.md
+          - Code First: 09_EXAMPLES/CODE_FIRST.md
+          - End to End: 09_EXAMPLES/END_TO_END.md
+          - SQL to PySpark: 09_EXAMPLES/SQL_TO_PYSPARK.md
+          - PySpark to SQL: 09_EXAMPLES/PYSPARK_TO_SQL.md
+          - PySpark to Delta: 09_EXAMPLES/PYSPARK_TO_DELTA.md
+          - Streaming PySpark: 09_EXAMPLES/STREAMING_PYSPARK.md
   - Reference:
       - Overview: 10_REFERENCE/README.md
       - CLI: 10_REFERENCE/CLI.md
       - Compatibility: 10_REFERENCE/COMPATIBILITY.md
       - Known Limitations: 10_REFERENCE/KNOWN_ISSUES.md
-      - Configuration: 10_REFERENCE/CONFIGURATION.md
       - Diagnostics: 10_REFERENCE/DIAGNOSTICS.md
       - Exceptions: 10_REFERENCE/EXCEPTIONS.md
-      - Environment Variables: 10_REFERENCE/ENVIRONMENT_VARIABLES.md
       - API Reference: 10_REFERENCE/API_REFERENCE.md
   - Development:
       - Overview: 11_DEVELOPMENT/README.md
       - Roadmap: 11_DEVELOPMENT/ROADMAP.md
       - Migration 0.4 → 0.5: 11_DEVELOPMENT/MIGRATION_0_4_TO_0_5.md
-      - FastAPI Integration Plan: 11_DEVELOPMENT/FASTAPI_INTEGRATION_PLAN.md
-      - Schema Drift Plan: 11_DEVELOPMENT/SCHEMA_DRIFT_PLAN.md
-      - ETL Reliability Plan: 11_DEVELOPMENT/ETL_RELIABILITY_PLAN.md
-      - SQLModel Integration Plan: 11_DEVELOPMENT/SQLMODEL_INTEGRATION_PLAN.md
-      - Dependency Strategy: 11_DEVELOPMENT/DEPENDENCY_STRATEGY.md
-      - SparkForge Adoption: 11_DEVELOPMENT/SPARKFORGE_ADOPTION.md
-      - Design Decisions: 11_DEVELOPMENT/DESIGN_DECISIONS.md
-      - Architecture Decisions: 11_DEVELOPMENT/ARCHITECTURE_DECISIONS.md
-      - Testing: 11_DEVELOPMENT/TESTING.md
-      - Benchmarks: 11_DEVELOPMENT/BENCHMARKS.md
       - Contributing: 11_DEVELOPMENT/CONTRIBUTING.md
       - Documentation: 11_DEVELOPMENT/DOCUMENTATION.md
-      - Release Process: 11_DEVELOPMENT/RELEASE_PROCESS.md
+      - Testing: 11_DEVELOPMENT/TESTING.md
       - Coding Standards: 11_DEVELOPMENT/CODING_STANDARDS.md
+      - Release Process: 11_DEVELOPMENT/RELEASE_PROCESS.md
+      - Dependency Strategy: 11_DEVELOPMENT/DEPENDENCY_STRATEGY.md
+      - Design Decisions: 11_DEVELOPMENT/DESIGN_DECISIONS.md
+      - Architecture Decisions: 11_DEVELOPMENT/ARCHITECTURE_DECISIONS.md
+      - Benchmarks: 11_DEVELOPMENT/BENCHMARKS.md
+      - Maintainer plans:
+          - FastAPI Integration Plan: 11_DEVELOPMENT/FASTAPI_INTEGRATION_PLAN.md
+          - Schema Drift Plan: 11_DEVELOPMENT/SCHEMA_DRIFT_PLAN.md
+          - ETL Reliability Plan: 11_DEVELOPMENT/ETL_RELIABILITY_PLAN.md
+          - SQLModel Integration Plan: 11_DEVELOPMENT/SQLMODEL_INTEGRATION_PLAN.md
+          - SparkForge Adoption: 11_DEVELOPMENT/SPARKFORGE_ADOPTION.md
   - Specifications:
       - Overview: specifications/README.md
       - DTCS: specifications/DTCS_SPEC.md
       - DPCS: specifications/DPCS_SPEC.md
-  - Visual Theme: theme/README.md
   - Manifesto: PIPELANTIC_MANIFESTO.md

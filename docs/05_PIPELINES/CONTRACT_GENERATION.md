@@ -52,7 +52,7 @@ Pipelantic may generate:
 
 ### ODCS
 
-Generated from `DataContractModel` classes.
+Generated from `Data` classes.
 
 Contains:
 

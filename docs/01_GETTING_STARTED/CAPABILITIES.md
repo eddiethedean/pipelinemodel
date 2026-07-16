@@ -20,6 +20,7 @@ Pipelantic 0.5.0 is an alpha release. This page is the shortest answer to
 | Polars plugin (eager + lazy preservation) | Available (`pipelantic-polars`) |
 | Pandas plugin (eager compatibility) | Available (`pipelantic-pandas`) |
 | Optional Arrow interchange | Available when PyArrow is installed |
+| Mermaid diagrams (`Pipeline.to_mermaid`) | Available |
 
 ## Not included in 0.5
 
@@ -42,3 +43,8 @@ pip install 'pipelantic-polars[arrow]' # optional PyArrow
 ```
 
 Core never imports Polars, Pandas, PyArrow, or NumPy.
+
+## Next Step
+
+Continue with [Quickstart](QUICKSTART.md), or read the
+[Evaluator brief](EVALUATOR.md) if you are assessing the project for adoption.

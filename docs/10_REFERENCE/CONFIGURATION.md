@@ -1,5 +1,11 @@
 # Configuration Reference
 
+!!! warning "Future design—not a Pipelantic 0.5 API guide"
+    This page describes a proposed 1.0 configuration surface. Pipelantic 0.5
+    does not load `pipelantic.toml` or these environment variables. Configure
+    profiles and bindings in Python.
+
+
 Pipelantic configuration binds portable pipeline models to concrete
 environments without embedding execution details in `Pipeline`,
 `Transformation`, or data-contract classes.

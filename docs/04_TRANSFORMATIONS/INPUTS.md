@@ -3,7 +3,7 @@
 `Input[T]` defines a typed input port for a `Transformation`.
 
 An input represents a logical dataset flowing into a transformation. The type
-parameter `T` must be a `DataContractModel` (or another supported contract
+parameter `T` must be a `Data` (or another supported contract
 type), allowing Pipelantic to validate compatibility before execution.
 
 ## Purpose
@@ -147,7 +147,7 @@ The Python declaration is the source of truth.
 ## Best Practices
 
 - Use descriptive input names.
-- Reference published `DataContractModel` classes.
+- Reference published `Data` classes.
 - Keep inputs focused on logical datasets.
 - Let execution plugins determine physical representations.
 

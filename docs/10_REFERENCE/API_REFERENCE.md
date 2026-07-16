@@ -1,6 +1,6 @@
 # Python API Reference
 
-> **Status: Available in Pipelantic 0.4.0.** Signatures and docstrings below
+> **Status: Available in Pipelantic 0.5.0.** Signatures and docstrings below
 > are generated from the package source.
 
 The package root is the supported convenience import surface for common
@@ -113,6 +113,44 @@ from pipelantic import (
 ## Contract interchange
 
 ::: pipelantic.interchange
+    options:
+      show_root_heading: true
+      members_order: source
+
+## Dataframe protocol
+
+::: pipelantic.dataframe
+    options:
+      show_root_heading: true
+      members_order: source
+
+## Capabilities
+
+::: pipelantic.capabilities
+    options:
+      show_root_heading: true
+      members_order: source
+
+## Reliability and schema drift
+
+::: pipelantic.reliability
+    options:
+      show_root_heading: true
+      members_order: source
+
+::: pipelantic.schema_drift
+    options:
+      show_root_heading: true
+      members_order: source
+
+::: pipelantic.schema_policy
+    options:
+      show_root_heading: true
+      members_order: source
+
+## Testing helpers
+
+::: pipelantic.testing
     options:
       show_root_heading: true
       members_order: source

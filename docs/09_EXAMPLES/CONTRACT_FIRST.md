@@ -1,5 +1,12 @@
 # Contract-First Pipeline
 
+!!! warning "Future design—not a Pipelantic 0.5 API guide"
+    This page is a design study. It may describe packages, commands, or
+    interfaces that are not installable yet. Use Current Capabilities, the
+    runnable examples under `examples/`, the API reference, and the CLI
+    reference for shipped behavior.
+
+
 This example demonstrates how to build a Pipelantic project from authored
 ODCS, DTCS, and DPCS contract artifacts rather than starting from Python
 classes.

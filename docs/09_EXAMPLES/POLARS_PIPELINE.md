@@ -1,5 +1,12 @@
 # Polars Pipeline
 
+!!! warning "Future design—not a Pipelantic 0.5 API guide"
+    This page is a design study. It may describe packages, commands, or
+    interfaces that are not installable yet. Use Current Capabilities, the
+    runnable examples under `examples/`, the API reference, and the CLI
+    reference for shipped behavior.
+
+
 This example builds a complete Pipelantic pipeline that reads customer data
 from CSV, executes transformations with Polars, validates the output against
 typed data contracts, and writes the curated result to Parquet.

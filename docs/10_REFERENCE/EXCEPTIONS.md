@@ -1,10 +1,39 @@
 # Exceptions Reference
 
-Pipelantic uses structured diagnostics for expected contract and pipeline
-problems. Exceptions represent failures in API usage, loading, configuration,
-plugins, or runtime execution.
+> **Status: Available in Pipelantic 0.5.0.** This page documents exceptions
+> exported by the installed package. Broader 1.0 exception trees on older
+> design pages are not authoritative.
 
-> The hierarchy below is the proposed public exception model for 1.0.
+Pipelantic uses structured diagnostics for expected contract and pipeline
+problems. Exceptions represent failures in model definition, validation
+escalation, or runtime execution.
+
+## Hierarchy (shipped)
+
+```text
+PipelanticError
+├── ModelDefinitionError
+├── PipelineValidationError
+├── InternalPipelanticError
+└── PipelineExecutionError
+    ├── NodeExecutionError
+    ├── DataValidationError
+    ├── PipelineTimeoutError
+    └── PipelineCancelledError
+```
+
+```python
+from pipelantic import (
+    DataValidationError,
+    ModelDefinitionError,
+    NodeExecutionError,
+    PipelineCancelledError,
+    PipelineExecutionError,
+    PipelineTimeoutError,
+    PipelineValidationError,
+    PipelanticError,
+)
+```
 
 ## Base Exception
 
@@ -16,152 +45,41 @@ class PipelanticError(Exception):
 Applications may catch this base class at integration boundaries, but should
 usually catch a more specific exception.
 
-## Proposed Hierarchy
+## Model and validation
 
-```text
-PipelanticError
-├── ConfigurationError
-├── SourceLoadError
-├── ModelDefinitionError
-├── PipelineValidationError
-├── PlanningError
-│   ├── BindingResolutionError
-│   ├── ImplementationResolutionError
-│   └── CapabilityError
-├── PluginError
-│   ├── PluginDiscoveryError
-│   ├── PluginCompatibilityError
-│   └── PluginExecutionError
-├── CompilationError
-├── PipelineExecutionError
-│   ├── NodeExecutionError
-│   ├── DataValidationError
-│   ├── PipelineTimeoutError
-│   └── PipelineCancelledError
-└── InternalPipelanticError
-```
+| Exception | When |
+|---|---|
+| `ModelDefinitionError` | A class definition cannot form a usable model |
+| `PipelineValidationError` | Validation failed and the caller requested an exception (`raise_for_errors`) |
 
-## `ConfigurationError`
+`PipelineValidationError` carries a `report` (`ValidationReport`).
 
-Raised when configuration cannot be loaded or contains invalid values that
-prevent constructing a runtime.
+## Execution
 
-## `SourceLoadError`
+| Exception | When |
+|---|---|
+| `PipelineExecutionError` | Pipeline execution failed |
+| `NodeExecutionError` | A single node failed (`node_name`, optional `stage`, `cause`) |
+| `DataValidationError` | Runtime data failed a contract boundary |
+| `PipelineTimeoutError` | A run or step exceeded its timeout |
+| `PipelineCancelledError` | A run was cancelled |
 
-Raised for unreadable Python modules, contract documents, or required local
-resources.
+Execution exceptions may include `run_id`, `report`, and `code` when available.
+Messages are redacted before entering reports and logs.
 
-Syntax and contract-shape problems should normally be represented as
-diagnostics attached to a load result.
+## Internal
 
-## `ModelDefinitionError`
+`InternalPipelanticError` signals a violated internal invariant. Treat it as a
+bug report candidate, not a normal control-flow signal.
 
-Raised when a class definition violates invariants that cannot be represented
-as a usable model, such as an invalid annotation wrapper or conflicting port
-declaration.
+## Diagnostics vs exceptions
 
-## `PipelineValidationError`
+Most wiring and contract problems surface as diagnostics on a
+`ValidationReport` without raising. Call `report.raise_for_errors()` when you
+want failures as exceptions.
 
-Raised by convenience methods such as `raise_for_errors()` when a validation
-report contains errors.
-
-```python
-try:
-    CustomerPipeline.validate().raise_for_errors()
-except PipelineValidationError as exc:
-    for diagnostic in exc.report.diagnostics:
-        print(diagnostic.code, diagnostic.message)
-```
-
-## `PlanningError`
-
-Raised when a valid logical pipeline cannot be resolved for a selected profile.
-The exception should carry a planning report.
-
-Common causes include missing bindings, unavailable implementations, and
-unsupported backend capabilities.
-
-## `PluginError`
-
-Represents plugin discovery, loading, compatibility, or protocol failures.
-User-code failures executed through a plugin should generally be wrapped in
-`NodeExecutionError`, with the plugin named in the execution context.
-
-## `CompilationError`
-
-Raised when a resolved `PipelinePlan` cannot be compiled for a target backend.
-The error should identify the unsupported plan element and target.
-
-## `PipelineExecutionError`
-
-Base class for terminal failures while executing or submitting a plan.
-
-It should include:
-
-- Pipeline and run identity
-- Failed node, when applicable
-- Attempt number
-- Selected implementation and plugin
-- Structured diagnostics
-- Original exception through exception chaining
-
-## `DataValidationError`
-
-Represents invalid runtime data when the configured policy requires failure.
-Partial rejection or quarantine may instead produce a successful node result
-with rejected-record metadata.
-
-## Cancellation and Timeouts
-
-Cancellation and timeout are distinct states:
-
-```python
-except PipelineTimeoutError:
-    ...
-except PipelineCancelledError:
-    ...
-```
-
-Plugins should preserve these states instead of converting them into a generic
-failure.
-
-## Internal Errors
-
-`InternalPipelanticError` indicates a broken framework invariant. It should
-include a diagnostic code and enough context for a bug report, while redacting
-secrets.
-
-## Exception Chaining
-
-Pipelantic should retain the original cause:
-
-```python
-raise NodeExecutionError(context=ctx) from original_exception
-```
-
-This preserves useful tracebacks without exposing backend exceptions as the
-stable public API.
-
-## Sync and Async Behavior
-
-Sync and async entry points should raise equivalent public exceptions:
-
-```python
-CustomerPipeline.run()
-await CustomerPipeline.arun()
-```
-
-Calling `run()` from an active asynchronous context should raise a clear usage
-error directing the user to `await arun()`.
-
-## What Not to Catch
-
-Do not broadly catch `BaseException`. Cancellation, keyboard interruption, and
-system-exiting exceptions require careful propagation and cleanup.
-
-## See Also
+## See also
 
 - [Diagnostics](DIAGNOSTICS.md)
-- [Callbacks](../04_TRANSFORMATIONS/CALLBACKS.md)
-- [Error Handling](../04_TRANSFORMATIONS/ERROR_HANDLING.md)
-
+- [API Reference](API_REFERENCE.md)
+- [CLI](CLI.md)

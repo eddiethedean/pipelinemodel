@@ -115,13 +115,24 @@ Run the narrowest relevant tests during development and the full suite before
 submission.
 
 ```bash
+uv sync
 uv run pytest
 uv run ruff check .
 uv run ruff format --check .
-uv run pyright
+uv run python scripts/check_docs.py
+uv run mkdocs build --strict
 ```
 
-Commands are provisional until the implementation toolchain is committed.
+For dataframe plugin work:
+
+```bash
+uv sync --group dataframes
+uv run pytest -m polars
+uv run pytest -m pandas
+```
+
+The committed toolchain is uv + pytest + ruff + mkdocs. Type checking with
+pyright is not part of CI yet.
 
 ## Commit Messages
 

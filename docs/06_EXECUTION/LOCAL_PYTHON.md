@@ -1,26 +1,33 @@
 # Local Python
 
-The Local Python execution plugin allows Pipelantic to execute validated
-**Pipeline Plans** directly within a Python process.
+> **Status: Available in Pipelantic 0.5.0.** Process-local execution of a
+> `PipelinePlan` with registered Python and dataframe implementations.
 
-Local execution is the reference execution environment for Pipelantic. It is
-ideal for development, testing, experimentation, CI, and lightweight
-production workloads.
+The local runtime executes validated **Pipeline Plans** in-process. It is the
+reference execution environment for development, testing, experimentation, and
+CI.
 
-Unlike orchestration platforms, Local Python requires no external scheduler or
-workflow engine. It executes the same Pipeline Plan while preserving identical
-pipeline semantics.
+It is **not** a multi-tenant production orchestrator. Prefer an external
+scheduler (future Airflow/orchestration plugins) when you need durable
+scheduling, cross-process isolation, or fleet-scale coordination.
+
+## Known limitations (0.5)
+
+- Run reports and the default report store are process-scoped
+- In-memory storage does not survive process restart
+- No multi-tenant artifact isolation between concurrent apps in one process
+- Alpha: APIs may change in 0.x releases
 
 ## Goals
 
-The Local Python plugin should:
+The local runtime should:
 
-- Execute Pipeline Plans without external infrastructure.
-- Preserve DPCS semantics.
-- Support synchronous and asynchronous implementations.
-- Provide deterministic execution.
-- Serve as the reference execution backend.
-- Enable rapid local development.
+- Execute Pipeline Plans without external infrastructure
+- Preserve DPCS semantics
+- Support synchronous and asynchronous implementations
+- Provide deterministic execution for a given plan and bindings
+- Serve as the reference execution backend
+- Enable rapid local development
 
 ## Philosophy
 
@@ -39,11 +46,11 @@ Planning
 Pipeline Plan
     │
     ▼
-Local Python Plugin
-    │
-    ▼
-Python Runtime
+Local runtime
 ```
+
+Unlike orchestration platforms, Local Python requires no external scheduler. It
+executes the same Pipeline Plan while preserving identical pipeline semantics.
 
 The only difference between local execution and orchestration is the execution
 plugin.
@@ -58,7 +65,6 @@ Local execution is useful for:
 - Jupyter notebooks
 - Command-line tools
 - CI pipelines
-- Small production deployments
 
 Developers can validate pipeline behavior before deploying to larger execution
 platforms.

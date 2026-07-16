@@ -40,8 +40,13 @@ evidence of a published package API. The 0.5 surface is defined by the
 package, [API reference](../10_REFERENCE/API_REFERENCE.md), tests, and
 changelog.
 
-Dataframe, SQL, Spark, and external orchestration chapters remain accepted
-design until their milestones ship.
+**Shipped in 0.5:** dataframe execution protocol, `pipelantic-polars`, and
+`pipelantic-pandas` (see Execution → Polars / Pandas and the Dataframe Plugin
+protocol page).
+
+**Still accepted design until later milestones:** SQL, Spark, external
+orchestration, Graphviz/HTML visualization, and non-dataframe Plugin SDK
+surfaces.
 
 ## Normative Authority
 

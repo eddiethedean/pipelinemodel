@@ -2,7 +2,7 @@
 
 Pipelantic relies on Pydantic through ContractModel rather than introducing a second data-modeling system.
 
-Pydantic provides the Python-native type system, field metadata, validation behavior, and schema introspection used by `DataContractModel`. ContractModel extends that experience with data-contract semantics and ODCS interoperability. Pipelantic then consumes those contract classes as typed pipeline interfaces.
+Pydantic provides the Python-native type system, field metadata, validation behavior, and schema introspection used by `Data`. ContractModel extends that experience with data-contract semantics and ODCS interoperability. Pipelantic then consumes those contract classes as typed pipeline interfaces.
 
 The relationship is:
 
@@ -44,7 +44,7 @@ Pydantic owns:
 
 ContractModel owns:
 
-- `DataContractModel`
+- `Data`
 - Data-contract metadata
 - ODCS mappings
 - Contract identity
@@ -72,10 +72,10 @@ Pipelantic must not reimplement Pydantic field parsing or validation behavior.
 A Pipelantic-ready data contract is an ordinary ContractModel class:
 
 ```python
-from pipelantic import DataContractModel
+from pipelantic import Data, load_data_contract
 
 
-class Customer(DataContractModel):
+class Customer(Data):
     customer_id: int
     name: str
     email: str | None = None
@@ -130,10 +130,10 @@ from decimal import Decimal
 from typing import Literal
 from uuid import UUID
 
-from pipelantic import DataContractModel
+from pipelantic import Data, load_data_contract
 
 
-class Order(DataContractModel):
+class Order(Data):
     order_id: UUID
     order_date: date
     total: Decimal
@@ -155,7 +155,7 @@ from typing import Annotated
 from pydantic import Field
 
 
-class Customer(DataContractModel):
+class Customer(Data):
     customer_id: Annotated[
         int,
         Field(
@@ -190,7 +190,7 @@ Pipelantic should reuse this information for:
 A field without a default is required:
 
 ```python
-class Customer(DataContractModel):
+class Customer(Data):
     customer_id: int
     email: str
 ```
@@ -204,7 +204,7 @@ It should rely on Pydantic and ContractModel.
 Optionality should follow normal Python and Pydantic semantics.
 
 ```python
-class Customer(DataContractModel):
+class Customer(Data):
     customer_id: int
     email: str | None = None
 ```
@@ -223,7 +223,7 @@ Pipelantic should consume the normalized ContractModel interpretation rather tha
 Defaults remain ordinary Pydantic defaults:
 
 ```python
-class Customer(DataContractModel):
+class Customer(Data):
     customer_id: int
     active: bool = True
 ```
@@ -234,7 +234,7 @@ Default factories should also remain available:
 from pydantic import Field
 
 
-class Customer(DataContractModel):
+class Customer(Data):
     customer_id: int
     tags: list[str] = Field(default_factory=list)
 ```
@@ -248,7 +248,7 @@ Pydantic field constraints should flow into contract metadata whenever possible.
 Examples:
 
 ```python
-class Customer(DataContractModel):
+class Customer(Data):
     age: Annotated[
         int,
         Field(ge=0, le=130),
@@ -292,7 +292,7 @@ Pipelantic should surface unsupported enforcement during planning.
 Strict validation should remain available:
 
 ```python
-class Customer(DataContractModel):
+class Customer(Data):
     customer_id: Annotated[
         int,
         Field(strict=True),
@@ -315,7 +315,7 @@ If an execution plugin cannot enforce strict typing directly, it must either:
 Descriptions should be defined once and reused everywhere:
 
 ```python
-class Customer(DataContractModel):
+class Customer(Data):
     customer_id: Annotated[
         int,
         Field(
@@ -339,7 +339,7 @@ Pipelantic may include this description in:
 Pydantic field examples may also enrich generated documentation:
 
 ```python
-class Customer(DataContractModel):
+class Customer(Data):
     email: Annotated[
         str,
         Field(
@@ -356,7 +356,7 @@ Examples are documentation metadata. They should not be treated as runtime defau
 Aliases allow external names to differ from Python identifiers:
 
 ```python
-class Customer(DataContractModel):
+class Customer(Data):
     customer_id: int = Field(alias="customerId")
 ```
 
@@ -416,7 +416,7 @@ Example:
 from pydantic import ConfigDict
 
 
-class Customer(DataContractModel):
+class Customer(Data):
     model_config = ConfigDict(extra="forbid")
 
     customer_id: int
@@ -438,13 +438,13 @@ Pipelantic should preserve the declared policy at validation boundaries.
 Nested Pydantic models should remain first-class:
 
 ```python
-class Address(DataContractModel):
+class Address(Data):
     street: str
     city: str
     postal_code: str
 
 
-class Customer(DataContractModel):
+class Customer(Data):
     customer_id: int
     address: Address
 ```
@@ -468,7 +468,7 @@ class Address(BaseModel):
     city: str
 
 
-class Customer(DataContractModel):
+class Customer(Data):
     customer_id: int
     address: Address
 ```
@@ -494,7 +494,7 @@ class CustomerStatus(StrEnum):
     INACTIVE = "inactive"
 
 
-class Customer(DataContractModel):
+class Customer(Data):
     customer_id: int
     status: CustomerStatus
 ```
@@ -511,12 +511,12 @@ from typing import Annotated, Literal
 from pydantic import Field
 
 
-class CardPayment(DataContractModel):
+class CardPayment(Data):
     payment_type: Literal["card"]
     last_four: str
 
 
-class BankPayment(DataContractModel):
+class BankPayment(Data):
     payment_type: Literal["bank"]
     account_id: str
 
@@ -556,7 +556,7 @@ Pydantic field validators can normalize or validate values:
 from pydantic import field_validator
 
 
-class Customer(DataContractModel):
+class Customer(Data):
     email: str
 
     @field_validator("email")
@@ -592,7 +592,7 @@ Cross-field validation may use model validators:
 from pydantic import model_validator
 
 
-class DateRange(DataContractModel):
+class DateRange(Data):
     start_date: date
     end_date: date
 
@@ -682,7 +682,7 @@ Pipelantic should support them only when:
 
 ## Dataclasses
 
-Pydantic dataclasses may be supported through ContractModel adapters, but `DataContractModel` should remain the recommended authoring surface.
+Pydantic dataclasses may be supported through ContractModel adapters, but `Data` should remain the recommended authoring surface.
 
 A consistent base class makes contract identity, metadata, generation, and loading easier to reason about.
 
@@ -823,7 +823,7 @@ Pydantic can create models dynamically.
 Dynamic models may be useful when loading ODCS:
 
 ```python
-Customer = DataContractModel.from_odcs(
+Customer = load_data_contract(
     "customer.odcs.yaml",
 )
 ```
@@ -974,7 +974,7 @@ Pipelantic should make performance strategy explicit through profiles while pres
 
 ## Recommended Practices
 
-- Use `DataContractModel` for published pipeline datasets.
+- Use `Data` for published pipeline datasets.
 - Prefer `Annotated` with `Field` for constraints and documentation.
 - Keep contract metadata explicit and versioned.
 - Reuse Pydantic models directly in transformation annotations.
@@ -1021,7 +1021,7 @@ Execution plugins must not weaken strict contract requirements without an explic
 
 ### Using Pydantic models as dataframe containers
 
-A `DataContractModel` describes record semantics. It should not force the physical dataframe representation.
+A `Data` describes record semantics. It should not force the physical dataframe representation.
 
 ## Key Principle
 

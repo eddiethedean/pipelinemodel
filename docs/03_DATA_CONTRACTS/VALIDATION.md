@@ -7,7 +7,7 @@ Pipelantic coordinates **when** validation happens, ContractModel defines **what
 The architectural boundary is:
 
 ```text
-DataContractModel
+Data
       │
       ▼
 ContractModel

@@ -1,5 +1,12 @@
 # Streaming PySpark
 
+!!! warning "Future design—not a Pipelantic 0.5 API guide"
+    This page is a design study. It may describe packages, commands, or
+    interfaces that are not installable yet. Use Current Capabilities, the
+    runnable examples under `examples/`, the API reference, and the CLI
+    reference for shipped behavior.
+
+
 This example builds a complete Pipelantic pipeline that consumes customer
 order events from Kafka with PySpark Structured Streaming, validates the events
 against typed contracts, applies event-time aggregation with watermarks, and

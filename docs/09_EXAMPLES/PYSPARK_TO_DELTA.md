@@ -1,5 +1,12 @@
 # PySpark to Delta
 
+!!! warning "Future design—not a Pipelantic 0.5 API guide"
+    This page is a design study. It may describe packages, commands, or
+    interfaces that are not installable yet. Use Current Capabilities, the
+    runnable examples under `examples/`, the API reference, and the CLI
+    reference for shipped behavior.
+
+
 This example builds a complete Pipelantic pipeline that reads distributed
 customer and order data with PySpark, performs typed transformations on Spark,
 and publishes the curated result to a Delta Lake table.

@@ -1,5 +1,11 @@
 # HTML
 
+!!! warning "Future design—not a Pipelantic 0.5 API guide"
+    Graphviz, HTML, lineage exporters, and generated pipeline docs beyond
+    Mermaid are not shipped in 0.5. For diagrams today, use
+    `Pipeline.to_mermaid()`.
+
+
 Pipelantic can generate **HTML documentation** from a validated Pipeline Plan.
 
 HTML output combines pipeline structure, contracts, lineage, diagnostics, and

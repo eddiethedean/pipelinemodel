@@ -4,43 +4,30 @@
 
 [![Documentation Status](https://readthedocs.org/projects/pipelantic/badge/?version=latest)](https://pipelantic.readthedocs.io/en/latest/?badge=latest)
 
-Define, validate, plan, and locally run contract-driven data pipelines with
-typed Python.
+Catch incompatible data-pipeline wiring before you process data.
 
-> Define data, transformations, and pipelines with typed Python classes.
-> Validate and plan them once. Execute them through interchangeable backends.
+Define datasets, transformations, and pipelines as typed Python classes.
+Validate and plan them once. Run locally today; swap Polars or Pandas backends
+without rewriting the logical pipeline.
 
-## Status
-
-**0.5.0 — Dataframe Execution**
-
-Pipelantic provides the typed modeling kernel, contract interoperability,
-an immutable secret-free `PipelinePlan`, a local async runtime, and a
-versioned dataframe execution protocol with independently installable
-Polars (reference) and Pandas (compatibility) plugins.
-
-Use Pipelantic when you want to catch incompatible wiring before processing
-data, generate ODCS/DTCS/DPCS contracts from Python, inspect a deterministic
-execution plan, or run the same logical pipeline on local Python, Polars, or
-Pandas.
-
-Pipelantic is currently alpha. SQL, Spark, Airflow, and other external
-backend plugins remain future work.
-
-See the [hosted documentation](https://pipelantic.readthedocs.io/) for the
-full design,
-[CHANGELOG.md](CHANGELOG.md) for release notes, and
-[Roadmap](docs/11_DEVELOPMENT/ROADMAP.md) for sequencing.
+**Status:** Alpha **0.5.0** — local runtime + optional Polars/Pandas plugins.
+SQL, Spark, and Airflow compilation are not shipped.
 
 ## Install
+
+Requires Python 3.11 or newer.
 
 ```bash
 pip install pipelantic
 # optional dataframe engines
 pip install pipelantic-polars
 pip install pipelantic-pandas
-# or
-uv add pipelantic
+```
+
+Verify:
+
+```bash
+python -c "import pipelantic; print(pipelantic.__version__)"
 ```
 
 ### Development
@@ -136,18 +123,20 @@ Run the complete tested version at
 
 ## Current capability boundary
 
-| Capability | 0.4 |
+| Capability | 0.5 |
 |---|---|
 | Typed modeling, validation, contracts, and planning | Available |
 | Local Python execution and run reports | Available |
 | Memory, callable, JSON, CSV, and no-write storage | Available |
-| Pandas, Polars, SQL, Spark, and Airflow plugins | Not yet available |
+| Polars and Pandas dataframe plugins | Available (`pipelantic-polars` / `pipelantic-pandas`) |
+| SQL, Spark, and Airflow plugins | Not yet available |
 
 ## Documentation
 
 - [Documentation site](https://pipelantic.readthedocs.io/)
 - [Getting Started](docs/01_GETTING_STARTED/README.md)
 - [Capabilities and Limitations](docs/01_GETTING_STARTED/CAPABILITIES.md)
+- [Evaluator brief](docs/01_GETTING_STARTED/EVALUATOR.md)
 - [Core Concepts](docs/02_FOUNDATIONS/CORE_CONCEPTS.md)
 - [Architecture](docs/02_FOUNDATIONS/ARCHITECTURE.md)
 - [Roadmap](docs/11_DEVELOPMENT/ROADMAP.md)

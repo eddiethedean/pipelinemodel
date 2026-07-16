@@ -1,5 +1,11 @@
-
 # Code-First Pipeline
+
+!!! warning "Future design—not a Pipelantic 0.5 API guide"
+    This page is a design study. It may describe packages, commands, or
+    interfaces that are not installable yet. Use Current Capabilities, the
+    runnable examples under `examples/`, the API reference, and the CLI
+    reference for shipped behavior.
+
 
 This example demonstrates the complementary workflow to **CONTRACT_FIRST.md**.
 Instead of authoring ODCS, DTCS, and DPCS documents first, developers begin

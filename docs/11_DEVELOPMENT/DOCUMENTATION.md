@@ -6,7 +6,7 @@ Documentation is part of the public API.
 
 Every page describing product behavior must be one of:
 
-- **Available in 0.4**
+- **Available in 0.5**
 - **Partially available**
 - **Future design**
 - **Normative specification**

@@ -34,14 +34,14 @@ Python classes are authored directly and artifacts are generated.
 Existing artifacts are loaded into Python.
 
 ```python
-from pipelantic import DataContractModel
+from pipelantic import Data, load_data_contract
 
-Customer = DataContractModel.from_odcs(
+Customer = load_data_contract(
     "contracts/data/customer.odcs.yaml",
 )
 ```
 
-The resulting class should behave like any authored `DataContractModel`.
+The resulting class should behave like any authored `Data`.
 
 ### Hybrid
 
