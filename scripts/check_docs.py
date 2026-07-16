@@ -118,7 +118,7 @@ def main() -> None:
     )
     if "Available in 0.5" not in secrets:
         raise SystemExit("SECRETS_MANAGEMENT.md missing shipped-in-0.5 banner")
-    if "provider = \"aws-secrets-manager\"" in secrets:
+    if 'provider = "aws-secrets-manager"' in secrets:
         raise SystemExit(
             "SECRETS_MANAGEMENT.md still shows aws-secrets-manager as current config"
         )
