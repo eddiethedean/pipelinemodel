@@ -226,47 +226,64 @@ class Transformation:
 
 
 def _collect_ports(cls: type[Transformation]) -> list[PortDefinition]:
-    """Introspect Input/Output/Parameter annotations on a transformation class."""
-    annotations = _class_annotations(cls)
+    """Introspect Input/Output/Parameter annotations across the class MRO."""
     ports: list[PortDefinition] = []
     seen: set[str] = set()
 
-    for name, annotation in annotations.items():
-        if name.startswith("_"):
-            continue
-        kind_cls, contract = unwrap_port_marker(annotation)
-        if kind_cls is None:
-            continue
-        if name in seen:
-            msg = f"Duplicate port name {name!r} on {cls.__name__}"
-            raise ModelDefinitionError(msg)
-        seen.add(name)
+    # Base → derived so subclasses can override port definitions by name.
+    bases = [
+        base
+        for base in reversed(cls.__mro__)
+        if base is not object
+        and base is not Transformation
+        and issubclass(base, Transformation)
+    ]
+    for base in bases:
+        annotations = _class_annotations(base)
+        for name, annotation in annotations.items():
+            if name.startswith("_"):
+                continue
+            kind_cls, contract = unwrap_port_marker(annotation)
+            if kind_cls is None:
+                continue
 
-        if kind_cls is Input:
-            ports.append(
-                PortDefinition(name=name, kind="input", contract_type=contract)
-            )
-        elif kind_cls is Output:
-            ports.append(
-                PortDefinition(name=name, kind="output", contract_type=contract)
-            )
-        elif kind_cls is Parameter:
             default = ...
             has_default = False
-            if isinstance(annotation, Parameter) and annotation.has_default:
-                default = annotation.default
-                has_default = True
-            elif name in cls.__dict__:
-                default = cls.__dict__[name]
-                has_default = True
-            ports.append(
-                PortDefinition(
-                    name=name,
-                    kind="parameter",
-                    contract_type=contract,
-                    default=default,
-                    has_default=has_default,
-                )
+            if kind_cls is Parameter:
+                default, has_default = _parameter_default(base, name, annotation)
+
+            port = PortDefinition(
+                name=name,
+                kind=(
+                    "input"
+                    if kind_cls is Input
+                    else "output"
+                    if kind_cls is Output
+                    else "parameter"
+                ),
+                contract_type=contract,
+                default=default,
+                has_default=has_default,
             )
+            if name in seen:
+                # Derived class overrides an inherited port of the same name.
+                ports = [p for p in ports if p.name != name]
+            else:
+                seen.add(name)
+            ports.append(port)
 
     return ports
+
+
+def _parameter_default(cls: type[Any], name: str, annotation: Any) -> tuple[Any, bool]:
+    """Resolve a Parameter default from annotation or class attribute."""
+    if isinstance(annotation, Parameter) and annotation.has_default:
+        return annotation.default, True
+    if name not in cls.__dict__:
+        return ..., False
+    value = cls.__dict__[name]
+    if isinstance(value, Parameter) and value.has_default:
+        return value.default, True
+    if isinstance(value, Parameter):
+        return ..., False
+    return value, True

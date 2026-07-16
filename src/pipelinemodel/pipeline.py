@@ -5,6 +5,7 @@ from __future__ import annotations
 import inspect
 import itertools
 from dataclasses import dataclass, field
+from types import MappingProxyType
 from typing import Any, ClassVar, TypeVar
 
 from pipelinemodel.contracts import is_data_contract_type
@@ -24,6 +25,7 @@ T = TypeVar("T")
 
 _subpipeline_key_counter = itertools.count(1)
 _source_key_counter = itertools.count(1)
+_building_graphs: set[type[Any]] = set()
 
 
 def _class_annotations(cls: type[Any]) -> dict[str, Any]:
@@ -228,6 +230,7 @@ class Pipeline(metaclass=_PipelineMeta):
     __member_order__: ClassVar[list[str]] = []
     __pipeline_members__: ClassVar[dict[str, Any]] = {}
     _cached_graph: ClassVar[LogicalGraph | None] = None
+    _graph_build_error: ClassVar[str | None] = None
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
@@ -236,6 +239,7 @@ class Pipeline(metaclass=_PipelineMeta):
         members = _collect_pipeline_members(cls)
         cls.__pipeline_members__ = members
         cls._cached_graph = None
+        cls._graph_build_error = None
 
     @classmethod
     def identity(cls) -> str:
@@ -247,9 +251,29 @@ class Pipeline(metaclass=_PipelineMeta):
         """Build (and cache) the immutable logical graph for this pipeline."""
         if cls._cached_graph is not None:
             return cls._cached_graph
-        graph = _build_logical_graph(cls)
-        cls._cached_graph = graph
-        return graph
+        if cls in _building_graphs:
+            cls._graph_build_error = (
+                f'Cyclic subpipeline nesting detected while building "{cls.__name__}".'
+            )
+            return LogicalGraph(
+                pipeline_id=pipeline_id(cls),
+                pipeline_name=cls.__name__,
+                metadata=MappingProxyType({"cyclic_subpipeline": True}),
+            )
+
+        _building_graphs.add(cls)
+        try:
+            graph = _build_logical_graph(cls)
+            if cls._graph_build_error:
+                graph = LogicalGraph(
+                    pipeline_id=pipeline_id(cls),
+                    pipeline_name=cls.__name__,
+                    metadata=MappingProxyType({"cyclic_subpipeline": True}),
+                )
+            cls._cached_graph = graph
+            return graph
+        finally:
+            _building_graphs.discard(cls)
 
     @classmethod
     def inspect(cls) -> LogicalGraph:
@@ -298,37 +322,55 @@ def _annotation_contract(cls: type[Any], name: str) -> type[Any] | None:
 
 
 def _collect_pipeline_members(cls: type[Pipeline]) -> dict[str, Any]:
-    """Collect Source/Step/Sink/Subpipeline members in declaration order."""
-    order = list(getattr(cls, "__member_order__", []))
-    members: dict[str, Any] = {}
-
-    names = order or [
-        k
-        for k, v in cls.__dict__.items()
-        if not k.startswith("_")
-        and isinstance(v, (Source, Sink, Step, SubpipelineInstance))
+    """Collect Source/Step/Sink/Subpipeline members across the class MRO."""
+    member_types = (Source, Sink, Step, SubpipelineInstance)
+    # Bases first (excluding Pipeline/object), then the concrete class last so
+    # subclass attributes override inherited ones by name.
+    bases = [
+        base
+        for base in reversed(cls.__mro__)
+        if base is not object and base is not Pipeline and issubclass(base, Pipeline)
     ]
 
-    seen: set[str] = set()
     ordered_names: list[str] = []
-    for name in names:
-        if name not in seen and name in cls.__dict__:
-            seen.add(name)
-            ordered_names.append(name)
-    for name, value in cls.__dict__.items():
-        if (
-            name not in seen
-            and not name.startswith("_")
-            and isinstance(value, (Source, Sink, Step, SubpipelineInstance))
-        ):
-            seen.add(name)
-            ordered_names.append(name)
+    raw_values: dict[str, Any] = {}
+    for base in bases:
+        order = list(getattr(base, "__member_order__", []))
+        names = order or [
+            k
+            for k, v in base.__dict__.items()
+            if not k.startswith("_") and isinstance(v, member_types)
+        ]
+        for name in names:
+            if name not in base.__dict__:
+                continue
+            value = base.__dict__[name]
+            if not isinstance(value, member_types):
+                continue
+            if name not in raw_values:
+                ordered_names.append(name)
+            else:
+                # Keep declaration order from first appearance; value updates.
+                pass
+            raw_values[name] = value
+        for name, value in base.__dict__.items():
+            if (
+                name not in raw_values
+                and not name.startswith("_")
+                and isinstance(value, member_types)
+            ):
+                ordered_names.append(name)
+                raw_values[name] = value
+            elif name in base.__dict__ and isinstance(value, member_types):
+                raw_values[name] = value
 
     pid = pipeline_id(cls)
+    members: dict[str, Any] = {}
     for name in ordered_names:
-        value = cls.__dict__[name]
+        value = raw_values[name]
+        owner = _member_owner(cls, name)
         if isinstance(value, Source):
-            contract = value.contract_type or _annotation_contract(cls, name)
+            contract = value.contract_type or _annotation_contract(owner or cls, name)
             members[name] = Source(
                 binding=value.binding,
                 contract_type=contract,
@@ -337,7 +379,7 @@ def _collect_pipeline_members(cls: type[Pipeline]) -> dict[str, Any]:
                 producer_key=value.producer_key,
             )
         elif isinstance(value, Sink):
-            contract = value.contract_type or _annotation_contract(cls, name)
+            contract = value.contract_type or _annotation_contract(owner or cls, name)
             members[name] = Sink(
                 input=value.input,
                 binding=value.binding,
@@ -350,6 +392,14 @@ def _collect_pipeline_members(cls: type[Pipeline]) -> dict[str, Any]:
 
     cls.__member_order__ = list(members.keys())
     return members
+
+
+def _member_owner(cls: type[Pipeline], name: str) -> type[Any] | None:
+    """Return the class in the MRO that defines ``name``."""
+    for base in cls.__mro__:
+        if name in getattr(base, "__dict__", {}):
+            return base
+    return None
 
 
 def _build_logical_graph(cls: type[Pipeline]) -> LogicalGraph:
@@ -533,7 +583,11 @@ def _build_logical_graph(cls: type[Pipeline]) -> LogicalGraph:
                     )
                 )
         elif isinstance(member, SubpipelineInstance):
+            public_inputs = {p.name for p in node_by_name[name].inputs}
             for port_name, raw in member.bindings.items():
+                if port_name not in public_inputs:
+                    # Unknown kwargs must not create phantom edges.
+                    continue
                 producer = _resolve_binding_ref(
                     raw, members=members, pipeline_cls=cls, port_hint=port_name
                 )
@@ -574,7 +628,10 @@ def _resolve_binding_ref(
     pipeline_cls: type[Pipeline],
     port_hint: str,
 ) -> OutputRef[Any] | None:
-    """Resolve a step/sink/subpipeline binding to a concrete OutputRef."""
+    """Resolve a step/sink/subpipeline binding to a concrete OutputRef.
+
+    Fail closed: ambiguous or unmatched references return ``None``.
+    """
     pid = pipeline_id(pipeline_cls)
 
     if isinstance(value, OutputRef) and value.node_name:
@@ -596,7 +653,6 @@ def _resolve_binding_ref(
             ):
                 if value.port_name in member._outputs:
                     return member._outputs[value.port_name]
-                # Rebuild from nested sinks if outputs not yet populated
                 for node in member.pipeline_cls.build_graph().nodes:
                     if (
                         node.kind is NodeKind.SINK
@@ -611,29 +667,33 @@ def _resolve_binding_ref(
                             node_kind="subpipeline",
                             producer_key=member.producer_key,
                         )
+        # Stale producer_key must not fall through to fuzzy matching.
+        return None
+
     if isinstance(value, Source):
-        for member in members.values():
-            if not isinstance(member, Source):
-                continue
-            if value.name and member.name == value.name:
-                return member.as_output_ref()
-        for member in members.values():
-            if (
-                isinstance(member, Source)
-                and member.binding == value.binding
-                and (
-                    value.contract_type is None
-                    or member.contract_type is value.contract_type
-                )
-            ):
-                return member.as_output_ref()
-        return value.as_output_ref()
+        if value.name:
+            for member in members.values():
+                if isinstance(member, Source) and member.name == value.name:
+                    return member.as_output_ref()
+        matches = [
+            member.as_output_ref()
+            for member in members.values()
+            if isinstance(member, Source)
+            and member.binding == value.binding
+            and (
+                value.contract_type is None
+                or member.contract_type is value.contract_type
+            )
+        ]
+        if len(matches) == 1:
+            return matches[0]
+        return None
 
     if isinstance(value, Step):
         for member in members.values():
             if isinstance(member, Step) and member.producer_key == value.producer_key:
                 return member.as_output_ref()
-        return value.as_output_ref()
+        return None
 
     if isinstance(value, OutputRef):
         matches: list[OutputRef[Any]] = []
@@ -651,9 +711,12 @@ def _resolve_binding_ref(
                     or member.contract_type is value.contract_type
                 ):
                     matches.append(member.as_output_ref())
+            elif (
+                isinstance(member, SubpipelineInstance)
+                and value.port_name in member._outputs
+            ):
+                matches.append(member._outputs[value.port_name])
         if len(matches) == 1:
-            return matches[0]
-        if matches:
             return matches[0]
         return None
 

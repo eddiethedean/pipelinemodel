@@ -43,7 +43,15 @@ jobs:
       - name: Smoke test wheel
         run: |
           TAG="${GITHUB_REF_NAME#v}"
-          uv run --isolated --no-project --with dist/*.whl \
+          shopt -s nullglob
+          wheels=(dist/*.whl)
+          if [ "${#wheels[@]}" -ne 1 ]; then
+            echo "Expected exactly one wheel in dist/, found ${#wheels[@]}"
+            ls -la dist/ || true
+            exit 1
+          fi
+          WHEEL="${wheels[0]}"
+          uv run --isolated --no-project --with "$WHEEL" \
             python -c "import pipelinemodel; assert pipelinemodel.__version__ == '$TAG'"
 
       - name: Publish to PyPI

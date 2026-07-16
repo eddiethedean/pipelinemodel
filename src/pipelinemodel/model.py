@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from enum import StrEnum
+from types import MappingProxyType
 from typing import Any
 
 
@@ -69,7 +71,7 @@ class Node:
     # For subpipelines: nested graph identity and public port names
     nested_pipeline_id: str | None = None
     nested_graph: LogicalGraph | None = None
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
 
 
 @dataclass(frozen=True, slots=True)
@@ -80,7 +82,7 @@ class LogicalGraph:
     pipeline_name: str
     nodes: tuple[Node, ...] = ()
     edges: tuple[Edge, ...] = ()
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
 
     def node_map(self) -> dict[str, Node]:
         """Return nodes keyed by name in declaration order."""

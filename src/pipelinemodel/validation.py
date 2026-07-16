@@ -19,6 +19,16 @@ def validate_pipeline(pipeline_cls: type[Pipeline]) -> ValidationReport:
     diagnostics: list[Diagnostic] = []
     diagnostics.extend(_validate_member_definitions(pipeline_cls))
     graph = pipeline_cls.build_graph()
+    build_error = getattr(pipeline_cls, "_graph_build_error", None)
+    if build_error:
+        diagnostics.append(
+            Diagnostic(
+                code="PMPIPE302",
+                severity=Severity.ERROR,
+                message=build_error,
+                path=("pipeline",),
+            )
+        )
     diagnostics.extend(_validate_graph(graph, pipeline_cls))
     diagnostics.extend(_validate_port_compatibility(graph, pipeline_cls))
     return ValidationReport.from_diagnostics(diagnostics)
@@ -214,8 +224,25 @@ def _validate_graph(
                 )
             )
         if isinstance(member, SubpipelineInstance):
+            node = graph.node_map().get(name)
+            public_inputs = {p.name for p in node.inputs} if node else set()
             for port_name in member.bindings:
-                if (name, port_name) not in edge_keys:
+                if port_name not in public_inputs:
+                    diagnostics.append(
+                        Diagnostic(
+                            code="PMPIPE201",
+                            severity=Severity.ERROR,
+                            message=(
+                                f'Unknown subpipeline input "{port_name}" on "{name}".'
+                            ),
+                            path=("pipeline", name, port_name),
+                            help=(
+                                "Bind only public source ports exposed by the "
+                                "child pipeline."
+                            ),
+                        )
+                    )
+                elif (name, port_name) not in edge_keys:
                     diagnostics.append(
                         Diagnostic(
                             code="PMPIPE201",
@@ -289,7 +316,33 @@ def _validate_port_compatibility(
         consumer_port = next(
             (p for p in consumer.inputs if p.name == edge.consumer_port), None
         )
-        if producer_port is None or consumer_port is None:
+        if producer_port is None:
+            diagnostics.append(
+                Diagnostic(
+                    code="PMPIPE201",
+                    severity=Severity.ERROR,
+                    message=(
+                        f'Unknown producer port "{edge.producer_port}" on '
+                        f'"{edge.producer_node}" wired to '
+                        f'"{edge.consumer_node}.{edge.consumer_port}".'
+                    ),
+                    path=("pipeline", edge.consumer_node, edge.consumer_port),
+                    related=(("pipeline", edge.producer_node, edge.producer_port),),
+                )
+            )
+            continue
+        if consumer_port is None:
+            diagnostics.append(
+                Diagnostic(
+                    code="PMPIPE201",
+                    severity=Severity.ERROR,
+                    message=(
+                        f'Unknown consumer port "{edge.consumer_port}" on '
+                        f'"{edge.consumer_node}".'
+                    ),
+                    path=("pipeline", edge.consumer_node, edge.consumer_port),
+                )
+            )
             continue
 
         prod_type = producer_port.contract_type

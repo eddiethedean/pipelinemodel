@@ -33,3 +33,35 @@ jobs:
 
       - name: Pytest
         run: uv run pytest -q
+
+  package:
+    name: Build and test wheel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.11"
+          enable-cache: true
+
+      - name: Sync dependencies
+        run: uv sync --locked
+
+      - name: Build
+        run: uv build
+
+      - name: Pytest against installed wheel
+        run: |
+          shopt -s nullglob
+          wheels=(dist/*.whl)
+          if [ "${#wheels[@]}" -ne 1 ]; then
+            echo "Expected exactly one wheel in dist/, found ${#wheels[@]}"
+            ls -la dist/ || true
+            exit 1
+          fi
+          WHEEL="${wheels[0]}"
+          echo "Testing wheel: $WHEEL"
+          uv run --isolated --no-project --with "$WHEEL" --with pytest \
+            python -m pytest -q
