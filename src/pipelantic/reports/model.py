@@ -192,6 +192,7 @@ class PipelineRunReport:
     recommendations: tuple[RunRecommendation, ...] = ()
     backend_runs: tuple[BackendRunReference, ...] = ()
     schema_observations: tuple[SchemaObservationResult, ...] = ()
+    lineage: tuple[dict[str, str], ...] = ()
     plan_fingerprint: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
     schema: str = REPORT_SCHEMA
@@ -224,6 +225,7 @@ class PipelineRunReport:
             "recommendations": [r.to_dict() for r in self.recommendations],
             "backend_runs": [b.to_dict() for b in self.backend_runs],
             "schema_observations": [o.to_dict() for o in self.schema_observations],
+            "lineage": [dict(edge) for edge in self.lineage],
             "plan_fingerprint": self.plan_fingerprint,
             "metadata": dict(self.metadata),
         }

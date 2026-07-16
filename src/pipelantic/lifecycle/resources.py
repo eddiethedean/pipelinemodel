@@ -7,6 +7,8 @@ from contextlib import AbstractAsyncContextManager, asynccontextmanager
 from dataclasses import dataclass, field
 from typing import Any, TypeVar
 
+import anyio
+
 T = TypeVar("T")
 
 
@@ -32,6 +34,7 @@ class ResourceManager:
 
     providers: dict[str, Callable[..., Any]] = field(default_factory=dict)
     _cache: dict[tuple[str, str], _CachedResource] = field(default_factory=dict)
+    _lock: anyio.Lock = field(default_factory=anyio.Lock)
 
     def override(self, name: str, provider: Callable[..., Any]) -> None:
         self.providers[name] = provider
@@ -47,36 +50,38 @@ class ResourceManager:
         from pipelantic.runtime.invoke import maybe_await
 
         cache_key = (name, f"{scope}:{scope_key}")
-        if cache_key in self._cache:
-            return self._cache[cache_key].value
-        provider = self.providers.get(name)
-        if provider is None:
-            raise KeyError(f"No resource provider registered for {name!r}")
-        value = await maybe_await(provider, context or {})
-        cleanup: Callable[[], Any] | None = None
-        if hasattr(value, "__aenter__") and hasattr(value, "__aexit__"):
-            cm: AbstractAsyncContextManager[Any] = value
-            value = await cm.__aenter__()
+        async with self._lock:
+            if cache_key in self._cache:
+                return self._cache[cache_key].value
+            provider = self.providers.get(name)
+            if provider is None:
+                raise KeyError(f"No resource provider registered for {name!r}")
+            value = await maybe_await(provider, context or {})
+            cleanup: Callable[[], Any] | None = None
+            if hasattr(value, "__aenter__") and hasattr(value, "__aexit__"):
+                cm: AbstractAsyncContextManager[Any] = value
+                value = await cm.__aenter__()
 
-            async def _cleanup() -> None:
-                await cm.__aexit__(None, None, None)
+                async def _cleanup() -> None:
+                    await cm.__aexit__(None, None, None)
 
-            cleanup = _cleanup
-        self._cache[cache_key] = _CachedResource(
-            value=value, cleanup=cleanup, scope=scope, scope_key=scope_key
-        )
-        return value
+                cleanup = _cleanup
+            self._cache[cache_key] = _CachedResource(
+                value=value, cleanup=cleanup, scope=scope, scope_key=scope_key
+            )
+            return value
 
     async def cleanup_scope(self, scope: str, scope_key: str = "") -> None:
         from pipelantic.runtime.invoke import maybe_await
 
-        keys = [
-            key
-            for key, entry in self._cache.items()
-            if entry.scope == scope and entry.scope_key == scope_key
-        ]
-        for key in keys:
-            entry = self._cache.pop(key)
+        async with self._lock:
+            keys = [
+                key
+                for key, entry in self._cache.items()
+                if entry.scope == scope and entry.scope_key == scope_key
+            ]
+            entries = [self._cache.pop(key) for key in keys]
+        for entry in entries:
             if entry.cleanup is not None:
                 await maybe_await(entry.cleanup)
 

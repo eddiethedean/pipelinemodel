@@ -247,6 +247,8 @@ def run_cmd(
     no_write: bool = typer.Option(False, "--no-write"),
 ) -> None:
     """Execute a pipeline locally and emit a run report."""
+    from pipelantic.exceptions import PipelineExecutionError
+
     pipeline_cls = _load_target(target)
     if run_one and run_until:
         raise typer.BadParameter("Use only one of --run-one or --run-until.")
@@ -260,7 +262,22 @@ def run_cmd(
         intent=RunIntent(intent),
         no_write=no_write,
     )
-    report = pipeline_cls.run(profile=profile, request=request, runtime=_CLI_RUNTIME)
+    try:
+        report = pipeline_cls.run(
+            profile=profile, request=request, runtime=_CLI_RUNTIME
+        )
+    except PipelineExecutionError as exc:
+        report = getattr(exc, "report", None)
+        if report is not None:
+            if fmt == "json":
+                typer.echo(report.to_json())
+            elif fmt == "html":
+                typer.echo(report.to_html())
+            else:
+                typer.echo(report.to_text())
+        else:
+            typer.echo(str(exc), err=True)
+        raise typer.Exit(1) from exc
     if fmt == "json":
         typer.echo(report.to_json())
     elif fmt == "html":

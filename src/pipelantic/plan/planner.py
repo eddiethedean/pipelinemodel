@@ -553,7 +553,7 @@ def _resolve_bindings(
         if node.binding in context.registry.bindings:
             resolved[node.name] = context.registry.bindings[node.binding]
             continue
-        provider = context.profile.bindings.get(node.binding, "local")
+        provider = context.profile.bindings.get(node.binding, "memory")
         secret = context.profile.secrets.get(node.binding)
         resolved[node.name] = BindingDescriptor(
             binding=node.binding,

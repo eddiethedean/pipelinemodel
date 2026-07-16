@@ -7,7 +7,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Annotated, Any, get_args, get_origin
 
 import anyio
 
@@ -18,12 +18,24 @@ from pipelantic.exceptions import (
     PipelineTimeoutError,
 )
 from pipelantic.lifecycle.callbacks import FailureAction, StepFailureContext
+from pipelantic.lifecycle.outbound import Emit
+from pipelantic.lifecycle.resources import Inject
 from pipelantic.lifecycle.runtime import PipelineRuntime
 from pipelantic.model import LogicalGraph, Node, NodeKind
 from pipelantic.plan.artifacts import ArtifactRef, ArtifactStrategy, artifact_identity
 from pipelantic.plan.model import PipelinePlan
-from pipelantic.registry import ImplementationDescriptor
-from pipelantic.reliability_runtime import write_mode_for_request
+from pipelantic.registry import BindingDescriptor, ImplementationDescriptor
+from pipelantic.reliability import (
+    FreshnessExpectation,
+    PartitionCompletenessExpectation,
+    RetrySafetyDeclaration,
+)
+from pipelantic.reliability_runtime import (
+    assert_retry_safe,
+    check_freshness,
+    check_partition_completeness,
+    write_mode_for_request,
+)
 from pipelantic.reports.model import (
     ArtifactResult,
     PipelineRunReport,
@@ -34,23 +46,83 @@ from pipelantic.reports.model import (
     ValidationResult,
 )
 from pipelantic.runtime.artifacts import ArtifactStore
+from pipelantic.runtime.context import AttemptContext, RunContext, StepContext
 from pipelantic.runtime.events import LifecycleEvent, SecurityEvent
 from pipelantic.runtime.invoke import maybe_await
-from pipelantic.runtime.logging import RunLogger
-from pipelantic.runtime.request import RunRequest
+from pipelantic.runtime.logging import RunLogger, redact_message
+from pipelantic.runtime.request import MaterializationPolicy, RunRequest
 from pipelantic.runtime.state import FailureStage, RunStatus, StepStatus
-from pipelantic.schema_drift import normalize_schema_from_model
+from pipelantic.schema_drift import (
+    SchemaObservation,
+    normalize_schema_from_fields,
+    normalize_schema_from_model,
+)
 from pipelantic.schema_policy import (
     DriftAction,
     InMemorySchemaHistory,
     SchemaDriftPolicy,
     evaluate_drift,
-    observe_model_schema,
 )
 from pipelantic.secrets.provider import SecretResolutionContext
 from pipelantic.secrets.ref import SecretRef
 from pipelantic.storage.protocol import as_records
 from pipelantic.transformation import ImplementationRecord, Transformation
+
+
+def _all_subclasses(cls: type[Any]) -> list[type[Any]]:
+    found: list[type[Any]] = []
+    for sub in cls.__subclasses__():
+        found.append(sub)
+        found.extend(_all_subclasses(sub))
+    return found
+
+
+def _logical_type_of(value: Any) -> str:
+    if value is None:
+        return "null"
+    if isinstance(value, bool):
+        return "boolean"
+    if isinstance(value, int):
+        return "integer"
+    if isinstance(value, float):
+        return "number"
+    if isinstance(value, str):
+        return "string"
+    if isinstance(value, dict):
+        return "object"
+    if isinstance(value, (list, tuple)):
+        return "array"
+    return type(value).__name__
+
+
+def _observe_records_schema(
+    subject_id: str, data: Any, *, layer: str
+) -> SchemaObservation | None:
+    records = as_records(data, None)
+    if not records:
+        return SchemaObservation(
+            subject_id=subject_id,
+            schema=normalize_schema_from_fields([], identity=f"observed:{subject_id}"),
+            inspector=layer,
+            metadata={"layer": layer},
+        )
+    sample = records[0]
+    if hasattr(sample, "model_dump"):
+        mapping = sample.model_dump()
+    elif isinstance(sample, dict):
+        mapping = sample
+    else:
+        mapping = {"value": sample}
+    fields = [
+        {"name": key, "logical_type": _logical_type_of(val), "required": True}
+        for key, val in mapping.items()
+    ]
+    return SchemaObservation(
+        subject_id=subject_id,
+        schema=normalize_schema_from_fields(fields, identity=f"observed:{subject_id}"),
+        inspector=layer,
+        metadata={"layer": layer},
+    )
 
 
 @dataclass
@@ -76,13 +148,19 @@ class LocalOrchestrator:
     request: RunRequest
     pipeline_cls: type[Any] | None = None
     workspace: Path | None = None
+    artifacts: ArtifactStore | None = None
     drift_policy: SchemaDriftPolicy = field(default_factory=SchemaDriftPolicy)
     schema_history: InMemorySchemaHistory = field(default_factory=InMemorySchemaHistory)
     transform_lookup: dict[str, type[Transformation]] = field(default_factory=dict)
+    outbound_events: list[dict[str, Any]] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         if self.pipeline_cls is not None:
             self._index_transformations(self.pipeline_cls)
+        if self.artifacts is None:
+            self.artifacts = ArtifactStore(workspace=self.workspace)
+        elif self.workspace is not None and self.artifacts.workspace is None:
+            self.artifacts.workspace = self.workspace
 
     def _index_transformations(self, pipeline_cls: type[Any]) -> None:
         members = getattr(pipeline_cls, "__pipeline_members__", {})
@@ -91,11 +169,23 @@ class LocalOrchestrator:
             if xf is not None:
                 self.transform_lookup[xf.identity()] = xf
 
+    def _strategy_for(self, node_name: str, port_name: str) -> ArtifactStrategy:
+        if self.request.materialization is MaterializationPolicy.NONE:
+            return ArtifactStrategy.IN_MEMORY
+        if self.request.materialization is MaterializationPolicy.DURABLE:
+            return ArtifactStrategy.DURABLE
+        for resolution in self.plan.output_resolutions:
+            if resolution.node_name == node_name and resolution.port_name == port_name:
+                return resolution.artifact.strategy
+        return ArtifactStrategy.IN_MEMORY
+
     async def execute(self) -> PipelineRunReport:
+        from pipelantic.lifecycle.lifespan import run_lifespan
+
         run_id = f"run-{uuid.uuid4().hex[:12]}"
         started = datetime.now(UTC)
         logger = RunLogger(run_id=run_id, pipeline_id=self.plan.pipeline_id)
-        artifacts = ArtifactStore(workspace=self.workspace)
+        artifacts = self.artifacts or ArtifactStore(workspace=self.workspace)
         graph = self.plan.logical_graph
         nodes = {n.name: _NodeState(node=n) for n in graph.nodes}
         producers = self._producers(graph)
@@ -106,6 +196,13 @@ class LocalOrchestrator:
         schema_obs: list[SchemaObservationResult] = []
         cancelled = False
         status = RunStatus.RUNNING
+        run_context = RunContext(
+            run_id=run_id,
+            pipeline_id=self.plan.pipeline_id,
+            plan_id=self.plan.plan_id,
+            profile=self.plan.profile_name,
+            intent=self.request.intent.value,
+        )
 
         self.runtime.events.emit(
             LifecycleEvent(
@@ -154,11 +251,14 @@ class LocalOrchestrator:
                             diagnostics=diagnostics,
                             schema_obs=schema_obs,
                             logger=logger,
+                            run_context=run_context,
                         )
                         if nodes[n].status is StepStatus.SUCCEEDED:
                             completed.add(n)
                         else:
-                            failed.add(n)
+                            hard_fail = nodes[n].status is not StepStatus.SKIPPED
+                            if hard_fail:
+                                failed.add(n)
                             stack = list(consumers.get(n, ()))
                             seen: set[str] = set()
                             while stack:
@@ -169,8 +269,12 @@ class LocalOrchestrator:
                                 if child in pending:
                                     pending.discard(child)
                                     nodes[child].status = StepStatus.ABANDONED
-                                    failed.add(child)
+                                    if hard_fail:
+                                        failed.add(child)
                                 stack.extend(consumers.get(child, ()))
+                            if not hard_fail:
+                                # Soft-skip: stop the wave without marking the run failed.
+                                pending.clear()
 
                 async with anyio.create_task_group() as wave:
                     for name in ready:
@@ -179,26 +283,24 @@ class LocalOrchestrator:
                 if failed:
                     break
 
+        cancel_exc = anyio.get_cancelled_exc_class()
         try:
-            timeout = self.request.timeout.run_seconds
-            if timeout is not None:
-                with anyio.fail_after(timeout):
-                    await self.runtime.run_middleware.run(
-                        {"run_id": run_id, "plan": self.plan},
-                        run_body,
-                    )
-            else:
-                await self.runtime.run_middleware.run(
-                    {"run_id": run_id, "plan": self.plan},
-                    run_body,
-                )
+            async with run_lifespan(self.runtime, run_id):
+                timeout = self.request.timeout.run_seconds
+                if timeout is not None:
+                    with anyio.fail_after(timeout):
+                        await self.runtime.run_middleware.run(run_context, run_body)
+                else:
+                    await self.runtime.run_middleware.run(run_context, run_body)
         except TimeoutError as exc:
             status = RunStatus.TIMED_OUT
             diagnostics.append(
                 RunDiagnostic(
                     code="PMEXEC408",
                     severity="error",
-                    message=f"Run timed out after {self.request.timeout.run_seconds}s",
+                    message=redact_message(
+                        f"Run timed out after {self.request.timeout.run_seconds}s"
+                    ),
                 )
             )
             report = self._build_report(
@@ -213,38 +315,38 @@ class LocalOrchestrator:
             )
             self.runtime.reports.put(report)
             raise PipelineTimeoutError(
-                str(exc), run_id=run_id, report=report, code="PMEXEC408"
+                redact_message(str(exc)),
+                run_id=run_id,
+                report=report,
+                code="PMEXEC408",
             ) from exc
+        except cancel_exc as exc:
+            cancelled = True
+            status = RunStatus.CANCELLED
+            report = self._build_report(
+                run_id=run_id,
+                started=started,
+                nodes=nodes,
+                validations=validations,
+                diagnostics=diagnostics,
+                schema_obs=schema_obs,
+                artifacts=artifacts,
+                status=status,
+            )
+            self.runtime.reports.put(report)
+            raise PipelineCancelledError(
+                "Run cancelled", run_id=run_id, report=report, code="PMEXEC409"
+            ) from exc
+        except PipelineExecutionError:
+            status = RunStatus.FAILED
+            raise
         except Exception as exc:
-            if (
-                type(exc).__name__ in {"CancelledError"}
-                or "cancel" in type(exc).__name__.lower()
-            ):
-                cancelled = True
-                status = RunStatus.CANCELLED
-                report = self._build_report(
-                    run_id=run_id,
-                    started=started,
-                    nodes=nodes,
-                    validations=validations,
-                    diagnostics=diagnostics,
-                    schema_obs=schema_obs,
-                    artifacts=artifacts,
-                    status=status,
-                )
-                self.runtime.reports.put(report)
-                raise PipelineCancelledError(
-                    "Run cancelled", run_id=run_id, report=report, code="PMEXEC409"
-                ) from exc
-            if isinstance(exc, PipelineExecutionError):
-                status = RunStatus.FAILED
-                raise
             status = RunStatus.FAILED
             diagnostics.append(
                 RunDiagnostic(
                     code="PMEXEC500",
                     severity="error",
-                    message=str(exc),
+                    message=redact_message(str(exc)),
                 )
             )
             report = self._build_report(
@@ -259,7 +361,10 @@ class LocalOrchestrator:
             )
             self.runtime.reports.put(report)
             raise PipelineExecutionError(
-                str(exc), run_id=run_id, report=report, code="PMEXEC500"
+                redact_message(str(exc)),
+                run_id=run_id,
+                report=report,
+                code="PMEXEC500",
             ) from exc
         finally:
             await self.runtime.resources.cleanup_scope("run", run_id)
@@ -313,8 +418,19 @@ class LocalOrchestrator:
             diagnostics=tuple(diagnostics),
             schema_observations=tuple(schema_obs),
             plan_fingerprint=self.plan.fingerprint,
+            lineage=tuple(
+                {
+                    "from": f"{e.producer_node}.{e.producer_port}",
+                    "to": f"{e.consumer_node}.{e.consumer_port}",
+                }
+                for e in graph.edges
+                if e.producer_node in selected and e.consumer_node in selected
+            ),
             backend_runs=(),
-            metadata={"orchestrator": "local"},
+            metadata={
+                "orchestrator": "local",
+                "outbound_events": list(self.outbound_events),
+            },
         )
         self.runtime.reports.put(report)
         event_kind = "run_completed" if status is RunStatus.SUCCEEDED else "run_failed"
@@ -342,6 +458,7 @@ class LocalOrchestrator:
         status: RunStatus,
     ) -> PipelineRunReport:
         ended = datetime.now(UTC)
+        selected = set(self.plan.selected_nodes or [n.name for n in nodes])
         return PipelineRunReport(
             pipeline_id=self.plan.pipeline_id,
             plan_id=self.plan.plan_id,
@@ -366,7 +483,18 @@ class LocalOrchestrator:
             diagnostics=tuple(diagnostics),
             schema_observations=tuple(schema_obs),
             plan_fingerprint=self.plan.fingerprint,
-            metadata={"orchestrator": "local"},
+            lineage=tuple(
+                {
+                    "from": f"{e.producer_node}.{e.producer_port}",
+                    "to": f"{e.consumer_node}.{e.consumer_port}",
+                }
+                for e in self.plan.logical_graph.edges
+                if e.producer_node in selected and e.consumer_node in selected
+            ),
+            metadata={
+                "orchestrator": "local",
+                "outbound_events": list(self.outbound_events),
+            },
         )
 
     def _step_report(self, state: _NodeState) -> StepRunReport:
@@ -382,7 +510,7 @@ class LocalOrchestrator:
             ended_at=state.ended_at,
             duration_seconds=duration,
             failure_stage=state.stage,
-            error_message=state.error,
+            error_message=redact_message(state.error) if state.error else None,
             records_in=state.records_in,
             records_out=state.records_out,
             implementation=state.implementation,
@@ -412,15 +540,24 @@ class LocalOrchestrator:
         diagnostics: list[RunDiagnostic],
         schema_obs: list[SchemaObservationResult],
         logger: RunLogger,
+        run_context: RunContext,
     ) -> None:
         max_attempts = max(1, self.request.retry.max_attempts)
         last_error: BaseException | None = None
+        retry_decl = self._retry_safety_for(name)
 
         for attempt in range(1, max_attempts + 1):
             state.attempts = attempt
             state.status = StepStatus.RUNNING if attempt == 1 else StepStatus.RETRYING
             state.started_at = state.started_at or datetime.now(UTC)
             current_attempt = attempt
+            step_context = StepContext(
+                run=run_context,
+                step_name=name,
+                node_kind=state.node.kind.value,
+                attempt=current_attempt,
+            )
+            bound_step_context = step_context
             self.runtime.events.emit(
                 LifecycleEvent(
                     kind="step_started",
@@ -433,7 +570,10 @@ class LocalOrchestrator:
             )
             try:
 
-                async def terminal(attempt_no: int = current_attempt) -> None:
+                async def terminal(
+                    attempt_no: int = current_attempt,
+                    ctx: StepContext = bound_step_context,
+                ) -> None:
                     await self._run_node_once(
                         state=state,
                         run_id=run_id,
@@ -442,19 +582,21 @@ class LocalOrchestrator:
                         validations=validations,
                         schema_obs=schema_obs,
                         attempt=attempt_no,
+                        step_context=ctx,
                     )
 
                 step_timeout = self.request.timeout.step_seconds
-                if step_timeout is not None:
-                    with anyio.fail_after(step_timeout):
-                        await self.runtime.step_middleware.run(
-                            {"step": name, "attempt": attempt},
-                            terminal,
-                        )
-                else:
-                    await self.runtime.step_middleware.run(
-                        {"step": name, "attempt": attempt},
-                        terminal,
+                try:
+                    if step_timeout is not None:
+                        with anyio.fail_after(step_timeout):
+                            await self.runtime.step_middleware.run(
+                                step_context, terminal
+                            )
+                    else:
+                        await self.runtime.step_middleware.run(step_context, terminal)
+                finally:
+                    await self.runtime.resources.cleanup_scope(
+                        "attempt", f"{name}:{current_attempt}"
                     )
                 state.status = StepStatus.SUCCEEDED
                 state.ended_at = datetime.now(UTC)
@@ -472,7 +614,7 @@ class LocalOrchestrator:
             except TimeoutError as exc:
                 state.status = StepStatus.TIMED_OUT
                 state.stage = FailureStage.ORCHESTRATOR.value
-                state.error = str(exc)
+                state.error = redact_message(str(exc))
                 state.ended_at = datetime.now(UTC)
                 last_error = exc
                 break
@@ -481,7 +623,7 @@ class LocalOrchestrator:
                 state.stage = (
                     getattr(exc, "stage", None) or FailureStage.TRANSFORM.value
                 )
-                state.error = str(exc)
+                state.error = redact_message(str(exc))
                 results = await self.runtime.callbacks.emit(
                     "step_failed",
                     StepFailureContext(
@@ -497,11 +639,37 @@ class LocalOrchestrator:
                 for result in results:
                     if isinstance(result, FailureAction):
                         action = result
-                if action is FailureAction.RETRY and attempt < max_attempts:
+
+                can_retry = attempt < max_attempts and (
+                    action is FailureAction.RETRY
+                    or (action is FailureAction.FAIL and self._should_retry(exc))
+                )
+                if can_retry and (
+                    action is FailureAction.RETRY or self._should_retry(exc)
+                ):
+                    assert_retry_safe(
+                        retry_decl,
+                        attempt=attempt + 1,
+                        step_name=name,
+                        run_id=run_id,
+                    )
+                    backoff = self.request.retry.backoff_seconds * attempt
+                    if backoff > 0:
+                        await anyio.sleep(backoff)
                     continue
-                if action is FailureAction.SKIP:
+                if action is FailureAction.SKIP or action is FailureAction.CONTINUE:
                     state.status = StepStatus.SKIPPED
                     state.ended_at = datetime.now(UTC)
+                    diagnostics.append(
+                        RunDiagnostic(
+                            code="PMEXEC301",
+                            severity="warning",
+                            message=redact_message(
+                                f"Step {name} continued/skipped after failure: {exc}"
+                            ),
+                            node_name=name,
+                        )
+                    )
                     return
                 state.status = StepStatus.FAILED
                 state.ended_at = datetime.now(UTC)
@@ -509,7 +677,7 @@ class LocalOrchestrator:
                     RunDiagnostic(
                         code="PMEXEC300",
                         severity="error",
-                        message=str(exc),
+                        message=redact_message(str(exc)),
                         node_name=name,
                     )
                 )
@@ -521,7 +689,7 @@ class LocalOrchestrator:
                         step_name=name,
                         attempt=attempt,
                         status=state.status.value,
-                        message=str(exc),
+                        message=redact_message(str(exc)),
                     )
                 )
                 logger.log(
@@ -529,7 +697,7 @@ class LocalOrchestrator:
                     f"Step {name} failed",
                     step_name=name,
                     attempt=attempt,
-                    error=str(exc),
+                    error=redact_message(str(exc)),
                 )
                 return
 
@@ -541,6 +709,24 @@ class LocalOrchestrator:
             )
             state.ended_at = datetime.now(UTC)
 
+    def _should_retry(self, exc: BaseException) -> bool:
+        retry_on = self.request.retry.retry_on
+        if not retry_on:
+            return self.request.retry.max_attempts > 1
+        return type(exc).__name__ in retry_on
+
+    def _retry_safety_for(self, step_name: str) -> RetrySafetyDeclaration | None:
+        raw = (self.request.metadata.get("retry_safety") or {}).get(step_name)
+        if isinstance(raw, RetrySafetyDeclaration):
+            return raw
+        if isinstance(raw, dict):
+            return RetrySafetyDeclaration(
+                subject_id=str(raw.get("subject_id") or step_name),
+                safe=bool(raw.get("safe", True)),
+                max_attempts=raw.get("max_attempts"),
+            )
+        return None
+
     async def _run_node_once(
         self,
         *,
@@ -551,14 +737,16 @@ class LocalOrchestrator:
         validations: list[ValidationResult],
         schema_obs: list[SchemaObservationResult],
         attempt: int,
+        step_context: StepContext,
     ) -> None:
         node = state.node
         if node.kind is NodeKind.SOURCE:
             data = await self._read_source(node, run_id=run_id)
+            await self._observe_schema(node, data, schema_obs=schema_obs)
+            await self._check_source_reliability(node, data, run_id=run_id)
             data = await self._validate_boundary(
                 node, data, boundary="source", validations=validations
             )
-            await self._observe_schema(node, data, schema_obs=schema_obs)
             self._store_outputs(node, data, artifacts)
             state.records_out = _count(data)
             return
@@ -577,6 +765,16 @@ class LocalOrchestrator:
             await self._write_sink(node, payload, run_id=run_id)
             state.records_in = _count(payload)
             state.records_out = _count(payload)
+            self.runtime.events.emit(
+                LifecycleEvent(
+                    kind="publication",
+                    run_id=run_id,
+                    pipeline_id=self.plan.pipeline_id,
+                    step_name=node.name,
+                    attempt=attempt,
+                    status="succeeded",
+                )
+            )
             return
 
         if node.kind is NodeKind.STEP:
@@ -592,8 +790,35 @@ class LocalOrchestrator:
             state.records_in = sum(_count(v) for v in inputs.values())
             params = self._parameters_for(node)
             impl = self._resolve_implementation(node)
-            state.implementation = impl.identity if impl else None
-            result = await self._invoke_transform(impl, inputs, params, node=node)
+            state.implementation = impl.identity
+            result = await self._invoke_transform(
+                impl,
+                inputs,
+                params,
+                node=node,
+                step_context=step_context,
+                attempt=attempt,
+            )
+            result, emits = self._split_emits(result)
+            for emit in emits:
+                self.outbound_events.append(
+                    {
+                        "event": emit.event,
+                        "payload": emit.payload
+                        if not hasattr(emit.payload, "model_dump")
+                        else emit.payload.model_dump(mode="json"),
+                        "step": node.name,
+                    }
+                )
+                self.runtime.events.emit(
+                    LifecycleEvent(
+                        kind="outbound_event",
+                        run_id=run_id,
+                        pipeline_id=self.plan.pipeline_id,
+                        step_name=node.name,
+                        message=emit.event,
+                    )
+                )
             if isinstance(result, dict) and any(p.name in result for p in node.outputs):
                 outputs = result
             else:
@@ -609,6 +834,7 @@ class LocalOrchestrator:
                 )
             await self._observe_schema(node, outputs, schema_obs=schema_obs)
             for port_name, value in outputs.items():
+                strategy = self._strategy_for(node.name, port_name)
                 logical = f"{node.name}.{port_name}"
                 ref = ArtifactRef(
                     identity=artifact_identity(
@@ -618,12 +844,12 @@ class LocalOrchestrator:
                         security_domain=self.plan.security_domain,
                     ),
                     logical_output=logical,
-                    strategy=ArtifactStrategy.IN_MEMORY,
+                    strategy=strategy,
                     security_domain=self.plan.security_domain,
                 )
                 durable = (
-                    self.request.materialization.value == "durable"
-                    or artifacts.should_durable(ArtifactStrategy.DURABLE)
+                    self.request.materialization is MaterializationPolicy.DURABLE
+                    or artifacts.should_durable(strategy)
                 )
                 artifacts.put(ref, value, durable=durable)
             state.records_out = sum(_count(v) for v in outputs.values())
@@ -636,6 +862,23 @@ class LocalOrchestrator:
             run_id=run_id,
             code="PMEXEC310",
         )
+
+    def _split_emits(self, result: Any) -> tuple[Any, list[Emit[Any]]]:
+        if isinstance(result, Emit):
+            return None, [result]
+        if (
+            isinstance(result, tuple)
+            and len(result) == 2
+            and isinstance(result[1], Emit)
+        ):
+            return result[0], [result[1]]
+        if (
+            isinstance(result, tuple)
+            and result
+            and all(isinstance(item, Emit) for item in result[1:])
+        ):
+            return result[0], list(result[1:])
+        return result, []
 
     def _gather_inputs(
         self, node: Node, graph: LogicalGraph, artifacts: ArtifactStore
@@ -650,6 +893,7 @@ class LocalOrchestrator:
 
     def _store_outputs(self, node: Node, data: Any, artifacts: ArtifactStore) -> None:
         port = node.outputs[0].name if node.outputs else "result"
+        strategy = self._strategy_for(node.name, port)
         logical = f"{node.name}.{port}"
         ref = ArtifactRef(
             identity=artifact_identity(
@@ -659,10 +903,14 @@ class LocalOrchestrator:
                 security_domain=self.plan.security_domain,
             ),
             logical_output=logical,
-            strategy=ArtifactStrategy.IN_MEMORY,
+            strategy=strategy,
             security_domain=self.plan.security_domain,
         )
-        artifacts.put(ref, data)
+        durable = (
+            self.request.materialization is MaterializationPolicy.DURABLE
+            or artifacts.should_durable(strategy)
+        )
+        artifacts.put(ref, data, durable=durable)
 
     def _parameters_for(self, node: Node) -> dict[str, Any]:
         params = {
@@ -674,9 +922,14 @@ class LocalOrchestrator:
         params.update(overrides)
         return params
 
-    def _resolve_implementation(self, node: Node) -> ImplementationRecord | None:
+    def _resolve_implementation(self, node: Node) -> ImplementationRecord:
         if not node.transformation_id:
-            return None
+            raise NodeExecutionError(
+                f"Step {node.name} has no transformation_id",
+                node_name=node.name,
+                stage=FailureStage.TRANSFORM.value,
+                code="PMEXEC320",
+            )
         descriptor: ImplementationDescriptor | None = self.plan.implementations.get(
             node.name
         )
@@ -687,8 +940,7 @@ class LocalOrchestrator:
         )
         xf = self.transform_lookup.get(node.transformation_id)
         if xf is None:
-            # Search registered transformation classes by identity.
-            for candidate in Transformation.__subclasses__():
+            for candidate in _all_subclasses(Transformation):
                 if candidate.identity() == node.transformation_id:
                     xf = candidate
                     self.transform_lookup[node.transformation_id] = xf
@@ -701,56 +953,44 @@ class LocalOrchestrator:
                 code="PMEXEC320",
             )
         record = xf.implementations().get(engine)
-        if record is None and engine != "local":
-            record = xf.implementations().get("local")
-        if record is None and xf.implementations():
-            record = next(iter(xf.implementations().values()))
         if record is None:
-            # Identity passthrough default for testing when no impl registered.
-            async def _identity(**kwargs: Any) -> Any:
-                if "result" in kwargs:
-                    return kwargs["result"]
-                if len(kwargs) == 1:
-                    return next(iter(kwargs.values()))
-                return kwargs
-
-            return ImplementationRecord(
-                engine="local",
-                identity=f"{node.transformation_id}::local-identity",
-                callable=_identity,
-                is_async=True,
-                signature=inspect.signature(_identity),
+            available = ", ".join(sorted(xf.implementations())) or "(none)"
+            raise NodeExecutionError(
+                f"No implementation for engine {engine!r} on "
+                f"{node.transformation_id}; available: {available}",
+                node_name=node.name,
+                stage=FailureStage.TRANSFORM.value,
+                code="PMEXEC321",
             )
         return record
 
     async def _invoke_transform(
         self,
-        impl: ImplementationRecord | None,
+        impl: ImplementationRecord,
         inputs: dict[str, Any],
         params: dict[str, Any],
         *,
         node: Node,
+        step_context: StepContext,
+        attempt: int,
     ) -> Any:
-        if impl is None:
-            raise NodeExecutionError(
-                f"No implementation for step {node.name}",
-                node_name=node.name,
-                stage=FailureStage.TRANSFORM.value,
-                code="PMEXEC321",
-            )
         kwargs = {**inputs, **params}
-        # Filter to signature parameters when possible.
+        attempt_ctx = AttemptContext(step=step_context, attempt=attempt)
+        # Inject annotated resources.
+        for name, param in impl.signature.parameters.items():
+            inject_name = self._inject_name(param.annotation)
+            if inject_name is None and name in self.runtime.resources.providers:
+                inject_name = name
+            if inject_name is None:
+                continue
+            kwargs[name] = await self.runtime.resources.get(
+                inject_name,
+                scope="attempt",
+                scope_key=f"{step_context.step_name}:{attempt}",
+                context={"step": step_context, "attempt": attempt_ctx},
+            )
         try:
             sig = impl.signature
-            accepted = {
-                k: v
-                for k, v in kwargs.items()
-                if k in sig.parameters
-                or any(
-                    p.kind in (inspect.Parameter.VAR_KEYWORD,)
-                    for p in sig.parameters.values()
-                )
-            }
             if any(
                 p.kind is inspect.Parameter.VAR_KEYWORD for p in sig.parameters.values()
             ):
@@ -761,39 +1001,56 @@ class LocalOrchestrator:
             accepted = kwargs
         return await maybe_await(impl.callable, **accepted)
 
+    def _inject_name(self, annotation: Any) -> str | None:
+        if annotation is inspect.Parameter.empty:
+            return None
+        origin = get_origin(annotation)
+        if origin is Annotated:
+            for arg in get_args(annotation)[1:]:
+                if isinstance(arg, Inject):
+                    return arg.name
+        return None
+
+    def _binding_descriptor(
+        self, node: Node, binding_name: str
+    ) -> BindingDescriptor | None:
+        override = self.request.binding_overrides.get(node.name)
+        if override:
+            if override in self.runtime.registry.bindings:
+                return self.runtime.registry.bindings[override]
+            for desc in self.plan.bindings.values():
+                if desc.binding == override:
+                    return desc
+        return self.plan.bindings.get(node.name) or self.plan.bindings.get(binding_name)
+
     async def _read_source(self, node: Node, *, run_id: str) -> Any:
         binding_name = node.binding or node.name
         binding_name = self.request.binding_overrides.get(node.name, binding_name)
-        descriptor = self.plan.bindings.get(node.name) or self.plan.bindings.get(
-            binding_name
-        )
+        descriptor = self._binding_descriptor(node, binding_name)
         provider_name = descriptor.provider if descriptor is not None else "memory"
         if provider_name in {"local", "python"}:
             provider_name = "memory"
-        if self.request.no_write and provider_name not in self.runtime.storage:
-            provider_name = "null"
         storage = self.runtime.storage.get(provider_name)
         if storage is None:
             storage = self.runtime.memory
             provider_name = "memory"
         location = descriptor.location if descriptor is not None else None
+        context: dict[str, Any] = {"run_id": run_id, "node": node.name}
         if descriptor is not None and descriptor.secret_ref is not None:
-            await self._resolve_secret(
+            context["secret"] = await self._resolve_secret(
                 descriptor.secret_ref, run_id=run_id, step=node.name
             )
         return await storage.read(
             binding=binding_name,
             location=location,
             contract_type=node.contract_type,
-            context={"run_id": run_id, "node": node.name},
+            context=context,
         )
 
     async def _write_sink(self, node: Node, data: Any, *, run_id: str) -> None:
         binding_name = node.binding or node.name
         binding_name = self.request.binding_overrides.get(node.name, binding_name)
-        descriptor = self.plan.bindings.get(node.name) or self.plan.bindings.get(
-            binding_name
-        )
+        descriptor = self._binding_descriptor(node, binding_name)
         provider_name = descriptor.provider if descriptor is not None else "memory"
         if provider_name in {"local", "python"}:
             provider_name = "memory"
@@ -801,8 +1058,9 @@ class LocalOrchestrator:
             provider_name = "null"
         storage = self.runtime.storage.get(provider_name) or self.runtime.memory
         location = descriptor.location if descriptor is not None else None
+        context: dict[str, Any] = {"run_id": run_id, "node": node.name}
         if descriptor is not None and descriptor.secret_ref is not None:
-            await self._resolve_secret(
+            context["secret"] = await self._resolve_secret(
                 descriptor.secret_ref, run_id=run_id, step=node.name
             )
         await storage.write(
@@ -810,7 +1068,7 @@ class LocalOrchestrator:
             location=location,
             data=data,
             contract_type=node.contract_type,
-            context={"run_id": run_id, "node": node.name},
+            context=context,
         )
 
     async def _resolve_secret(self, ref: SecretRef, *, run_id: str, step: str) -> Any:
@@ -841,7 +1099,7 @@ class LocalOrchestrator:
                     secret_identity=ref.identity(),
                     outcome="failure",
                     step_name=step,
-                    message=str(exc),
+                    message=redact_message(str(exc)),
                 )
             )
             raise
@@ -857,6 +1115,42 @@ class LocalOrchestrator:
             )
         )
         return value
+
+    async def _check_source_reliability(
+        self, node: Node, data: Any, *, run_id: str
+    ) -> None:
+        expectations = self.request.metadata.get("freshness") or {}
+        raw = expectations.get(node.name) or expectations.get(node.binding or "")
+        if isinstance(raw, FreshnessExpectation):
+            result = check_freshness(raw, observed_at=None)
+            if not result.ok:
+                raise NodeExecutionError(
+                    result.message or "Freshness check failed",
+                    node_name=node.name,
+                    stage=FailureStage.FRESHNESS.value,
+                    run_id=run_id,
+                    code="PMEXEC350",
+                )
+        partitions = self.request.metadata.get("partitions") or {}
+        pref = partitions.get(node.name) or partitions.get(node.binding or "")
+        if isinstance(pref, PartitionCompletenessExpectation):
+            observed: set[str] = set()
+            for row in as_records(data, None):
+                mapping = row.model_dump() if hasattr(row, "model_dump") else row
+                if isinstance(mapping, dict):
+                    key = "|".join(str(mapping.get(k, "")) for k in pref.partition_keys)
+                    observed.add(key)
+            ok, message = check_partition_completeness(
+                pref, observed_partitions=observed
+            )
+            if not ok:
+                raise NodeExecutionError(
+                    message or "Partition completeness failed",
+                    node_name=node.name,
+                    stage=FailureStage.FRESHNESS.value,
+                    run_id=run_id,
+                    code="PMEXEC351",
+                )
 
     async def _validate_boundary(
         self,
@@ -900,11 +1194,13 @@ class LocalOrchestrator:
                     node_name=node.name,
                     boundary=boundary,
                     status="failed",
-                    message=str(exc),
+                    message=redact_message(str(exc)),
                 )
             )
             raise NodeExecutionError(
-                f"Validation failed at {boundary} for {node.name}: {exc}",
+                redact_message(
+                    f"Validation failed at {boundary} for {node.name}: {exc}"
+                ),
                 node_name=node.name,
                 stage=boundary,
                 code="PMEXEC330",
@@ -919,10 +1215,14 @@ class LocalOrchestrator:
         schema_obs: list[SchemaObservationResult],
     ) -> None:
         model = node.contract_type
-        if model is None:
+        if model is None and not data:
             return
-        declared = normalize_schema_from_model(model)
-        current = observe_model_schema(node.name, model, layer="current")
+        declared = normalize_schema_from_model(model) if model is not None else None
+        payload = data
+        if isinstance(data, dict):
+            # Multi-output: observe first port payload.
+            payload = next(iter(data.values()), [])
+        current = _observe_records_schema(node.name, payload, layer="current")
         previous = self.schema_history.latest(node.name)
         if current is not None:
             self.schema_history.record(current)
@@ -934,13 +1234,14 @@ class LocalOrchestrator:
             policy=self.drift_policy,
             profile_name=self.plan.profile_name,
         )
-        schema_obs.append(
-            SchemaObservationResult(
-                subject_id=node.name,
-                layer="declared",
-                fingerprint=declared.fingerprint(),
+        if declared is not None:
+            schema_obs.append(
+                SchemaObservationResult(
+                    subject_id=node.name,
+                    layer="declared",
+                    fingerprint=declared.fingerprint(),
+                )
             )
-        )
         if previous is not None:
             schema_obs.append(
                 SchemaObservationResult(

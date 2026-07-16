@@ -26,6 +26,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CLI: `pipelantic run` and `pipelantic report show|export`
 - Hard dependency on `anyio` for structured concurrency
 
+### Fixed
+
+- Durable materialization no longer always writes workspace files; strategy
+  comes from the plan/request
+- Missing transformation implementations fail closed (no silent identity
+  fallback or engine swap)
+- Cancellation uses `anyio` cancelled-exc handling and returns a partial report
+- Exception and diagnostic messages are redacted before entering reports/logs
+- Binding `SecretRef` values are passed into storage context; unresolved
+  secrets still fail closed
+- Plan `retry_max_attempts` / `timeout_seconds` merge into default `RunRequest`
+  policies
+- Planner default binding provider is `memory` (`local`/`python` remain aliases)
+- Binding overrides resolve registry descriptors for provider/location/secret
+- Retry honors backoff/`retry_on` and retry-safety declarations; `CONTINUE`
+  soft-skips without failing the step status as hard failure
+- Schema observations fingerprint observed data (not only the contract class)
+- CLI `run` prints embedded reports on `PipelineExecutionError`
+- Debug session invalidation clears shared artifact/memory state across reruns
+- Resource `Inject` wiring, outbound `Emit` capture, report lineage, and
+  run/region lifespan helpers
+
 ### Changed
 
 - Package version and public status advance to 0.4 (Local Runtime and

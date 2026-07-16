@@ -52,6 +52,21 @@ def redact_value(value: Any) -> Any:
     return value
 
 
+_SECRET_INLINE_RE = re.compile(
+    r"(?i)(password|secret|token|api[_-]?key|credential|authorization)"
+    r"""\s*[=:]\s*['\"]?[^\s'\",;]+"""
+)
+
+
+def redact_message(message: str) -> str:
+    """Redact likely secret assignments from free-form exception text."""
+    if not message:
+        return message
+    redacted = _SECRET_INLINE_RE.sub(r"\1=***", message)
+    # Also collapse obvious SecretValue reprs.
+    return redacted.replace("value=***", "value=***")
+
+
 class RunLogger:
     """Contextual logger that redacts secrets before emission."""
 
@@ -76,9 +91,10 @@ class RunLogger:
         attempt: int | None = None,
         **extras: Any,
     ) -> LogRecord:
+        safe_message = redact_message(str(message))
         record = LogRecord(
             level=level,
-            message=message,
+            message=safe_message,
             run_id=self.run_id,
             pipeline_id=self.pipeline_id,
             step_name=step_name,
@@ -88,7 +104,7 @@ class RunLogger:
         self.records.append(record)
         getattr(self._logger, level.lower(), self._logger.info)(
             "%s run=%s step=%s %s",
-            message,
+            safe_message,
             self.run_id,
             step_name,
             redact_value(extras),

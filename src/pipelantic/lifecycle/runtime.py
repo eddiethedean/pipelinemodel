@@ -57,11 +57,17 @@ class PipelineRuntime:
         if not self.storage:
             self.storage = {
                 "memory": self.memory,
+                "local": self.memory,
+                "python": self.memory,
                 "callable": self.callables,
                 "json": JsonStorage(),
                 "csv": CsvStorage(),
                 "null": NullStorage(),
             }
+        else:
+            self.storage.setdefault("memory", self.memory)
+            self.storage.setdefault("local", self.memory)
+            self.storage.setdefault("python", self.memory)
 
     def add_run_middleware(self, middleware: Any, *, name: str | None = None) -> None:
         self.run_middleware.add(middleware, name=name)

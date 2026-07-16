@@ -149,9 +149,7 @@ def test_run_selection_until() -> None:
     assert report.status is RunStatus.SUCCEEDED
     names = {s.step_name for s in report.steps}
     assert "normalized" in names
-    assert "out" not in names or all(
-        s.status.value != "succeeded" for s in report.steps if s.step_name == "out"
-    )
+    assert "out" not in names
 
 
 def test_parallel_branches_succeed() -> None:

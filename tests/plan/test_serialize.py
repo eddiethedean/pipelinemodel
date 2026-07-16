@@ -42,12 +42,12 @@ def test_secret_ref_round_trip_on_binding() -> None:
     registry.register_binding(
         BindingDescriptor(
             binding="rows",
-            provider="local",
+            provider="memory",
             kind="source",
             secret_ref=SecretRef(provider="env-secrets", name="rows", key="token"),
         )
     )
-    profile = Profile(name="sec", bindings={"out": "local"})
+    profile = Profile(name="sec", bindings={"out": "memory"})
     plan = plan_pipeline(
         Sample,
         context=PlanningContext.create(profile=profile, registry=registry),
