@@ -2,11 +2,22 @@
 
 from __future__ import annotations
 
+import re
+
+import pytest
+import typer
 from typer.testing import CliRunner
 
-from pipelantic.cli import app
+from pipelantic.cli import _build_selection, app
 
-runner = CliRunner()
+runner = CliRunner(env={"NO_COLOR": "1", "TERM": "dumb"})
+_ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def _plain_output(result: object) -> str:
+    stderr = getattr(result, "stderr", "") or ""
+    stdout = getattr(result, "stdout", "") or ""
+    return _ANSI_ESCAPE.sub("", stderr + stdout).lower()
 
 
 def test_cli_version() -> None:
@@ -36,6 +47,11 @@ def test_cli_plan_explain() -> None:
     assert "steps" in result.stdout
 
 
+def test_build_selection_rejects_conflicting_flags() -> None:
+    with pytest.raises(typer.BadParameter, match="only one"):
+        _build_selection(run_one="step", run_until="step", nodes=None)
+
+
 def test_cli_conflicting_selection_flags() -> None:
     target = "tests.fixtures.sample_pipeline:SamplePipeline"
     result = runner.invoke(
@@ -43,11 +59,10 @@ def test_cli_conflicting_selection_flags() -> None:
         [
             "plan",
             target,
-            "--run-one",
-            "step",
-            "--run-until",
-            "step",
+            "--run-one=step",
+            "--run-until=step",
         ],
     )
     assert result.exit_code != 0
-    assert "run-one" in (result.stderr + result.stdout).lower()
+    output = _plain_output(result)
+    assert "only one" in output or "run-until" in output
