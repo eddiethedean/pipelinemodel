@@ -120,17 +120,17 @@ jobs:
 
       - name: Pytest SQL suite (SQLite IR + runtime)
         env:
-          PIPELANTIC_SQL_URL: sqlite+pysqlite:///:memory:
+          PIPELANTIC_SQL_URL: "sqlite+pysqlite:///:memory:"
         run: uv run pytest -q tests/sql -m sql
 
       - name: Pytest SQL suite (PostgreSQL)
         env:
-          PIPELANTIC_SQL_URL: postgresql+psycopg://postgres:postgres@localhost:5432/pipelantic
+          PIPELANTIC_SQL_URL: "postgresql+psycopg://postgres:postgres@localhost:5432/pipelantic"
         run: uv run pytest -q tests/sql -m sql
 
       - name: Runnable SQL examples
         env:
-          PIPELANTIC_SQL_URL: postgresql+psycopg://postgres:postgres@localhost:5432/pipelantic
+          PIPELANTIC_SQL_URL: "postgresql+psycopg://postgres:postgres@localhost:5432/pipelantic"
         run: |
           uv run python examples/sql_to_sql.py
           uv run python examples/sql_transactional_write.py
