@@ -1,59 +1,59 @@
 # Security Policy
 
-Pipelantic 0.2 provides the typed modeling kernel and contract
-interoperability. Security reports concerning the published package,
-documentation, proposed APIs, repository automation, or later milestones are
+Pipelantic 0.4.0 is an alpha release. Security reports concerning the
+published package, contract loading, planning, local runtime, storage
+bindings, secret handling, documentation, or repository automation are
 welcome.
-
-## Reporting a Vulnerability
-
-Do not open a public issue for:
-
-- credential exposure
-- arbitrary code execution
-- unsafe contract or configuration parsing
-- path traversal
-- server-side request forgery
-- plugin supply-chain vulnerabilities
-- injection vulnerabilities
-- cross-tenant artifact or cache exposure
-
-Until a private reporting address or GitHub private vulnerability reporting is
-configured, contact the repository owner privately through an available
-verified channel and include:
-
-- affected component
-- impact
-- reproduction steps
-- relevant configuration
-- suggested mitigation, when known
-
-Do not include production secrets, customer data, or regulated records.
 
 ## Supported Versions
 
-| Version | Supported |
+| Version | Support |
 |---|---|
-| 0.2.x | Best-effort while contract interoperability is in alpha |
-| 0.1.x | Best-effort |
-| earlier | Not supported |
+| 0.4.x | Current alpha line; best-effort security fixes |
+| 0.3.x | Critical fixes only when practical |
+| 0.2.x and earlier | Not supported |
 
-A formal security patch policy will be published before 1.0.
+Upgrade to the latest patch release before reporting an issue.
 
-## Security Model
+## Reporting a Vulnerability
 
-The project threat model and production-readiness requirements are documented
-in [docs/02_FOUNDATIONS/SECURITY.md](docs/02_FOUNDATIONS/SECURITY.md).
+Do not open a public issue for a suspected vulnerability.
+
+Use GitHub private vulnerability reporting when it is enabled for the
+repository. If it is unavailable, contact the repository owner privately
+through the verified contact listed in the package metadata and request a
+secure reporting channel before sending sensitive details.
+
+Include:
+
+- Affected version and component
+- Security impact
+- Minimal reproduction steps
+- Relevant non-secret configuration
+- Suggested mitigation, when known
+
+Never include production credentials, customer data, regulated records, or
+live exploit targets.
+
+## Scope
+
+Security-sensitive areas include:
+
+- Unsafe contract or configuration parsing
+- Path traversal
+- Arbitrary code execution outside explicitly registered implementations
+- Secret disclosure in plans, logs, reports, exceptions, or generated files
+- Storage binding and plugin supply-chain vulnerabilities
+- Cross-run artifact, cache, or report exposure
+- Injection vulnerabilities
+
+The detailed threat model is documented in
+[docs/02_FOUNDATIONS/SECURITY.md](docs/02_FOUNDATIONS/SECURITY.md).
 
 ## Disclosure
 
-The project intends to use coordinated disclosure:
+The project follows coordinated disclosure: acknowledge the report, assess
+impact, prepare and test a fix, publish an upgrade, and then disclose technical
+details at an appropriate time.
 
-1. Confirm receipt privately.
-2. Validate and assess severity.
-3. Develop and test a fix.
-4. Prepare an advisory and upgrade guidance.
-5. Release the fix before public technical details.
-
-Response targets and a formal private reporting mechanism must be established
-before Pipelantic is declared production-ready.
+Formal response-time guarantees are not available during the alpha series.

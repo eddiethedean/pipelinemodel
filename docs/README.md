@@ -26,15 +26,14 @@ as executable interface declarations—to data engineering.
 
 ## Project Status
 
-**0.3.0** ships validation, profiles, and an immutable secret-free
-`PipelinePlan` on top of the typed modeling kernel and ODCS/DTCS/DPCS
-interoperability. Local execution and secret resolution arrive in later
-milestones.
+**0.4.0** ships validation, profiles, an immutable secret-free
+`PipelinePlan`, local Python execution, runtime secret resolution, run reports,
+and memory/callable/JSON/CSV storage.
 
 Many chapters still describe the intended 1.0 product. Examples beyond the
 shipped surface are design examples, not a promise that every illustrated API
-is already available. See [Documentation Status](02_FOUNDATIONS/DOCUMENTATION_STATUS.md)
-and the [Roadmap](11_DEVELOPMENT/ROADMAP.md).
+is already available. Start with
+[Current Capabilities and Limitations](01_GETTING_STARTED/CAPABILITIES.md).
 
 ## Thirty-Second Example
 
@@ -83,18 +82,20 @@ From these declarations, Pipelantic can derive:
 - Static wiring and compatibility diagnostics
 - A logical lineage graph
 - A deterministic, secret-free `PipelinePlan` (0.3.0)
+- A local Python runtime and structured run report (0.4.0)
 
-Execution plugins and runtime secret resolution arrive in later milestones.
+Memory, callable, JSON, CSV, and no-write storage are included in 0.4.
+Dataframe, SQL, Spark, and external orchestration plugins arrive later.
 
 The transformation implementation remains separate:
 
 ```python
-@NormalizeCustomers.implementation("polars")
+@NormalizeCustomers.implementation("local")
 def normalize_customers(customers):
     ...
 ```
 
-The same transformation may also have Pandas, SQL, PySpark, remote, or other
+Future plugins may add Pandas, Polars, SQL, PySpark, remote, or other
 implementations.
 
 ## The Architecture in One View

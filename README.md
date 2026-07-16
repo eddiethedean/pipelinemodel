@@ -4,7 +4,8 @@
 
 [![Documentation Status](https://readthedocs.org/projects/pipelantic/badge/?version=latest)](https://pipelantic.readthedocs.io/en/latest/?badge=latest)
 
-Typed, contract-driven data pipeline modeling for Python.
+Define, validate, plan, and locally run contract-driven data pipelines with
+typed Python.
 
 > Define data, transformations, and pipelines with typed Python classes.
 > Validate and plan them once. Execute them through interchangeable backends.
@@ -17,6 +18,13 @@ Pipelantic provides the typed modeling kernel, contract interoperability,
 an immutable secret-free `PipelinePlan`, and a local async runtime that
 executes plans via Python callables, in-memory artifacts, and stdlib
 JSON/CSV bindings.
+
+Use Pipelantic when you want to catch incompatible wiring before processing
+data, generate ODCS/DTCS/DPCS contracts from Python, or inspect a deterministic
+execution plan independently of a future backend.
+
+Pipelantic is currently alpha. Pandas, Polars, SQL, Spark, Airflow, and other
+external backend plugins are design work and are not included in 0.4.
 
 See the [hosted documentation](https://pipelantic.readthedocs.io/) for the
 full design,
@@ -60,7 +68,16 @@ repository secret.
 ## Quick example
 
 ```python
-from pipelantic import Data, Input, Output, Pipeline, Sink, Source, Transformation
+from pipelantic import (
+    Data,
+    Input,
+    Output,
+    Pipeline,
+    PipelineRuntime,
+    Sink,
+    Source,
+    Transformation,
+)
 
 
 class RawCustomer(Data):
@@ -88,17 +105,45 @@ class CustomerPipeline(Pipeline):
     )
 
 
-graph = CustomerPipeline.inspect()
-report = CustomerPipeline.validate()
-print(CustomerPipeline.to_mermaid())
-# Local execution (0.4+):
-# run_report = CustomerPipeline.run(profile="development")
+@NormalizeCustomers.implementation("local")
+def normalize(customers: list[RawCustomer]) -> list[Customer]:
+    return [
+        Customer(
+            customer_id=row.customer_id,
+            full_name=f"{row.first_name} {row.last_name}",
+        )
+        for row in customers
+    ]
+
+
+CustomerPipeline.validate(profile="development").raise_for_errors()
+
+runtime = PipelineRuntime()
+runtime.memory.seed(
+    "customer_source",
+    [RawCustomer(customer_id=1, first_name="Ada", last_name="Lovelace")],
+)
+run_report = CustomerPipeline.run(profile="development", runtime=runtime)
+print(runtime.memory.get("customer_sink"))
 ```
+
+Run the complete tested version at
+[examples/quickstart.py](examples/quickstart.py).
+
+## Current capability boundary
+
+| Capability | 0.4 |
+|---|---|
+| Typed modeling, validation, contracts, and planning | Available |
+| Local Python execution and run reports | Available |
+| Memory, callable, JSON, CSV, and no-write storage | Available |
+| Pandas, Polars, SQL, Spark, and Airflow plugins | Not yet available |
 
 ## Documentation
 
 - [Documentation site](https://pipelantic.readthedocs.io/)
 - [Getting Started](docs/01_GETTING_STARTED/README.md)
+- [Capabilities and Limitations](docs/01_GETTING_STARTED/CAPABILITIES.md)
 - [Core Concepts](docs/02_FOUNDATIONS/CORE_CONCEPTS.md)
 - [Architecture](docs/02_FOUNDATIONS/ARCHITECTURE.md)
 - [Roadmap](docs/11_DEVELOPMENT/ROADMAP.md)

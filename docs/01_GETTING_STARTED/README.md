@@ -41,10 +41,12 @@ No prior experience with orchestration frameworks is required.
 Read the Getting Started section in this order:
 
 1. [Installation](INSTALLATION.md)
-2. [Quickstart](QUICKSTART.md)
-3. [Your First Pipeline](FIRST_PIPELINE.md)
-4. [Project Structure](PROJECT_STRUCTURE.md)
-5. [FAQ](FAQ.md)
+2. [Current Capabilities and Limitations](CAPABILITIES.md)
+3. [Quickstart](QUICKSTART.md)
+4. [Your First Pipeline](FIRST_PIPELINE.md)
+5. [Project Structure](PROJECT_STRUCTURE.md)
+6. [Troubleshooting](TROUBLESHOOTING.md)
+7. [FAQ](FAQ.md)
 
 ## The Pipelantic Mental Model
 
@@ -58,8 +60,9 @@ You describe *what* the pipeline is:
 
 Pipelantic validates and plans the pipeline.
 
-Execution is then delegated to the libraries and orchestrators you
-choose.
+Pipelantic 0.4 can execute registered Python implementations with its local
+runtime. Future plugins will connect the same plans to dataframe, SQL, Spark,
+and orchestration systems.
 
 ``` text
 Python Classes
@@ -74,8 +77,8 @@ Pipeline Validation
 Execution Planning
       │
       ▼
-Execution Plugins
-(Pandas, Polars, Airflow, ...)
+Local Python Runtime (0.4)
+Future External Plugins
 ```
 
 ## A Preview
@@ -116,5 +119,5 @@ Pipelantic is built around a few core ideas:
 
 ## Next Step
 
-Continue with [Installation](INSTALLATION.md) to review the intended package
-layout and development installation workflow.
+Continue with [Installation](INSTALLATION.md), then check the
+[current capability boundary](CAPABILITIES.md).

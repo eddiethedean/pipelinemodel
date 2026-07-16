@@ -2,10 +2,10 @@
 
 ## What is Pipelantic?
 
-Pipelantic is a Python framework for building typed, contract-driven
-ETL pipelines. It models data pipelines using Python classes and type
-annotations, validates them, generates portable contracts, and delegates
-execution to external execution engines.
+Pipelantic is a Python framework for defining typed, contract-driven data
+pipelines. It validates them, generates portable contracts, creates
+deterministic plans, and can execute registered Python implementations through
+its local runtime.
 
 ------------------------------------------------------------------------
 
@@ -23,8 +23,9 @@ Airflow or other orchestration plugins.
 
 No.
 
-Pipelantic does not implement dataframe operations, database
-connectors, schedulers, or distributed execution.
+Pipelantic does not implement dataframe operations, database clients,
+scheduling, or distributed execution. Pipelantic 0.4 does include an
+in-process local runtime with memory, callable, JSON, CSV, and no-write storage.
 
 Instead, it coordinates existing tools through a common typed model.
 
@@ -44,8 +45,9 @@ Its focus is:
 -   portability
 -   execution abstraction
 
-Pipelantic can generate plans and backend artifacts for multiple orchestration
-systems without changing pipeline definitions.
+Pipelantic's architecture is designed so future plugins can consume the same
+plans without changing pipeline definitions. External orchestrator compilation
+is not included in 0.4.
 
 ------------------------------------------------------------------------
 
@@ -119,10 +121,9 @@ Business logic remains unchanged.
 
 Pipelantic is dataframe-engine neutral.
 
-For new projects, Polars is generally recommended because of its modern
-execution model and performance characteristics.
-
-Pandas remains a fully supported execution option.
+Pipelantic 0.4 does not ship Pandas or Polars plugins. Choose and call those
+libraries inside your own registered Python implementation if needed, or wait
+for a documented plugin release.
 
 ------------------------------------------------------------------------
 
@@ -197,16 +198,16 @@ Cloud-specific integrations are implemented through plugins.
 
 Yes.
 
-Pipelantic is designed to generate:
+Pipelantic 0.4 generates or exposes:
 
 -   contract documentation
 -   pipeline documentation
 -   lineage diagrams
 -   Mermaid graphs
--   Graphviz graphs
+-   Mermaid graphs
 -   execution plans
 
-from the same Python source code.
+Graphviz and generated HTML pipeline documentation remain future design work.
 
 ------------------------------------------------------------------------
 

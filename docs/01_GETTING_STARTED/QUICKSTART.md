@@ -1,150 +1,129 @@
-# Quickstart
+# Five-Minute Quickstart
 
-Welcome to your first Pipelantic project.
+> **Status: Available in Pipelantic 0.4.0.** Every API in this guide is shipped
+> and the complete example is tested in CI.
 
-In this guide you'll build a complete, typed pipeline in just a few
-minutes. You'll define a data contract, create a transformation
-contract, wire everything into a pipeline, validate it, and generate
-portable contracts.
+This guide defines, validates, plans, and runs a typed pipeline using only the
+core package and in-memory storage.
 
-> **Goal:** Learn the Pipelantic mental model, not every feature.
->
-> **Status:** Steps 1–7 match the shipped 0.4.0 surface (authoring, validation,
-> contract generation, planning, and local execution). Dataframe/SQL/Spark
-> plugins arrive in later milestones.
+## 1. Install
 
-## Step 1 --- Define a Data Contract
+Pipelantic requires Python 3.11 or newer.
 
-``` python
-from pipelantic import Data
+```bash
+python -m pip install pipelantic
+```
 
-class Customer(Data):
-    id: int
+Verify the installation:
+
+```bash
+python -c "import pipelantic; print(pipelantic.__version__)"
+```
+
+## 2. Create `pipeline.py`
+
+```python
+from pipelantic import (
+    Data,
+    Input,
+    Output,
+    Pipeline,
+    PipelineRuntime,
+    Sink,
+    Source,
+    Transformation,
+)
+
+
+class RawCustomer(Data):
+    customer_id: int
     first_name: str
     last_name: str
-```
 
-This class is both a Pydantic model and the source of an ODCS-compatible
-data contract.
 
-## Step 2 --- Define a Transformation
+class Customer(Data):
+    customer_id: int
+    full_name: str
 
-``` python
-from pipelantic import Transformation, Input, Output
 
 class NormalizeCustomers(Transformation):
-    customers: Input[Customer]
+    customers: Input[RawCustomer]
     result: Output[Customer]
-```
 
-The type annotations describe the transformation interface.
-Pipelantic can derive a DTCS contract from this definition.
 
-## Step 3 --- Build a Pipeline
+@NormalizeCustomers.implementation("local")
+def normalize_customers(customers: list[RawCustomer]) -> list[Customer]:
+    return [
+        Customer(
+            customer_id=customer.customer_id,
+            full_name=f"{customer.first_name} {customer.last_name}",
+        )
+        for customer in customers
+    ]
 
-``` python
-from pipelantic import Pipeline, Sink, Source
 
 class CustomerPipeline(Pipeline):
-    raw: Source[Customer] = Source(binding="customer_source")
-
-    normalized = NormalizeCustomers.step(
-        customers=raw,
-    )
-
+    raw: Source[RawCustomer] = Source(binding="customer_source")
+    normalized = NormalizeCustomers.step(customers=raw)
     curated: Sink[Customer] = Sink(
         input=normalized.result,
         binding="customer_sink",
     )
-```
 
-Notice that the pipeline describes **logical data flow** rather than
-execution.
 
-## Step 4 --- Validate
-
-``` python
 report = CustomerPipeline.validate()
+report.raise_for_errors()
 
-if report.has_errors:
-    report.raise_for_errors()
-```
-
-Validation happens before execution so wiring and contract mismatches
-are caught early.
-
-## Step 5 --- Generate Contracts
-
-``` python
-CustomerPipeline.write_contracts("contracts/")
-```
-
-Pipelantic generates:
-
-``` text
-contracts/
-├── data/
-│   └── customer.odcs.yaml
-├── transformations/
-│   └── normalize-customers.dtcs.yaml
-└── pipelines/
-    └── customer-pipeline.dpcs.yaml
-```
-
-## Step 6 --- Plan
-
-```python
-plan = CustomerPipeline.plan(profile="local")
-```
-
-0.4.0 resolves a deterministic, secret-free `PipelinePlan` with
-implementation, binding, capability, and execution-region decisions. Use
-`CustomerPipeline.explain_plan(profile="local")` or the CLI
-(`pipelantic plan …`) for a structured explanation.
-
-## Step 7 --- Execute locally
-
-``` python
-from pipelantic import PipelineRuntime
+plan = CustomerPipeline.plan(profile="development")
+print(f"Plan: {plan.plan_id}")
 
 runtime = PipelineRuntime()
-# Seed in-memory source data for local runs, or register json/csv bindings.
-runtime.memory.seed("customer_source", [...])
-
-report = CustomerPipeline.run(
-    profile="development",
-    runtime=runtime,
+runtime.memory.seed(
+    "customer_source",
+    [
+        RawCustomer(customer_id=1, first_name="Ada", last_name="Lovelace"),
+        RawCustomer(customer_id=2, first_name="Grace", last_name="Hopper"),
+    ],
 )
-print(report.status, report.to_text())
+
+run_report = CustomerPipeline.run(profile="development", runtime=runtime)
+print(run_report.to_text())
+
+for customer in runtime.memory.get("customer_sink"):
+    print(customer.model_dump())
 ```
 
-or
+## 3. Run it
 
-``` python
-await CustomerPipeline.arun(
-    profile="development",
-    runtime=runtime,
-)
+```bash
+python pipeline.py
 ```
 
-Local execution uses the same `PipelinePlan` as future orchestrators. Source
-and sink I/O in 0.4 uses Python callables, in-memory datasets, and stdlib
-JSON/CSV bindings. Polars/Pandas/SQL plugins arrive in later milestones.
+The final records are:
 
-## What You've Learned
+```text
+{'customer_id': 1, 'full_name': 'Ada Lovelace'}
+{'customer_id': 2, 'full_name': 'Grace Hopper'}
+```
 
-You have:
+The exact generated plan and run identifiers vary, but the run status should
+be `succeeded`.
 
--   Defined a typed data contract.
--   Defined a typed transformation.
--   Built a pipeline.
--   Validated the pipeline.
--   Generated portable contracts.
--   Planned the pipeline with a profile.
--   Executed the pipeline locally and inspected a run report.
+## What happened
 
-## Where to Go Next
+1. `Data` classes defined the input and output contracts.
+2. `Transformation` declared the typed interface.
+3. `implementation("local")` registered executable Python code.
+4. `Pipeline` connected a named source, step, and sink.
+5. Validation checked the graph before execution.
+6. Planning produced a deterministic, secret-free `PipelinePlan`.
+7. `PipelineRuntime` supplied in-memory source and sink storage.
+8. `run()` returned a structured `PipelineRunReport`.
 
-Continue with [Your First Pipeline](FIRST_PIPELINE.md), where you'll build a realistic
-end-to-end ETL pipeline and learn how data contracts, transformation
-contracts, and pipeline contracts work together.
+The same example is available at `examples/quickstart.py`.
+
+## Next
+
+- Build the example in smaller steps in [Your First Pipeline](FIRST_PIPELINE.md).
+- Review [Current Capabilities and Limitations](CAPABILITIES.md).
+- See [Troubleshooting](TROUBLESHOOTING.md) if the run fails.

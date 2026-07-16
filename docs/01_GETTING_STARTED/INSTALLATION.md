@@ -52,6 +52,7 @@ docs/
 
 ```bash
 uv run python -c "import pipelantic; print(pipelantic.__version__)"
+uv run pipelantic --help
 ```
 
 ## User Installation
@@ -64,6 +65,28 @@ uv add pipelantic
 
 Backend plugins remain independently installable and are not required by the
 core package.
+
+Pandas, Polars, SQL, Spark, and Airflow plugins are not published as part of
+Pipelantic 0.4. Do not install undocumented extras expecting those backends.
+
+## Upgrade
+
+```bash
+python -m pip install --upgrade pipelantic
+# or
+uv lock --upgrade-package pipelantic
+```
+
+Review the
+[changelog](https://github.com/eddiethedean/pipelantic/blob/main/CHANGELOG.md)
+before upgrading between 0.x releases because breaking changes remain
+possible.
+
+## Installation Problems
+
+See [Troubleshooting](TROUBLESHOOTING.md) for Python-version errors, stale
+virtual environments, missing implementations, and unsupported backend
+examples.
 
 ## Dependency Philosophy
 

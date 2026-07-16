@@ -22,6 +22,16 @@ Documents use these conceptual stability levels:
 | Normative | A requirement defined by a contract specification |
 | Example | Illustrative code that expresses intended UX |
 
+Public pages use these visible statuses:
+
+| Page status | Meaning |
+|---|---|
+| Available in 0.4 | Tested against the current package |
+| Partially available | Shipped and future behavior are explicitly separated |
+| Future design | Not a current API or installation guide |
+| Normative specification | Contract requirements, not package behavior |
+| Internal project plan | Maintainer sequencing and implementation notes |
+
 Unless a chapter says otherwise, user-guide code beyond the shipped 0.4
 modeling, interchange, validation, planning, and **local runtime** surface
 should be read as an **accepted design example**, not as evidence of a
@@ -59,7 +69,9 @@ specification.
 
 ## Code Examples
 
-Examples prioritize a coherent authoring model:
+Beginner and runnable examples prioritize executable current behavior. Future
+design examples may prioritize the intended authoring model only when their
+status is prominent:
 
 ```python
 class NormalizeCustomers(Transformation):
@@ -67,7 +79,7 @@ class NormalizeCustomers(Transformation):
     result: Output[Customer]
 ```
 
-As implementation begins:
+For all examples:
 
 - Examples should become executable or syntax-checked.
 - Unsupported examples should be marked explicitly.
@@ -117,4 +129,3 @@ See:
 - [Roadmap](../11_DEVELOPMENT/ROADMAP.md)
 - [Design Decisions](../11_DEVELOPMENT/DESIGN_DECISIONS.md)
 - [Architecture Decisions](../11_DEVELOPMENT/ARCHITECTURE_DECISIONS.md)
-

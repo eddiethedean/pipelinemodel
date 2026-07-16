@@ -1,308 +1,131 @@
-# API Reference
+# Python API Reference
 
-This chapter describes Pipelantic's public Python API. Surfaces marked
-**shipped** are available in the current release. Other entries remain design
-references for later milestones.
+> **Status: Available in Pipelantic 0.4.0.** Signatures and docstrings below
+> are generated from the package source.
 
-## Stable Import Surface
-
-Common authoring and interchange APIs are available from the package root:
+The package root is the supported convenience import surface for common
+authoring, planning, runtime, storage, report, secret, and interchange types:
 
 ```python
 from pipelantic import (
     Data,
-    Pipeline,
-    Transformation,
     Input,
     Output,
     Parameter,
-    Source,
-    Step,
+    Pipeline,
+    PipelineRuntime,
     Sink,
-    ContractBundle,
-    load_data_contract,
-    write_odcs,
-    write_contracts,
-    load_bundle,
-    diff_data_contracts,
+    Source,
+    Transformation,
 )
 ```
 
-The three primary authoring models use one coherent import surface:
+`DataContractModel` is a deprecated alias for `Data`.
 
-```python
-from pipelantic import Data, Pipeline, Transformation
-```
+## Authoring
 
-`Data` is Pipelantic's thin public facade over ContractModel. ContractModel
-continues to own data-contract validation and ODCS operational behavior.
-Pipelantic must not create a competing data-contract implementation.
+### Data contracts
 
-Classes authored directly against ContractModel remain accepted. The
-Pipelantic-facing `DataContractModel` name is deprecated before 1.0 in favor of
-`Data`.
+::: pipelantic.contracts
+    options:
+      show_root_heading: true
+      members_order: source
 
-Plugin-author interfaces should live under `pipelantic.sdk`, not the root.
+### Transformations
 
-## `Data`
+::: pipelantic.transformation
+    options:
+      show_root_heading: true
+      members_order: source
 
-Base class or direct public alias for a ContractModel-backed data contract:
+### Pipelines
 
-```python
-class Customer(Data):
-    customer_id: int
-    full_name: str
-```
+::: pipelantic.pipeline
+    options:
+      show_root_heading: true
+      members_order: source
 
-The implementation should prefer a direct alias when possible. A thin subclass
-is justified only when Pipelantic requires a real integration hook that cannot
-be expressed through composition or registration.
+### Ports and references
 
-## `Transformation`
+::: pipelantic.ports
+    options:
+      show_root_heading: true
+      members_order: source
 
-Base class for a typed transformation contract.
+## Validation and diagnostics
 
-```python
-class NormalizeCustomers(Transformation):
-    customers: Input[RawCustomer]
-    minimum_age: Parameter[int] = 18
-    result: Output[Customer]
-```
+::: pipelantic.diagnostics
+    options:
+      show_root_heading: true
+      members_order: source
 
-Proposed class methods:
+::: pipelantic.validation
+    options:
+      show_root_heading: true
+      members_order: source
 
-```python
-NormalizeCustomers.inputs()
-NormalizeCustomers.outputs()
-NormalizeCustomers.parameters()
-NormalizeCustomers.implementations()
-NormalizeCustomers.validate_definition()
-NormalizeCustomers.to_dtcs()          # shipped in 0.2
-NormalizeCustomers.from_dtcs(...)     # shipped in 0.2
-NormalizeCustomers.step(...)
-```
+## Profiles, planning, and registries
 
-### `implementation`
+::: pipelantic.profile
+    options:
+      show_root_heading: true
+      members_order: source
 
-Register an execution implementation:
+::: pipelantic.plan
+    options:
+      show_root_heading: true
+      members_order: source
 
-```python
-@NormalizeCustomers.implementation("polars")
-def normalize(customers, minimum_age):
-    ...
-```
+::: pipelantic.registry
+    options:
+      show_root_heading: true
+      members_order: source
 
-Registration should record implementation identity, callable signature,
-capabilities, and optional execution hints.
+## Local runtime and reports
 
-## Port Annotations
+::: pipelantic.runtime
+    options:
+      show_root_heading: true
+      members_order: source
 
-### `Input[T]`
+::: pipelantic.lifecycle
+    options:
+      show_root_heading: true
+      members_order: source
 
-Declares data consumed under contract `T`.
+::: pipelantic.reports
+    options:
+      show_root_heading: true
+      members_order: source
 
-### `Output[T]`
+## Storage and secrets
 
-Declares data produced under contract `T`.
+::: pipelantic.storage
+    options:
+      show_root_heading: true
+      members_order: source
 
-### `Parameter[T]`
+::: pipelantic.secrets
+    options:
+      show_root_heading: true
+      members_order: source
 
-Declares typed configuration that influences a transformation without becoming
-a graph edge.
+## Contract interchange
 
-Metadata may be added through `typing.Annotated`.
+::: pipelantic.interchange
+    options:
+      show_root_heading: true
+      members_order: source
 
-## `Pipeline`
+## Exceptions
 
-Base class for a declarative pipeline graph.
-
-```python
-class CustomerPipeline(Pipeline):
-    raw: Source[RawCustomer] = Source(binding="customer_source")
-    normalized = NormalizeCustomers.step(customers=raw)
-    curated: Sink[Customer] = Sink(
-        input=normalized.result,
-        binding="customer_sink",
-    )
-```
-
-Proposed class methods:
-
-```python
-CustomerPipeline.inspect()
-CustomerPipeline.validate()
-CustomerPipeline.plan(profile="local")       # shipped in 0.3
-CustomerPipeline.run(profile="local")        # 0.4+
-await CustomerPipeline.arun(profile="local") # 0.4+
-CustomerPipeline.compile(target="airflow", profile="production")  # later
-CustomerPipeline.to_dpcs()                   # shipped in 0.2
-CustomerPipeline.from_dpcs(...)              # shipped in 0.2
-CustomerPipeline.generate_contracts(...)     # shipped in 0.2
-CustomerPipeline.write_contracts("contracts/")  # shipped in 0.2
-CustomerPipeline.to_mermaid()
-CustomerPipeline.to_graphviz()               # later
-```
-
-## Nodes
-
-### `Source[T]`
-
-Declares a logical data origin.
-
-```python
-source: Source[Customer] = Source(binding="customers")
-```
-
-### `Step[TTransformation]`
-
-A concrete use of a transformation in a pipeline. Users usually create steps
-through `Transformation.step(...)`.
-
-### `Sink[T]`
-
-Declares a logical data destination:
-
-```python
-sink: Sink[Customer] = Sink(input=step.result, binding="warehouse")
-```
-
-## Results and Reports
-
-Public operations should return structured values:
-
-```python
-ValidationReport
-PlanningReport
-PipelinePlan
-CompilationResult
-PipelineRunReport
-StepRunReport
-ArtifactResult
-ValidationResult
-StateTransitionResult
-ContractBundle
-```
-
-Convenience methods may raise exceptions, but the underlying structured report
-must remain accessible.
-
-`Pipeline.run()` and `Pipeline.arun()` return `PipelineRunReport`. Backend
-plugins may use narrower internal result objects, but those are normalized
-before reaching public application code.
-
-## `Profile`
-
-Represents environment-specific bindings and backend choices:
-
-```python
-profile = Profile(
-    name="local",
-    orchestrator="local",
-    dataframe_engine="polars",
-)
-```
-
-Profiles may also be loaded from project configuration.
-
-## Secret References
-
-Planned secret APIs keep configuration serializable while making resolved
-values runtime-only:
-
-```python
-from pipelantic import SecretRef
-
-password = SecretRef(
-    provider="production-secrets",
-    name="analytics/warehouse",
-    key="password",
-    version="current",
-)
-```
-
-`SecretRef` may appear in profiles and plans. `SecretValue` is produced only by
-an authorized Secret Provider during execution; it redacts display and rejects
-ordinary serialization.
-
-## Hooks
-
-Hook decorators register typed lifecycle callbacks:
-
-```python
-@on_invalid_data(stage="input_validation")
-def handle_invalid(context: InvalidDataContext) -> InvalidDataAction:
-    ...
-
-@on_failure(stage="transform")
-async def handle_failure(context: ExecutionFailureContext) -> FailureAction:
-    ...
-```
-
-Sync and async callables share the same lifecycle model.
-
-## Runtime Entry Points
-
-```python
-result = CustomerPipeline.run(profile="local")
-result = await CustomerPipeline.arun(profile="local")
-```
-
-The internal engine is async-first. `run()` is a synchronous boundary for code
-that does not already have an active event loop.
-
-## Loading
-
-Proposed high-level loading APIs:
-
-```python
-Pipeline.from_contract("customer.dpcs.yaml")
-Transformation.from_contract("normalize.dtcs.yaml")
-load_pipeline("package.module:CustomerPipeline")
-```
-
-ContractModel remains responsible for ODCS data-contract loading.
-
-## Plugin SDK
-
-Advanced interfaces should live under explicit modules:
-
-```python
-from pipelantic.sdk import (
-    DataframePlugin,
-    OrchestratorPlugin,
-    StoragePlugin,
-    ResourceProvider,
-    SecretProvider,
-    PluginCapabilities,
-)
-```
-
-SDK protocols should be async at the orchestration boundary even when the
-underlying library is synchronous.
-
-## Internal APIs
-
-Modules or names beginning with an underscore are not public. The planner's
-mutable working state, metaclass internals, compiler passes, and plugin loader
-implementation should not be imported by applications.
-
-## Typing
-
-Pipelantic should ship type information and prioritize:
-
-- Generic port types
-- Typed step outputs
-- IDE completion
-- Static plugin protocols
-- Minimal reliance on untyped dictionaries
-
-A mypy or pyright plugin may be considered only if standard Python typing
-cannot express essential authoring behavior.
-
-## See Also
-
-- [Type Annotations](../04_TRANSFORMATIONS/TYPE_ANNOTATIONS.md)
-- [Pipeline](../05_PIPELINES/PIPELINE.md)
-- [Plugin SDK Overview](../07_PLUGIN_SDK/OVERVIEW.md)
-- [Secrets Management](../06_EXECUTION/SECRETS_MANAGEMENT.md)
-- [Exceptions](EXCEPTIONS.md)
+::: pipelantic.exceptions
+    options:
+      show_root_heading: true
+      members_order: source
+
+## Stability
+
+Pipelantic is alpha. A root export is public in the current release, but 0.x
+releases may change APIs. Review the changelog and
+[compatibility matrix](COMPATIBILITY.md) before upgrading.

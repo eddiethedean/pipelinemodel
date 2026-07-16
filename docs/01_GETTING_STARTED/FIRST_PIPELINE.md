@@ -1,178 +1,148 @@
 # Your First Pipeline
 
-This tutorial walks through building a complete Pipelantic project
-from start to finish. Rather than focusing on execution details, you'll
-learn how to model a pipeline using typed Python classes.
+> **Status: Available in Pipelantic 0.4.0.** This tutorial uses the local
+> Python runtime and in-memory storage. It does not require a dataframe plugin.
 
-> **Status:** Steps 1–8 match the shipped 0.4.0 surface (authoring, validation,
-> contract generation, planning, and local execution). Dataframe engines and
-> external orchestrators arrive in later milestones.
+This tutorial explains the pieces of the runnable quickstart and shows how to
+inspect the artifacts Pipelantic creates.
 
-## Goal
+## Define data contracts
 
-We'll build a simple pipeline that:
-
-1.  Reads raw customer records.
-2.  Normalizes customer names.
-3.  Writes curated customer records.
-4.  Generates portable contracts.
-5.  Validates the entire pipeline before execution.
-
-## Step 1 --- Define the Data Contracts
-
-``` python
+```python
 from pipelantic import Data
+
 
 class RawCustomer(Data):
     customer_id: int
     first_name: str
     last_name: str
 
+
 class Customer(Data):
     customer_id: int
     full_name: str
 ```
 
-These classes are the source of truth for your data. Pipelantic can
-generate ODCS-compatible contracts directly from them.
+These models validate records and provide the source for generated ODCS
+artifacts.
 
-## Step 2 --- Define the Transformation
+## Define a transformation contract
 
-``` python
-from pipelantic import Transformation, Input, Output
+```python
+from pipelantic import Input, Output, Transformation
+
 
 class NormalizeCustomers(Transformation):
     customers: Input[RawCustomer]
     result: Output[Customer]
 ```
 
-Notice that the transformation defines **what** it accepts and **what**
-it produces---not **how** it performs the work.
+The class states what the transformation consumes and produces. It does not
+execute anything by itself.
 
-## Step 3 --- Provide an Implementation
+## Register local executable code
 
-``` python
-@NormalizeCustomers.implementation("polars")
-def normalize_customers(df):
-    return (
-        df.with_columns(
-            (df["first_name"] + " " + df["last_name"])
-            .alias("full_name")
+```python
+@NormalizeCustomers.implementation("local")
+def normalize_customers(customers: list[RawCustomer]) -> list[Customer]:
+    return [
+        Customer(
+            customer_id=row.customer_id,
+            full_name=f"{row.first_name} {row.last_name}",
         )
-        .drop(["first_name", "last_name"])
-    )
+        for row in customers
+    ]
 ```
 
-A Pandas, Spark, or remote implementation could be registered instead
-without changing the transformation contract.
+The engine name must match an implementation the selected profile can use.
+The built-in development profile selects local Python implementations.
 
-## Step 4 --- Build the Pipeline
+## Connect the pipeline
 
-``` python
+```python
 from pipelantic import Pipeline, Sink, Source
+
 
 class CustomerPipeline(Pipeline):
     raw: Source[RawCustomer] = Source(binding="customer_source")
-
-    normalized = NormalizeCustomers.step(
-        customers=raw,
-    )
-
+    normalized = NormalizeCustomers.step(customers=raw)
     curated: Sink[Customer] = Sink(
         input=normalized.result,
         binding="customer_sink",
     )
 ```
 
-The pipeline models the logical flow of data between contracts and
-transformations.
+Bindings are logical names. At runtime, a storage provider resolves each name.
 
-## Step 5 --- Validate
+## Validate and inspect
 
-``` python
-report = CustomerPipeline.validate()
+```python
+report = CustomerPipeline.validate(profile="development")
 report.raise_for_errors()
+
+graph = CustomerPipeline.inspect()
+print(CustomerPipeline.to_mermaid())
 ```
 
-Validation checks:
+Validation returns structured diagnostics. Inspection and Mermaid generation
+do not execute transformation code.
 
--   Contract compatibility
--   Pipeline wiring
--   Required inputs and outputs
--   Parameter types
--   Plugin bindings (when configured)
+## Generate portable contracts
 
-## Step 6 --- Generate Contracts
-
-``` python
+```python
 CustomerPipeline.write_contracts("contracts/")
 ```
 
-This produces:
+This writes ODCS, DTCS, and DPCS artifacts derived from the same definitions.
+Generated filenames are deterministic; inspect the returned `ContractBundle`
+instead of depending on hand-written filename assumptions.
 
-``` text
-contracts/
-├── data/
-│   ├── raw-customer.odcs.yaml
-│   └── customer.odcs.yaml
-├── transformations/
-│   └── normalize-customers.dtcs.yaml
-└── pipelines/
-    └── customer-pipeline.dpcs.yaml
-```
-
-## Step 7 --- Plan
+## Plan
 
 ```python
-plan = CustomerPipeline.plan(profile="local")
+plan = CustomerPipeline.plan(profile="development")
+print(plan.plan_id, plan.fingerprint)
+print(CustomerPipeline.explain_plan(profile="development"))
 ```
 
-0.4.0 resolves registered implementations, source and sink bindings,
-capabilities, resource references, and the physical execution graph without
-reading data, resolving secrets, or executing the transformation during
-planning.
+Planning resolves implementations, bindings, capabilities, and execution
+regions without reading data or resolving secret values.
 
-## Step 8 --- Execute locally
+## Run
 
-``` python
+```python
 from pipelantic import PipelineRuntime
 
 runtime = PipelineRuntime()
-runtime.memory.seed("customer_source", [...])
-report = CustomerPipeline.run(profile="development", runtime=runtime)
-print(report.to_text())
+runtime.memory.seed(
+    "customer_source",
+    [RawCustomer(customer_id=1, first_name="Ada", last_name="Lovelace")],
+)
+
+run_report = CustomerPipeline.run(
+    profile="development",
+    runtime=runtime,
+)
+print(run_report.status.value)
+
+customers = runtime.memory.get("customer_sink")
+print(customers[0].full_name)
 ```
 
-or
+Expected output:
 
-``` python
-await CustomerPipeline.arun(profile="development", runtime=runtime)
+```text
+Ada Lovelace
 ```
 
-Local execution consumes the same `PipelinePlan` as future orchestrators.
-JSON/CSV and callable bindings are available in 0.4; Polars/Pandas/SQL
-plugins ship later.
+Use `await CustomerPipeline.arun(...)` when calling Pipelantic from an existing
+async application.
 
-## What You Built
+## Current boundary
 
-You created:
+Pipelantic 0.4 can run registered Python implementations with memory, callable,
+JSON, CSV, and no-write storage. Pandas, Polars, SQL, Spark, and external
+orchestrators are future plugin designs.
 
--   Typed data contracts
--   A typed transformation contract
--   A typed pipeline
--   Portable ODCS, DTCS, and DPCS contracts
--   A validated `PipelinePlan`
--   A local `PipelineRunReport`
-
-## Key Takeaways
-
--   Python type annotations define the interface.
--   Contracts are generated automatically.
--   Pipelines describe intent, not execution.
--   Execution engines are interchangeable.
--   Validation and planning always happen before execution.
-
-## Next Step
-
-Continue with [Project Structure](PROJECT_STRUCTURE.md) to learn how to organize a
-Pipelantic project for long-term maintainability.
+Continue with [Project Structure](PROJECT_STRUCTURE.md) or run the complete
+repository example in `examples/quickstart.py`.

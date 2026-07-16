@@ -37,6 +37,8 @@ uv sync
 uv run pytest
 uv run ruff check .
 uv run ruff format --check .
+uv run python scripts/check_docs.py
+uv run python examples/quickstart.py
 uv run mkdocs build --strict
 ```
 
@@ -90,6 +92,9 @@ Documentation should:
 - Include executable examples where possible
 - Avoid claiming that Pipelantic executes work owned by plugins
 
+See [Documentation Contributions](DOCUMENTATION.md) for page-status labels,
+current-version rules, and CI checks.
+
 ## Plugin Contributions
 
 Core plugins should:
@@ -139,4 +144,3 @@ compatibility, and architecture.
 Do not report credential leaks, arbitrary code execution, unsafe reference
 resolution, or other vulnerabilities through a public issue. Follow the
 repository security policy.
-

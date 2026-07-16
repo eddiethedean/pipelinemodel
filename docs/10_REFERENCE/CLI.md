@@ -1,247 +1,101 @@
 # Command-Line Interface
 
-The Pipelantic command-line interface exposes validation, planning,
-generation, visualization, compilation, and delegated execution for local
-development and automation.
-
-> The commands in this chapter describe the proposed Pipelantic 1.0 CLI.
-> Names and options may change before the public API is stabilized.
-
-## Command
+> **Status: Available in Pipelantic 0.4.0.** This page documents the commands
+> implemented by the installed package.
 
 ```bash
-pipelantic [GLOBAL_OPTIONS] COMMAND [ARGS]
+pipelantic --help
+pipelantic --version
 ```
 
-The CLI must use the same public APIs as Python applications. It must not
-implement a second planner, validator, or contract generator.
+Pipeline targets use `package.module:PipelineClass` or
+`path/to/file.py:PipelineClass`.
 
-## Global Options
+## `validate`
 
-```text
---project PATH        Project root or configuration file
---profile NAME        Execution profile
---format FORMAT       human, json, or sarif output
---color / --no-color  Control ANSI color
---verbose             Include additional operational detail
---quiet               Suppress non-error output
---version             Display the installed version
---help                Display help
-```
-
-Command-line options override environment variables, which override project
-configuration.
-
-## Core Commands
-
-### `init`
-
-Create a new Pipelantic project.
+Validate without executing transformation code:
 
 ```bash
-pipelantic init customer_pipeline
+pipelantic validate examples/quickstart.py:CustomerPipeline \
+  --profile development
 ```
 
-The generated project should contain a minimal typed pipeline, tests, profiles,
-and contract output directories.
+Options:
 
-### `inspect`
+- `--profile`, `-p`: profile name; default `local`
+- `--format`: `human` or `json`
 
-Inspect a pipeline without executing it.
+Exit status is 0 for a valid pipeline and 1 for validation errors.
+
+## `inspect`
+
+Print the logical pipeline graph:
 
 ```bash
-pipelantic inspect src/customer_pipeline.py:CustomerPipeline
+pipelantic inspect examples/quickstart.py:CustomerPipeline
+pipelantic inspect examples/quickstart.py:CustomerPipeline --format json
 ```
 
-Inspection may report:
+## `plan`
 
-- Pipeline identity and version
-- Sources, steps, sinks, and subpipelines
-- Referenced ODCS, DTCS, and DPCS contracts
-- Registered transformation implementations
-- Unresolved bindings
-- Available profiles
-
-### `validate`
-
-Validate contracts, transformation interfaces, graph wiring, and selected
-profile bindings.
+Resolve a deterministic `PipelinePlan`:
 
 ```bash
-pipelantic validate src/customer_pipeline.py:CustomerPipeline
-pipelantic validate contracts/customer.dpcs.yaml
-pipelantic validate . --profile production
+pipelantic plan examples/quickstart.py:CustomerPipeline \
+  --profile development
 ```
 
-Validation does not execute user transformation code.
+The default output format is JSON. Selection options are:
 
-### `plan`
+- `--run-one NODE`
+- `--run-until NODE`
+- `--nodes NAME,NAME`
 
-Resolve a pipeline and profile into a deterministic `PipelinePlan`.
+`--run-one` and `--run-until` are mutually exclusive.
+
+Explain resolution decisions with either form:
 
 ```bash
-pipelantic plan src/customer_pipeline.py:CustomerPipeline \
-  --profile production \
-  --output build/customer-plan.json
+pipelantic plan explain examples/quickstart.py:CustomerPipeline \
+  --profile development
+
+pipelantic plan examples/quickstart.py:CustomerPipeline \
+  --profile development --explain
 ```
 
-Planning resolves:
+## `run`
 
-- Plugin and implementation selection
-- Source and sink bindings
-- Resources
-- Execution regions
-- Capability requirements
-- Materialization boundaries
-
-### `run`
-
-Delegate a validated plan to the selected orchestration backend.
+Validate, plan, and execute with the local runtime:
 
 ```bash
-pipelantic run src/customer_pipeline.py:CustomerPipeline --profile local
+pipelantic run examples/quickstart.py:CustomerPipeline \
+  --profile development
 ```
 
-`run` is primarily intended for local or directly managed backends. An
-externally managed orchestrator may instead return a submission identifier or
-require compilation.
+Supported report formats are `text`, `json`, and `html`. Additional options:
 
-### `compile`
+- `--run-one NODE`
+- `--run-until NODE`
+- `--intent INTENT`
+- `--no-write`
 
-Compile a plan into a backend artifact.
+CLI runs start with a new process-local runtime. A source that requires seeded
+in-memory data is therefore better run through Python, as shown in the
+quickstart. Use JSON, CSV, callable bindings, or application-owned runtime
+setup for CLI execution.
+
+## `report`
 
 ```bash
-pipelantic compile src/customer_pipeline.py:CustomerPipeline \
-  --profile production \
-  --target airflow \
-  --output build/dags/customer_pipeline.py
+pipelantic report show RUN_ID --format text
+pipelantic report export RUN_ID --format json --output report.json
 ```
 
-Possible targets include Airflow DAGs, deployment bundles, SQL scripts, Spark
-job definitions, and plugin-defined artifacts.
+The built-in CLI report store is process-local. A report created by a previous
+CLI process is not available to a new invocation.
 
-### `generate`
+## Commands not included in 0.4
 
-Generate portable artifacts from typed Python models.
-
-```bash
-pipelantic generate contracts src/customer_pipeline.py:CustomerPipeline \
-  --output contracts/
-```
-
-Subcommands may include:
-
-```text
-generate contracts
-generate docs
-generate mermaid
-generate graphviz
-generate html
-```
-
-Generated contracts must remain separated by standard:
-
-```text
-contracts/
-├── data/             # ODCS
-├── transformations/  # DTCS
-└── pipelines/        # DPCS
-```
-
-### `graph`
-
-Render a logical pipeline or resolved plan.
-
-```bash
-pipelantic graph src/customer_pipeline.py:CustomerPipeline \
-  --format mermaid \
-  --output build/customer-pipeline.mmd
-```
-
-The logical graph should remain distinguishable from a backend execution graph.
-
-### `plugins`
-
-Inspect installed plugins and capabilities.
-
-```bash
-pipelantic plugins list
-pipelantic plugins show polars
-pipelantic plugins check --profile production
-```
-
-### `config`
-
-Inspect effective configuration and its provenance.
-
-```bash
-pipelantic config show --profile production
-pipelantic config validate
-```
-
-Sensitive values must be redacted.
-
-## Pipeline References
-
-Python pipelines use an importable reference:
-
-```text
-package.module:PipelineClass
-```
-
-File references may also be supported:
-
-```text
-src/pipelines/customer.py:CustomerPipeline
-```
-
-Contract-first pipelines use a DPCS path:
-
-```text
-contracts/pipelines/customer.dpcs.yaml
-```
-
-## Output Formats
-
-Human output is the default. Machine-readable modes are intended for CI and
-editor integrations.
-
-```bash
-pipelantic validate . --format json
-pipelantic validate . --format sarif
-```
-
-## Exit Codes
-
-| Code | Meaning |
-|---:|---|
-| 0 | Command completed successfully |
-| 1 | Validation, planning, or compatibility errors |
-| 2 | Invalid command usage or configuration |
-| 3 | Source, import, or I/O failure |
-| 4 | Plugin or backend failure |
-| 130 | Interrupted by the user |
-
-## CI Example
-
-```bash
-pipelantic validate . --profile production --format sarif
-pipelantic generate contracts . --check
-pipelantic plan . --profile production --check
-```
-
-`--check` should compare generated output without modifying files.
-
-## Safety
-
-Commands that only inspect, validate, plan, or generate must not execute
-transformation implementations. Commands that may cause external effects must
-say so clearly and support a dry-run mode where meaningful.
-
-## See Also
-
-- [Configuration](CONFIGURATION.md)
-- [Diagnostics](DIAGNOSTICS.md)
-- [Environment Variables](ENVIRONMENT_VARIABLES.md)
-- [Execution Model](../06_EXECUTION/EXECUTION_MODEL.md)
-
+`init`, `compile`, `generate`, `graph`, `plugins`, and `config` are future CLI
+designs. Do not depend on them until they appear in this current-version
+reference and in `pipelantic --help`.

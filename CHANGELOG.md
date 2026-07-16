@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.0] - 2026-07-16
 
+### Upgrade notes
+
+- Register local executable transformations with
+  `@TransformationClass.implementation("local")`.
+- Use the `development` profile for the built-in local runtime examples.
+- Pandas, Polars, SQL, Spark, and Airflow plugins are not part of this release.
+
+### Known limitations
+
+- The local report store is process-scoped.
+- The package remains alpha and 0.x releases may contain breaking changes.
+
 ### Added
 
 - Local async-first runtime that executes `PipelinePlan`s in-process
@@ -137,5 +149,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   checks, and tag-triggered PyPI release
 
 [0.3.0]: https://github.com/eddiethedean/pipelantic/releases/tag/v0.3.0
+[0.4.0]: https://github.com/eddiethedean/pipelantic/releases/tag/v0.4.0
 [0.2.0]: https://github.com/eddiethedean/pipelantic/releases/tag/v0.2.0
 [0.1.0]: https://github.com/eddiethedean/pipelantic/releases/tag/v0.1.0
