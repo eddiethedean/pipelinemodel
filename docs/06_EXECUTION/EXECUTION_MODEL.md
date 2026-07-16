@@ -3,7 +3,7 @@
 The execution model defines how a resolved `PipelinePlan` is realized while
 preserving the observable semantics of the logical pipeline.
 
-PipelineModel coordinates execution through plugins. External libraries and
+Pipelantic coordinates execution through plugins. External libraries and
 platforms perform reads, transformations, writes, scheduling, and distributed
 computation.
 
@@ -29,7 +29,7 @@ PipelineRunReport, diagnostics, events, and lineage
 
 ## Execution Responsibilities
 
-PipelineModel coordinates:
+Pipelantic coordinates:
 
 - Plan submission
 - Logical identity propagation

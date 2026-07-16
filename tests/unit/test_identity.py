@@ -1,6 +1,6 @@
 """Unit tests for identity helpers."""
 
-from pipelinemodel.identity import (
+from pipelantic.identity import (
     contract_id,
     implementation_id,
     node_id,

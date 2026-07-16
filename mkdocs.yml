@@ -1,0 +1,230 @@
+site_name: Pipelantic
+site_description: Typed, contract-driven data pipeline modeling for Python.
+site_url: https://pipelantic.readthedocs.io/
+repo_url: https://github.com/eddiethedean/pipelantic
+repo_name: eddiethedean/pipelantic
+edit_uri: edit/main/docs/
+docs_dir: docs
+
+theme:
+  name: material
+  logo: theme/assets/pipelantic-logo.svg
+  favicon: theme/assets/pipelantic-favicon.svg
+  font:
+    text: Inter
+    code: IBM Plex Mono
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: pipelantic-light
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: pipelantic-dark
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - content.action.edit
+    - content.code.copy
+    - navigation.footer
+    - navigation.indexes
+    - navigation.sections
+    - navigation.tabs
+    - navigation.top
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+
+extra_css:
+  - theme/stylesheets/pipelantic.css
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths:
+            - src
+          options:
+            docstring_style: google
+            members_order: source
+            show_root_heading: true
+            show_source: false
+
+nav:
+  - Home: README.md
+  - Getting Started:
+      - Overview: 01_GETTING_STARTED/README.md
+      - Installation: 01_GETTING_STARTED/INSTALLATION.md
+      - Quickstart: 01_GETTING_STARTED/QUICKSTART.md
+      - First Pipeline: 01_GETTING_STARTED/FIRST_PIPELINE.md
+      - Project Structure: 01_GETTING_STARTED/PROJECT_STRUCTURE.md
+      - FAQ: 01_GETTING_STARTED/FAQ.md
+  - Foundations:
+      - Overview: 02_FOUNDATIONS/README.md
+      - Vision: 02_FOUNDATIONS/VISION.md
+      - Why Pipelantic: 02_FOUNDATIONS/WHY_PIPELANTIC.md
+      - FastAPI Philosophy: 02_FOUNDATIONS/FASTAPI_PHILOSOPHY.md
+      - Design Principles: 02_FOUNDATIONS/DESIGN_PRINCIPLES.md
+      - Core Concepts: 02_FOUNDATIONS/CORE_CONCEPTS.md
+      - Architecture: 02_FOUNDATIONS/ARCHITECTURE.md
+      - Security: 02_FOUNDATIONS/SECURITY.md
+      - Glossary: 02_FOUNDATIONS/GLOSSARY.md
+      - Documentation Status: 02_FOUNDATIONS/DOCUMENTATION_STATUS.md
+  - Data Contracts:
+      - Overview: 03_DATA_CONTRACTS/README.md
+      - DataContractModel: 03_DATA_CONTRACTS/DATACONTRACTMODEL.md
+      - Pydantic Integration: 03_DATA_CONTRACTS/PYDANTIC_INTEGRATION.md
+      - ODCS: 03_DATA_CONTRACTS/ODCS.md
+      - Validation: 03_DATA_CONTRACTS/VALIDATION.md
+      - Versioning: 03_DATA_CONTRACTS/VERSIONING.md
+      - Generation: 03_DATA_CONTRACTS/GENERATION.md
+      - Loading: 03_DATA_CONTRACTS/LOADING.md
+  - Transformations:
+      - Overview: 04_TRANSFORMATIONS/README.md
+      - Transformation: 04_TRANSFORMATIONS/TRANSFORMATION.md
+      - Inputs: 04_TRANSFORMATIONS/INPUTS.md
+      - Outputs: 04_TRANSFORMATIONS/OUTPUTS.md
+      - Parameters: 04_TRANSFORMATIONS/PARAMETERS.md
+      - Type Annotations: 04_TRANSFORMATIONS/TYPE_ANNOTATIONS.md
+      - DTCS: 04_TRANSFORMATIONS/DTCS.md
+      - Implementations: 04_TRANSFORMATIONS/IMPLEMENTATIONS.md
+      - Callbacks: 04_TRANSFORMATIONS/CALLBACKS.md
+      - Error Handling: 04_TRANSFORMATIONS/ERROR_HANDLING.md
+      - Async: 04_TRANSFORMATIONS/ASYNC.md
+  - Pipelines:
+      - Overview: 05_PIPELINES/README.md
+      - Pipeline: 05_PIPELINES/PIPELINE.md
+      - Sources: 05_PIPELINES/SOURCES.md
+      - Steps: 05_PIPELINES/STEPS.md
+      - Sinks: 05_PIPELINES/SINKS.md
+      - Subpipelines: 05_PIPELINES/SUBPIPELINES.md
+      - DPCS: 05_PIPELINES/DPCS.md
+      - Validation: 05_PIPELINES/PIPELINE_VALIDATION.md
+      - Planning: 05_PIPELINES/PLANNING.md
+      - Profiles: 05_PIPELINES/PROFILES.md
+      - Contract Generation: 05_PIPELINES/CONTRACT_GENERATION.md
+      - Contract Loading: 05_PIPELINES/CONTRACT_LOADING.md
+  - Execution:
+      - Overview: 06_EXECUTION/README.md
+      - Execution Model: 06_EXECUTION/EXECUTION_MODEL.md
+      - Lifecycle Extensions: 06_EXECUTION/LIFECYCLE_EXTENSIONS.md
+      - Logging: 06_EXECUTION/LOGGING.md
+      - Run Reports: 06_EXECUTION/RUN_REPORTS.md
+      - Plugins: 06_EXECUTION/PLUGINS.md
+      - Dataframe Plugins: 06_EXECUTION/DATAFRAME_PLUGINS.md
+      - Orchestration Plugins: 06_EXECUTION/ORCHESTRATION_PLUGINS.md
+      - Storage Plugins: 06_EXECUTION/STORAGE_PLUGINS.md
+      - Resource Plugins: 06_EXECUTION/RESOURCE_PLUGINS.md
+      - Local Python: 06_EXECUTION/LOCAL_PYTHON.md
+      - Polars: 06_EXECUTION/POLARS.md
+      - Pandas: 06_EXECUTION/PANDAS.md
+      - SQL: 06_EXECUTION/SQL.md
+      - SQL Execution: 06_EXECUTION/SQL_EXECUTION.md
+      - SQL Pushdown: 06_EXECUTION/SQL_PUSHDOWN.md
+      - PySpark: 06_EXECUTION/PYSPARK.md
+      - PySpark Execution: 06_EXECUTION/PYSPARK_EXECUTION.md
+      - Spark Optimization: 06_EXECUTION/SPARK_OPTIMIZATION.md
+      - Structured Streaming: 06_EXECUTION/STRUCTURED_STREAMING.md
+      - Airflow: 06_EXECUTION/AIRFLOW.md
+      - Compilation: 06_EXECUTION/COMPILATION.md
+  - Plugin SDK:
+      - Overview: 07_PLUGIN_SDK/README.md
+      - Architecture: 07_PLUGIN_SDK/OVERVIEW.md
+      - Dataframe Plugin: 07_PLUGIN_SDK/DATAFRAME_PLUGIN.md
+      - Orchestrator Plugin: 07_PLUGIN_SDK/ORCHESTRATOR_PLUGIN.md
+      - Storage Plugin: 07_PLUGIN_SDK/STORAGE_PLUGIN.md
+      - Resource Provider: 07_PLUGIN_SDK/RESOURCE_PROVIDER.md
+      - Observability Provider: 07_PLUGIN_SDK/OBSERVABILITY_PROVIDER.md
+      - SQL Plugin: 07_PLUGIN_SDK/SQL_PLUGIN.md
+      - SQL Dialect: 07_PLUGIN_SDK/SQL_DIALECT.md
+      - PySpark Plugin: 07_PLUGIN_SDK/PYSPARK_PLUGIN.md
+      - Spark Provider: 07_PLUGIN_SDK/SPARK_PROVIDER.md
+      - Testing Plugins: 07_PLUGIN_SDK/TESTING_PLUGINS.md
+      - Distribution: 07_PLUGIN_SDK/DISTRIBUTION.md
+  - Visualization:
+      - Overview: 08_VISUALIZATION/README.md
+      - Lineage: 08_VISUALIZATION/LINEAGE.md
+      - Mermaid: 08_VISUALIZATION/MERMAID.md
+      - Graphviz: 08_VISUALIZATION/GRAPHVIZ.md
+      - HTML: 08_VISUALIZATION/HTML.md
+      - Documentation: 08_VISUALIZATION/DOCUMENTATION.md
+      - Pipeline Interface: 08_VISUALIZATION/OPENAPI_FOR_PIPELINES.md
+  - Examples:
+      - Overview: 09_EXAMPLES/README.md
+      - CSV to CSV: 09_EXAMPLES/CSV_TO_CSV.md
+      - CSV to SQL: 09_EXAMPLES/CSV_TO_SQL.md
+      - SQL to SQL: 09_EXAMPLES/SQL_TO_SQL.md
+      - Pandas Pipeline: 09_EXAMPLES/PANDAS_PIPELINE.md
+      - Polars Pipeline: 09_EXAMPLES/POLARS_PIPELINE.md
+      - Airflow Pipeline: 09_EXAMPLES/AIRFLOW_PIPELINE.md
+      - Multi-output: 09_EXAMPLES/MULTI_OUTPUT.md
+      - Callbacks: 09_EXAMPLES/CALLBACKS.md
+      - Async Pipelines: 09_EXAMPLES/ASYNC_PIPELINES.md
+      - Contract First: 09_EXAMPLES/CONTRACT_FIRST.md
+      - Code First: 09_EXAMPLES/CODE_FIRST.md
+      - End to End: 09_EXAMPLES/END_TO_END.md
+      - SQL to PySpark: 09_EXAMPLES/SQL_TO_PYSPARK.md
+      - PySpark to SQL: 09_EXAMPLES/PYSPARK_TO_SQL.md
+      - PySpark to Delta: 09_EXAMPLES/PYSPARK_TO_DELTA.md
+      - Streaming PySpark: 09_EXAMPLES/STREAMING_PYSPARK.md
+  - Reference:
+      - Overview: 10_REFERENCE/README.md
+      - CLI: 10_REFERENCE/CLI.md
+      - Configuration: 10_REFERENCE/CONFIGURATION.md
+      - Diagnostics: 10_REFERENCE/DIAGNOSTICS.md
+      - Exceptions: 10_REFERENCE/EXCEPTIONS.md
+      - Environment Variables: 10_REFERENCE/ENVIRONMENT_VARIABLES.md
+      - API Reference: 10_REFERENCE/API_REFERENCE.md
+  - Development:
+      - Overview: 11_DEVELOPMENT/README.md
+      - Roadmap: 11_DEVELOPMENT/ROADMAP.md
+      - Dependency Strategy: 11_DEVELOPMENT/DEPENDENCY_STRATEGY.md
+      - SparkForge Adoption: 11_DEVELOPMENT/SPARKFORGE_ADOPTION.md
+      - Design Decisions: 11_DEVELOPMENT/DESIGN_DECISIONS.md
+      - Architecture Decisions: 11_DEVELOPMENT/ARCHITECTURE_DECISIONS.md
+      - Testing: 11_DEVELOPMENT/TESTING.md
+      - Benchmarks: 11_DEVELOPMENT/BENCHMARKS.md
+      - Contributing: 11_DEVELOPMENT/CONTRIBUTING.md
+      - Release Process: 11_DEVELOPMENT/RELEASE_PROCESS.md
+      - Coding Standards: 11_DEVELOPMENT/CODING_STANDARDS.md
+  - Specifications:
+      - Overview: specifications/README.md
+      - DTCS: specifications/DTCS_SPEC.md
+      - DPCS: specifications/DPCS_SPEC.md
+  - Visual Theme: theme/README.md
+  - Manifesto: PIPELANTIC_MANIFESTO.md

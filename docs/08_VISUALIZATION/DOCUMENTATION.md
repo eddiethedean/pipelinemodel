@@ -1,11 +1,11 @@
 # Documentation
 
-PipelineModel documentation should be generated from the same validated models
+Pipelantic documentation should be generated from the same validated models
 used for planning and execution.
 
 Data contracts, transformation contracts, pipeline contracts, lineage,
 diagnostics, diagrams, and runtime metadata should not be maintained in separate
-handwritten systems. PipelineModel derives documentation from its canonical
+handwritten systems. Pipelantic derives documentation from its canonical
 models so the published material stays synchronized with the actual pipeline.
 
 ## Purpose
@@ -51,7 +51,7 @@ arbitrary source code or runtime logs as the canonical pipeline definition.
 
 ## Documentation Sources
 
-PipelineModel documentation may combine information from:
+Pipelantic documentation may combine information from:
 
 - `DataContractModel` classes
 - ODCS artifacts
@@ -69,7 +69,7 @@ Each source contributes a distinct layer of information.
 
 ## Logical and Runtime Documentation
 
-PipelineModel should distinguish between two categories.
+Pipelantic should distinguish between two categories.
 
 ### Logical documentation
 
@@ -253,7 +253,7 @@ project.write_documentation(
 ```
 
 The final public API may differ, but generators should consume normalized
-PipelineModel objects rather than private class internals.
+Pipelantic objects rather than private class internals.
 
 ## Documentation Profiles
 
@@ -346,7 +346,7 @@ version identities in links or contract references.
 
 ## Compatibility Documentation
 
-When multiple versions are available, PipelineModel may generate compatibility
+When multiple versions are available, Pipelantic may generate compatibility
 reports describing:
 
 - Compatible changes
@@ -485,7 +485,7 @@ Examples include:
 - Search services
 - Static-site generators
 
-Extensions should consume public PipelineModel models and preserve stable
+Extensions should consume public Pipelantic models and preserve stable
 identities and references.
 
 ## Testing
@@ -531,7 +531,7 @@ Avoid:
 
 ## Key Principle
 
-> PipelineModel documentation is generated from the same canonical contracts,
+> Pipelantic documentation is generated from the same canonical contracts,
 > Pipeline Plans, and lineage models used by validation and execution. It makes
 > the system understandable without creating another source of truth that can
 > drift from the implementation.

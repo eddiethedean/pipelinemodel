@@ -1,11 +1,11 @@
 # SQL to SQL
 
-This example builds a complete PipelineModel pipeline that reads customer and
+This example builds a complete Pipelantic pipeline that reads customer and
 order data from SQL, performs the transformation **inside the database**, and
 writes the resulting customer metrics to another SQL table.
 
 The example demonstrates SQL-native execution as the preferred strategy for
-SQL-to-SQL pipelines. PipelineModel keeps the logical transformation portable,
+SQL-to-SQL pipelines. Pipelantic keeps the logical transformation portable,
 while the planner selects the SQL implementation when the database and dialect
 can preserve the required semantics.
 
@@ -175,7 +175,7 @@ They do not depend on:
 
 from typing import Literal
 
-from pipelinemodel import Input, Output, Parameter, Transformation
+from pipelantic import Input, Output, Parameter, Transformation
 
 from .contracts import Customer, CustomerOrderSummary, Order
 
@@ -204,7 +204,7 @@ unstructured string.
 ```python
 # src/sql_to_sql/sql_implementations.py
 
-from pipelinemodel.sql import (
+from pipelantic.sql import (
     SqlQuery,
     SqlRelation,
     coalesce,
@@ -279,10 +279,10 @@ The important requirements are:
 
 ## Raw SQL Escape Hatch
 
-PipelineModel may also support raw SQL for advanced or database-specific cases.
+Pipelantic may also support raw SQL for advanced or database-specific cases.
 
 ```python
-from pipelinemodel.sql import RawSqlQuery
+from pipelantic.sql import RawSqlQuery
 
 
 @BuildCustomerOrderSummary.implementation(
@@ -380,7 +380,7 @@ Both implementations satisfy the same DTCS transformation contract.
 ```python
 # src/sql_to_sql/pipeline.py
 
-from pipelinemodel import Pipeline, Sink, Source
+from pipelantic import Pipeline, Sink, Source
 
 from .contracts import Customer, CustomerOrderSummary, Order
 from .transformations import BuildCustomerOrderSummary
@@ -414,7 +414,7 @@ The pipeline remains independent of SQL syntax and database configuration.
 ```python
 # src/sql_to_sql/profiles.py
 
-from pipelinemodel import Profile
+from pipelantic import Profile
 
 
 local_sql = Profile(
@@ -899,7 +899,7 @@ Polars-only transformation
 SQL sink
 ```
 
-PipelineModel should minimize physical transitions while preserving semantics.
+Pipelantic should minimize physical transitions while preserving semantics.
 
 ## Step 13 — Generate Contracts
 
@@ -1367,9 +1367,9 @@ The pipeline author does not rewrite the pipeline to choose among them.
 
 ## Key Principle
 
-> When a pipeline begins and ends in SQL, PipelineModel should prefer executing
+> When a pipeline begins and ends in SQL, Pipelantic should prefer executing
 > eligible transformations inside SQL. The database performs the work, while
-> PipelineModel preserves portable contracts, validation, lineage, diagnostics,
+> Pipelantic preserves portable contracts, validation, lineage, diagnostics,
 > and fallback behavior.
 
 ## Next Step

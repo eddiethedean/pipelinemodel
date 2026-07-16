@@ -35,7 +35,7 @@ Only errors make a validation report invalid by default.
 
 ## Diagnostic Namespaces
 
-PipelineModel-owned codes should use stable categories:
+Pipelantic-owned codes should use stable categories:
 
 ```text
 PMSRCxxx   Source and import loading
@@ -181,8 +181,8 @@ Suppressing errors that protect required semantics should not be allowed.
 ## Machine-Readable Output
 
 ```bash
-pipelinemodel validate . --format json
-pipelinemodel validate . --format sarif
+pipelantic validate . --format json
+pipelantic validate . --format sarif
 ```
 
 Machine output should use stable field names and diagnostic codes even when

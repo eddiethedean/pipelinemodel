@@ -1,10 +1,10 @@
 # CSV to CSV
 
-This example builds a complete PipelineModel pipeline that reads customer data
+This example builds a complete Pipelantic pipeline that reads customer data
 from a CSV file, validates it against a data contract, normalizes the records
 with a typed transformation, and writes the curated results to another CSV file.
 
-The example demonstrates the full PipelineModel lifecycle:
+The example demonstrates the full Pipelantic lifecycle:
 
 ```text
 Data Contract
@@ -111,7 +111,7 @@ both models.
 ```python
 # src/csv_to_csv/transformations.py
 
-from pipelinemodel import Input, Output, Parameter, Transformation
+from pipelantic import Input, Output, Parameter, Transformation
 
 from .contracts import Customer, RawCustomer
 
@@ -167,7 +167,7 @@ The transformation contract remains portable.
 ```python
 # src/csv_to_csv/pipeline.py
 
-from pipelinemodel import Pipeline, Sink, Source
+from pipelantic import Pipeline, Sink, Source
 
 from .contracts import Customer, RawCustomer
 from .transformations import NormalizeCustomers
@@ -208,7 +208,7 @@ The pipeline does not contain file paths or Polars-specific code.
 ```python
 # src/csv_to_csv/profiles.py
 
-from pipelinemodel import Profile
+from pipelantic import Profile
 
 
 local = Profile(
@@ -296,7 +296,7 @@ result = await CustomerCsvPipeline.arun(
 )
 ```
 
-PipelineModel handles sync and async invocation without requiring the pipeline
+Pipelantic handles sync and async invocation without requiring the pipeline
 author to manage event loops or worker coordination manually.
 
 ## Expected Output
@@ -446,7 +446,7 @@ customer_id,first_name,last_name,email
 
 The value `0` violates the `customer_id > 0` constraint.
 
-The configured validation policy determines whether PipelineModel:
+The configured validation policy determines whether Pipelantic:
 
 - Fails the source
 - Rejects the record

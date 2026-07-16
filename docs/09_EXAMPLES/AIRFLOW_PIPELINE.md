@@ -1,6 +1,6 @@
 # Airflow Pipeline
 
-This example builds a complete PipelineModel pipeline that validates and plans a
+This example builds a complete Pipelantic pipeline that validates and plans a
 typed data workflow, then compiles the resulting Pipeline Plan into an Apache
 Airflow DAG.
 
@@ -111,7 +111,7 @@ The contracts are independent of Airflow.
 ```python
 # src/airflow_pipeline/transformations.py
 
-from pipelinemodel import Input, Output, Parameter, Transformation
+from pipelantic import Input, Output, Parameter, Transformation
 
 from .contracts import Customer, RawCustomer
 
@@ -169,7 +169,7 @@ The Polars plugin executes the transformation.
 ```python
 # src/airflow_pipeline/pipeline.py
 
-from pipelinemodel import Pipeline, Sink, Source
+from pipelantic import Pipeline, Sink, Source
 
 from .contracts import Customer, RawCustomer
 from .transformations import NormalizeCustomers
@@ -198,7 +198,7 @@ The pipeline contains no `DAG`, `Operator`, `TaskGroup`, or Airflow decorator.
 ```python
 # src/airflow_pipeline/profiles.py
 
-from pipelinemodel import Profile
+from pipelantic import Profile
 
 
 production = Profile(
@@ -381,7 +381,7 @@ customer_airflow_pipeline
     └── publish_customers
 ```
 
-Each Airflow task should retain the corresponding stable PipelineModel identity.
+Each Airflow task should retain the corresponding stable Pipelantic identity.
 
 ## Example Generated DAG Module
 
@@ -390,7 +390,7 @@ A generated module may resemble:
 ```python
 from airflow import DAG
 
-from pipelinemodel_airflow import load_compiled_pipeline
+from pipelantic_airflow import load_compiled_pipeline
 
 
 dag: DAG = load_compiled_pipeline(
@@ -406,7 +406,7 @@ Another plugin implementation may emit a fully expanded DAG module.
 
 ## Task Mapping
 
-PipelineModel steps may compile into:
+Pipelantic steps may compile into:
 
 - Python tasks
 - Deferrable operators
@@ -503,7 +503,7 @@ Unsupported mandatory semantics should fail compilation.
 
 ## Callbacks
 
-PipelineModel callbacks may map to:
+Pipelantic callbacks may map to:
 
 - Task failure callbacks
 - Task retry callbacks
@@ -531,7 +531,7 @@ The Airflow plugin should preserve both branches and their dependencies.
 
 Airflow should not own resource semantics.
 
-The compiled tasks use PipelineModel Resource Providers for:
+The compiled tasks use Pipelantic Resource Providers for:
 
 - Object storage
 - Databases
@@ -877,7 +877,7 @@ Deployment is outside the portable pipeline model.
 
 The Airflow plugin should publish compatibility for:
 
-- PipelineModel
+- Pipelantic
 - Plugin SDK
 - Airflow
 - Python
@@ -944,7 +944,7 @@ The plugin may emit or link:
 - Worker identity
 - External job references
 
-These supplement PipelineModel's structured execution events.
+These supplement Pipelantic's structured execution events.
 
 ## Lineage
 
@@ -1015,7 +1015,7 @@ Avoid:
 
 ## Key Principle
 
-> Airflow is an orchestration target for PipelineModel. The Airflow plugin
+> Airflow is an orchestration target for Pipelantic. The Airflow plugin
 > compiles a validated Pipeline Plan into a DAG while preserving contracts,
 > dependencies, retries, failure semantics, lineage, and observable behavior.
 

@@ -1,6 +1,6 @@
 # Roadmap
 
-This roadmap sequences PipelineModel from a typed modeling library into a
+This roadmap sequences Pipelantic from a typed modeling library into a
 stable, secure orchestration model and plugin platform.
 
 It is a direction and dependency plan, not a release-date commitment. Version
@@ -9,7 +9,7 @@ acceptance scenarios, documentation, tests, and security requirements pass.
 
 ## Product Outcome
 
-PipelineModel will provide one portable model for:
+Pipelantic will provide one portable model for:
 
 - ContractModel-compatible, ODCS-aligned data contracts
 - Type-driven, DTCS-aligned transformations
@@ -20,7 +20,7 @@ PipelineModel will provide one portable model for:
 - Structured logging, lifecycle extension points, and normalized run reports
 - Contract, lineage, documentation, and visualization generation
 
-PipelineModel owns the logical model and coordination contracts. It does not
+Pipelantic owns the logical model and coordination contracts. It does not
 become a dataframe engine, distributed scheduler, storage system, secret
 manager, or medallion framework.
 
@@ -174,7 +174,7 @@ by the initial end-to-end and SparkForge parity fixtures.
 ### Exit gate
 
 Code-first and contract-first inputs converge on one canonical logical model
-with explicit provenance and no domain semantics duplicated in PipelineModel.
+with explicit provenance and no domain semantics duplicated in Pipelantic.
 
 ## 0.3 — Validation and Pipeline Plan IR
 
@@ -249,7 +249,7 @@ class definitions or inventing missing semantics.
 
 ### Exit gate
 
-The local runtime is a complete reference implementation of PipelineModel
+The local runtime is a complete reference implementation of Pipelantic
 runtime semantics, not a simplified test-only path.
 
 ## 0.5 — Dataframe Execution
@@ -405,8 +405,8 @@ Plugin SDK have stable integration surfaces.
 
 ### Deliver
 
-- SparkForge-to-PipelineModel adapter
-- Mapping of medallion steps to ordinary PipelineModel nodes and profiles
+- SparkForge-to-Pipelantic adapter
+- Mapping of medallion steps to ordinary Pipelantic nodes and profiles
 - Mapping of debug sessions to run selections and intents
 - Mapping of direct step results to `OutputRef` and `ArtifactRef`
 - Mapping of validation thresholds to named quality-gate policies
@@ -420,13 +420,13 @@ Plugin SDK have stable integration surfaces.
 - Existing representative SparkForge pipelines generate equivalent dependency
   closures, execution groups, validation decisions, writes, and run summaries.
 - SparkForge retains medallion terminology and defaults in its own package.
-- PipelineModel receives no bronze, silver, or gold concepts.
+- Pipelantic receives no bronze, silver, or gold concepts.
 - SparkForge can progressively replace its SQL and Spark engines without an
   all-at-once user migration.
 
 ### Exit gate
 
-SparkForge can depend on PipelineModel as its underlying model, planner, and
+SparkForge can depend on Pipelantic as its underlying model, planner, and
 coordination engine while remaining the medallion-focused facade.
 
 See [SparkForge Feature Adoption](SPARKFORGE_ADOPTION.md) for the detailed
@@ -473,11 +473,11 @@ The release candidate must demonstrate:
    redaction behavior.
 10. Plugin conformance and production trust-policy enforcement.
 11. Security-boundary preservation through planning and optimization.
-12. A representative SparkForge pipeline using PipelineModel underneath.
+12. A representative SparkForge pipeline using Pipelantic underneath.
 
 ### Exit gate
 
-PipelineModel 1.0 ships only when:
+Pipelantic 1.0 ships only when:
 
 - Typed authoring, contract interoperability, validation, planning, execution,
   reporting, and plugin coordination work together end to end.
@@ -486,7 +486,7 @@ PipelineModel 1.0 ships only when:
   automated verification, and documented residual risk.
 - The public examples describe tested behavior rather than aspirations.
 - SparkForge migration has proved the core abstractions without moving
-  medallion semantics into PipelineModel.
+  medallion semantics into Pipelantic.
 
 ## Post-1.0 Themes
 
@@ -506,7 +506,7 @@ real adoption evidence.
 
 ## SparkForge Replacement Gate
 
-PipelineModel is ready to replace SparkForge's duplicated underlying engines
+Pipelantic is ready to replace SparkForge's duplicated underlying engines
 only when it preserves these behaviors in domain-neutral form:
 
 - selective and interactive execution
@@ -520,11 +520,11 @@ only when it preserves these behaviors in domain-neutral form:
 - SQL, PySpark, Delta, and orchestration capabilities supplied through plugins
 - semantic parity tests for representative SparkForge pipelines
 
-This gate does not require PipelineModel to understand medallion layers.
+This gate does not require Pipelantic to understand medallion layers.
 
 ## Explicit Non-Goals
 
-PipelineModel does not plan to become:
+Pipelantic does not plan to become:
 
 - A proprietary distributed scheduler
 - A dataframe or SQL engine
@@ -538,7 +538,7 @@ PipelineModel does not plan to become:
 
 ## Prioritization Rule
 
-A proposed feature belongs in PipelineModel when it strengthens portable
+A proposed feature belongs in Pipelantic when it strengthens portable
 modeling, static analysis, deterministic planning, lifecycle coordination,
 result normalization, or plugin interoperability.
 
@@ -548,7 +548,7 @@ Use this ownership test:
 |---|---|
 | Meaning of data, transformation, or pipeline contracts | ODCS, DTCS, or DPCS |
 | Operationalizing data contracts | ContractModel |
-| Portable pipeline model, planner, and coordination protocols | PipelineModel |
+| Portable pipeline model, planner, and coordination protocols | Pipelantic |
 | Backend execution mechanics | Execution plugins and providers |
 | Medallion conventions and migration experience | SparkForge |
 

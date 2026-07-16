@@ -2,7 +2,7 @@
 
 ## Overview
 
-PipelineModel adopts the **Data Pipeline Contract Standard (DPCS)** as the
+Pipelantic adopts the **Data Pipeline Contract Standard (DPCS)** as the
 canonical portable representation of pipeline contracts.
 
 DPCS defines the logical structure of a pipeline, including its public
@@ -11,10 +11,10 @@ gates, failure semantics, lineage, compatibility, and orchestrator bindings.
 It remains independent of any workflow engine, runtime, storage system, or
 programming language.
 
-This document explains how PipelineModel integrates with DPCS. The normative
+This document explains how Pipelantic integrates with DPCS. The normative
 specification remains in `docs/specifications/DPCS_SPEC.md`.
 
-## Why PipelineModel Uses DPCS
+## Why Pipelantic Uses DPCS
 
 A pipeline definition should outlive the orchestrator that happens to execute it.
 
@@ -33,7 +33,7 @@ pipeline to be:
 - Documented and visualized
 - Exchanged between conforming implementations
 
-PipelineModel treats DPCS as the canonical artifact for a complete pipeline.
+Pipelantic treats DPCS as the canonical artifact for a complete pipeline.
 
 ## Architectural Relationship
 
@@ -41,7 +41,7 @@ PipelineModel treats DPCS as the canonical artifact for a complete pipeline.
 Python Pipeline Class
         │
         ▼
-PipelineModel Introspection
+Pipelantic Introspection
         │
         ▼
 Logical Pipeline Graph
@@ -59,7 +59,7 @@ Orchestrator Binding
 Execution Runtime
 ```
 
-PipelineModel owns the Python authoring experience, graph construction,
+Pipelantic owns the Python authoring experience, graph construction,
 validation coordination, planning, and plugin integration.
 
 DPCS owns the portable semantic representation.
@@ -86,10 +86,10 @@ duplicating their semantics.
 
 ## Code-First Workflow
 
-PipelineModel recommends authoring pipelines with typed Python classes.
+Pipelantic recommends authoring pipelines with typed Python classes.
 
 ```python
-from pipelinemodel import Pipeline, Sink, Source
+from pipelantic import Pipeline, Sink, Source
 
 
 class CustomerPipeline(Pipeline):
@@ -107,7 +107,7 @@ class CustomerPipeline(Pipeline):
     )
 ```
 
-From this definition, PipelineModel can derive:
+From this definition, Pipelantic can derive:
 
 - Pipeline identity
 - Public inputs and outputs
@@ -126,7 +126,7 @@ The generated DPCS document is the portable artifact.
 
 ## Contract-First Workflow
 
-PipelineModel should also load existing DPCS artifacts.
+Pipelantic should also load existing DPCS artifacts.
 
 Conceptually:
 
@@ -136,7 +136,7 @@ CustomerPipeline = Pipeline.from_dpcs(
 )
 ```
 
-A loaded pipeline should expose the same normalized PipelineModel interface as
+A loaded pipeline should expose the same normalized Pipelantic interface as
 an authored pipeline, provided all referenced contracts can be resolved.
 
 Contract-first loading should preserve:
@@ -185,7 +185,7 @@ Stable identities enable:
 
 DPCS defines a public pipeline boundary.
 
-PipelineModel should represent that boundary through typed pipeline inputs and
+Pipelantic should represent that boundary through typed pipeline inputs and
 outputs.
 
 Conceptually:
@@ -203,7 +203,7 @@ Internal steps should not automatically become public API.
 
 ## Sources and Sinks
 
-PipelineModel sources and sinks map naturally to pipeline boundaries.
+Pipelantic sources and sinks map naturally to pipeline boundaries.
 
 ```python
 raw: Source[RawCustomer] = Source(
@@ -227,7 +227,7 @@ semantics.
 
 ## Pipeline Steps
 
-Each PipelineModel step becomes a DPCS Pipeline Step.
+Each Pipelantic step becomes a DPCS Pipeline Step.
 
 A step may represent:
 
@@ -261,7 +261,7 @@ The DTCS transformation contract remains independently versioned and reusable.
 
 ## Pipeline Graph
 
-PipelineModel derives a directed graph from typed connections.
+Pipelantic derives a directed graph from typed connections.
 
 ```text
 Source[RawCustomer]
@@ -275,7 +275,7 @@ Sink[Customer]
 
 DPCS records logical dependencies, not a particular scheduling algorithm.
 
-PipelineModel should validate:
+Pipelantic should validate:
 
 - Unique node identities
 - Valid edges
@@ -292,7 +292,7 @@ to the orchestrator or local execution plugin.
 
 DPCS distinguishes logical data movement from physical transport.
 
-PipelineModel should represent every data flow with:
+Pipelantic should represent every data flow with:
 
 - Source endpoint
 - Destination endpoint
@@ -306,7 +306,7 @@ pipeline contract explicitly requires materialization.
 
 ## Control Flow
 
-Where supported by DPCS, PipelineModel may model control-flow semantics such
+Where supported by DPCS, Pipelantic may model control-flow semantics such
 as:
 
 - Conditional branches
@@ -340,12 +340,12 @@ References should include:
 - Resolution information
 - Compatibility requirements
 
-PipelineModel should resolve required references before constructing a final
+Pipelantic should resolve required references before constructing a final
 Pipeline Plan.
 
 ## Subpipelines
 
-A PipelineModel subpipeline maps to a Pipeline Step that references another DPCS
+A Pipelantic subpipeline maps to a Pipeline Step that references another DPCS
 contract.
 
 ```python
@@ -371,7 +371,7 @@ steps.
 DPCS may express scheduling intent while remaining independent of scheduler
 implementation.
 
-PipelineModel may model portable concepts such as:
+Pipelantic may model portable concepts such as:
 
 - Manual execution
 - Time-based intent
@@ -405,7 +405,7 @@ Examples include:
 - Resource isolation
 - Required plugin capabilities
 
-PipelineModel should validate these requirements against declared plugin and
+Pipelantic should validate these requirements against declared plugin and
 orchestrator capabilities before binding.
 
 ## Quality Gates
@@ -432,7 +432,7 @@ the declared behavior.
 
 DPCS can describe portable failure behavior.
 
-PipelineModel should map its callbacks and declarative actions into DPCS where
+Pipelantic should map its callbacks and declarative actions into DPCS where
 those behaviors are standardized.
 
 Examples include:
@@ -451,7 +451,7 @@ portable contract.
 
 ## Callbacks
 
-Callbacks may enrich PipelineModel runtime behavior.
+Callbacks may enrich Pipelantic runtime behavior.
 
 Only callback behavior with defined portable semantics should be emitted into
 DPCS.
@@ -460,7 +460,7 @@ For example, a declarative retry or fail-pipeline action may be portable, while
 a callback that calls a specific internal notification service is an
 implementation binding.
 
-PipelineModel should distinguish:
+Pipelantic should distinguish:
 
 - Contractual callback semantics
 - Environment-specific operational callbacks
@@ -486,7 +486,7 @@ They provide implementation-specific bindings and operational configuration.
 
 ## Pipeline Plan
 
-After loading or introspecting a pipeline, PipelineModel should construct a
+After loading or introspecting a pipeline, Pipelantic should construct a
 validated, implementation-independent Pipeline Plan.
 
 The Pipeline Plan should preserve:
@@ -504,7 +504,7 @@ The Pipeline Plan should preserve:
 - Lineage
 - Extensions
 
-The Pipeline Plan acts as PipelineModel's semantic intermediate representation.
+The Pipeline Plan acts as Pipelantic's semantic intermediate representation.
 
 It is not yet tied to Airflow, Dagster, Prefect, local Python, or another target.
 
@@ -525,7 +525,7 @@ OrchestratorCapabilities(
 )
 ```
 
-PipelineModel compares the Pipeline Plan requirements against these capabilities.
+Pipelantic compares the Pipeline Plan requirements against these capabilities.
 
 Unsupported mandatory capabilities should fail planning or binding rather than
 being silently discarded.
@@ -571,7 +571,7 @@ pipeline semantics.
 
 ## Validation
 
-PipelineModel should validate DPCS semantics in phases.
+Pipelantic should validate DPCS semantics in phases.
 
 ### Definition validation
 
@@ -677,7 +677,7 @@ Possible classifications include:
 - Conditionally compatible
 - Incompatible
 
-PipelineModel should use the normative DPCS compatibility model rather than
+Pipelantic should use the normative DPCS compatibility model rather than
 inventing an unrelated rule system.
 
 ## Versioning
@@ -717,14 +717,14 @@ Breaking changes may include:
 - Changing failure semantics
 - Introducing unsupported mandatory execution requirements
 
-PipelineModel should generate compatibility diagnostics and migration guidance
+Pipelantic should generate compatibility diagnostics and migration guidance
 where practical.
 
 ## Lineage
 
 DPCS lineage describes logical provenance across the pipeline.
 
-PipelineModel can derive lineage from:
+Pipelantic can derive lineage from:
 
 - Source contracts
 - Step inputs and outputs
@@ -760,7 +760,7 @@ regardless of formatting or serialization.
 
 ## Extensions
 
-PipelineModel and organizations may define namespaced DPCS extensions.
+Pipelantic and organizations may define namespaced DPCS extensions.
 
 Extensions may add metadata or behavior not yet standardized, but they must not
 redefine mandatory DPCS semantics.
@@ -772,7 +772,7 @@ binding.
 
 ## Registries
 
-PipelineModel may resolve DPCS artifacts through:
+Pipelantic may resolve DPCS artifacts through:
 
 - Local files
 - Python packages
@@ -798,7 +798,7 @@ Pipeline contracts should not embed secrets.
 Runtime credentials should be supplied through external secret management,
 resources, bindings, or profiles.
 
-PipelineModel should support:
+Pipelantic should support:
 
 - Artifact integrity verification
 - Safe extension processing
@@ -812,7 +812,7 @@ meaning.
 
 ## Conformance
 
-PipelineModel may eventually declare conformance across several DPCS roles:
+Pipelantic may eventually declare conformance across several DPCS roles:
 
 - Parser
 - Validator
@@ -879,7 +879,7 @@ DPCS artifacts should reference external secret and resource providers.
 
 ## Key Principle
 
-> PipelineModel authors and plans pipelines in Python. DPCS preserves their
+> Pipelantic authors and plans pipelines in Python. DPCS preserves their
 > logical meaning as portable contracts. Orchestrator plugins translate those
 > plans into runtime-specific artifacts without changing observable semantics.
 
@@ -888,5 +888,5 @@ DPCS artifacts should reference external secret and resource providers.
 For the normative definition of DPCS, see the
 [DPCS 1.0 Specification](../specifications/DPCS_SPEC.md).
 
-This document describes **how PipelineModel integrates with DPCS**. It does not
+This document describes **how Pipelantic integrates with DPCS**. It does not
 replace or restate the full normative specification.

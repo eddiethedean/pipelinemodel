@@ -1,6 +1,6 @@
 # Mermaid
 
-PipelineModel can generate **Mermaid** diagrams directly from a validated
+Pipelantic can generate **Mermaid** diagrams directly from a validated
 Pipeline Plan.
 
 Mermaid provides a lightweight, text-based diagram format that renders in

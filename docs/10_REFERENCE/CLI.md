@@ -1,16 +1,16 @@
 # Command-Line Interface
 
-The PipelineModel command-line interface exposes validation, planning,
+The Pipelantic command-line interface exposes validation, planning,
 generation, visualization, compilation, and delegated execution for local
 development and automation.
 
-> The commands in this chapter describe the proposed PipelineModel 1.0 CLI.
+> The commands in this chapter describe the proposed Pipelantic 1.0 CLI.
 > Names and options may change before the public API is stabilized.
 
 ## Command
 
 ```bash
-pipelinemodel [GLOBAL_OPTIONS] COMMAND [ARGS]
+pipelantic [GLOBAL_OPTIONS] COMMAND [ARGS]
 ```
 
 The CLI must use the same public APIs as Python applications. It must not
@@ -36,10 +36,10 @@ configuration.
 
 ### `init`
 
-Create a new PipelineModel project.
+Create a new Pipelantic project.
 
 ```bash
-pipelinemodel init customer_pipeline
+pipelantic init customer_pipeline
 ```
 
 The generated project should contain a minimal typed pipeline, tests, profiles,
@@ -50,7 +50,7 @@ and contract output directories.
 Inspect a pipeline without executing it.
 
 ```bash
-pipelinemodel inspect src/customer_pipeline.py:CustomerPipeline
+pipelantic inspect src/customer_pipeline.py:CustomerPipeline
 ```
 
 Inspection may report:
@@ -68,9 +68,9 @@ Validate contracts, transformation interfaces, graph wiring, and selected
 profile bindings.
 
 ```bash
-pipelinemodel validate src/customer_pipeline.py:CustomerPipeline
-pipelinemodel validate contracts/customer.dpcs.yaml
-pipelinemodel validate . --profile production
+pipelantic validate src/customer_pipeline.py:CustomerPipeline
+pipelantic validate contracts/customer.dpcs.yaml
+pipelantic validate . --profile production
 ```
 
 Validation does not execute user transformation code.
@@ -80,7 +80,7 @@ Validation does not execute user transformation code.
 Resolve a pipeline and profile into a deterministic `PipelinePlan`.
 
 ```bash
-pipelinemodel plan src/customer_pipeline.py:CustomerPipeline \
+pipelantic plan src/customer_pipeline.py:CustomerPipeline \
   --profile production \
   --output build/customer-plan.json
 ```
@@ -99,7 +99,7 @@ Planning resolves:
 Delegate a validated plan to the selected orchestration backend.
 
 ```bash
-pipelinemodel run src/customer_pipeline.py:CustomerPipeline --profile local
+pipelantic run src/customer_pipeline.py:CustomerPipeline --profile local
 ```
 
 `run` is primarily intended for local or directly managed backends. An
@@ -111,7 +111,7 @@ require compilation.
 Compile a plan into a backend artifact.
 
 ```bash
-pipelinemodel compile src/customer_pipeline.py:CustomerPipeline \
+pipelantic compile src/customer_pipeline.py:CustomerPipeline \
   --profile production \
   --target airflow \
   --output build/dags/customer_pipeline.py
@@ -125,7 +125,7 @@ job definitions, and plugin-defined artifacts.
 Generate portable artifacts from typed Python models.
 
 ```bash
-pipelinemodel generate contracts src/customer_pipeline.py:CustomerPipeline \
+pipelantic generate contracts src/customer_pipeline.py:CustomerPipeline \
   --output contracts/
 ```
 
@@ -153,7 +153,7 @@ contracts/
 Render a logical pipeline or resolved plan.
 
 ```bash
-pipelinemodel graph src/customer_pipeline.py:CustomerPipeline \
+pipelantic graph src/customer_pipeline.py:CustomerPipeline \
   --format mermaid \
   --output build/customer-pipeline.mmd
 ```
@@ -165,9 +165,9 @@ The logical graph should remain distinguishable from a backend execution graph.
 Inspect installed plugins and capabilities.
 
 ```bash
-pipelinemodel plugins list
-pipelinemodel plugins show polars
-pipelinemodel plugins check --profile production
+pipelantic plugins list
+pipelantic plugins show polars
+pipelantic plugins check --profile production
 ```
 
 ### `config`
@@ -175,8 +175,8 @@ pipelinemodel plugins check --profile production
 Inspect effective configuration and its provenance.
 
 ```bash
-pipelinemodel config show --profile production
-pipelinemodel config validate
+pipelantic config show --profile production
+pipelantic config validate
 ```
 
 Sensitive values must be redacted.
@@ -207,8 +207,8 @@ Human output is the default. Machine-readable modes are intended for CI and
 editor integrations.
 
 ```bash
-pipelinemodel validate . --format json
-pipelinemodel validate . --format sarif
+pipelantic validate . --format json
+pipelantic validate . --format sarif
 ```
 
 ## Exit Codes
@@ -225,9 +225,9 @@ pipelinemodel validate . --format sarif
 ## CI Example
 
 ```bash
-pipelinemodel validate . --profile production --format sarif
-pipelinemodel generate contracts . --check
-pipelinemodel plan . --profile production --check
+pipelantic validate . --profile production --format sarif
+pipelantic generate contracts . --check
+pipelantic plan . --profile production --check
 ```
 
 `--check` should compare generated output without modifying files.

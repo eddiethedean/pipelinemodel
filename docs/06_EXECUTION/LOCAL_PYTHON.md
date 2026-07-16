@@ -1,9 +1,9 @@
 # Local Python
 
-The Local Python execution plugin allows PipelineModel to execute validated
+The Local Python execution plugin allows Pipelantic to execute validated
 **Pipeline Plans** directly within a Python process.
 
-Local execution is the reference execution environment for PipelineModel. It is
+Local execution is the reference execution environment for Pipelantic. It is
 ideal for development, testing, experimentation, CI, and lightweight
 production workloads.
 
@@ -24,7 +24,7 @@ The Local Python plugin should:
 
 ## Philosophy
 
-Local execution should never bypass the PipelineModel lifecycle.
+Local execution should never bypass the Pipelantic lifecycle.
 
 ```text
 Pipeline
@@ -94,7 +94,7 @@ async def normalize(...):
     ...
 ```
 
-PipelineModel automatically invokes the correct implementation style.
+Pipelantic automatically invokes the correct implementation style.
 
 Developers should not manage event loops directly.
 
@@ -167,7 +167,7 @@ Avoid:
 
 ## Key Principle
 
-> Local Python is the reference execution backend for PipelineModel. It executes
+> Local Python is the reference execution backend for Pipelantic. It executes
 validated Pipeline Plans directly within Python while preserving the same
 portable semantics expected from every orchestration plugin.
 

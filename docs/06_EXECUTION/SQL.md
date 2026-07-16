@@ -1,6 +1,6 @@
 # SQL
 
-The SQL execution backend allows PipelineModel to execute eligible
+The SQL execution backend allows Pipelantic to execute eligible
 transformations directly inside a SQL database instead of materializing data
 into an in-memory dataframe.
 
@@ -203,12 +203,12 @@ Avoid:
 
 ## Key Principle
 
-> SQL execution is another backend for PipelineModel. It executes the same
+> SQL execution is another backend for Pipelantic. It executes the same
 validated Pipeline Plan using database-native operations, allowing computation
 to move to the data while preserving the portable semantics defined by ODCS,
 DTCS, and DPCS.
 
 ## Next Step
 
-Continue with **COMPILATION.md** to learn how PipelineModel compiles Pipeline
+Continue with **COMPILATION.md** to learn how Pipelantic compiles Pipeline
 Plans into backend-specific execution artifacts, including SQL.

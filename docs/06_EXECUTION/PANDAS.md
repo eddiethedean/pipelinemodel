@@ -1,10 +1,10 @@
 # Pandas
 
-The Pandas plugin enables PipelineModel to execute transformations using the
+The Pandas plugin enables Pipelantic to execute transformations using the
 Pandas dataframe library.
 
 Pandas is one of the most widely adopted data analysis libraries in Python and
-provides excellent compatibility with the broader data ecosystem. PipelineModel
+provides excellent compatibility with the broader data ecosystem. Pipelantic
 supports Pandas as an execution backend while encouraging users to keep their
 contracts and pipeline definitions independent of any dataframe library.
 
@@ -13,7 +13,7 @@ contracts and pipeline definitions independent of any dataframe library.
 The Pandas plugin should:
 
 - Execute DTCS transformation implementations using Pandas.
-- Preserve PipelineModel semantics.
+- Preserve Pipelantic semantics.
 - Integrate with execution profiles.
 - Interoperate with existing Pandas-based code.
 - Remain interchangeable with other dataframe plugins.
@@ -52,7 +52,7 @@ These strengths make it an important compatibility backend.
 
 ## Recommended Usage
 
-PipelineModel recommends:
+Pipelantic recommends:
 
 - Use Polars for new high-performance workloads.
 - Use Pandas when integrating with existing libraries or legacy code.
@@ -77,7 +77,7 @@ The Pandas plugin should support:
 - Typed transformation execution
 - Contract validation
 - Sync execution
-- Async execution (through PipelineModel)
+- Async execution (through Pipelantic)
 - Callback integration
 - Structured diagnostics
 
@@ -105,7 +105,7 @@ def normalize_pandas(...):
     ...
 ```
 
-PipelineModel selects the implementation using the active profile.
+Pipelantic selects the implementation using the active profile.
 
 ## Best Practices
 
@@ -125,11 +125,11 @@ Avoid:
 
 ## Key Principle
 
-> Pandas is an execution backend, not a modeling dependency. PipelineModel
+> Pandas is an execution backend, not a modeling dependency. Pipelantic
 preserves identical pipeline semantics regardless of whether a transformation
 executes with Pandas, Polars, or another supported dataframe engine.
 
 ## Next Step
 
 Continue with **POLARS.md** to learn about the recommended high-performance
-reference dataframe plugin for PipelineModel.
+reference dataframe plugin for Pipelantic.

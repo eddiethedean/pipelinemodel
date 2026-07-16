@@ -1,6 +1,6 @@
 # Contract-First Pipeline
 
-This example demonstrates how to build a PipelineModel project from authored
+This example demonstrates how to build a Pipelantic project from authored
 ODCS, DTCS, and DPCS contract artifacts rather than starting from Python
 classes.
 
@@ -13,7 +13,7 @@ Contract-first development is useful when:
 - Registries are the source of contract identity and versioning.
 - Python is one implementation target among several.
 
-PipelineModel should support both directions:
+Pipelantic should support both directions:
 
 ```text
 Code-first
@@ -24,7 +24,7 @@ and:
 
 ```text
 Contract-first
-ODCS / DTCS / DPCS ───► Typed PipelineModel objects
+ODCS / DTCS / DPCS ───► Typed Pipelantic objects
 ```
 
 The two workflows should converge on the same normalized internal models and
@@ -37,7 +37,7 @@ Build a pipeline that:
 1. Authors a customer data contract in ODCS.
 2. Authors a normalization transformation in DTCS.
 3. Authors a CSV-to-Parquet pipeline in DPCS.
-4. Loads all three artifacts into PipelineModel.
+4. Loads all three artifacts into Pipelantic.
 5. Generates or binds typed Python interfaces.
 6. Registers a Polars implementation.
 7. Validates implementation conformance.
@@ -136,7 +136,7 @@ schema:
 
 The exact ODCS syntax should follow the supported ODCS version.
 
-The example focuses on the PipelineModel workflow rather than redefining the
+The example focuses on the Pipelantic workflow rather than redefining the
 normative standard.
 
 ## Step 2 — Author the Curated Customer ODCS Contract
@@ -281,7 +281,7 @@ It does not contain physical paths, credentials, or execution-engine details.
 Conceptually:
 
 ```python
-from pipelinemodel.contracts import ContractProject
+from pipelantic.contracts import ContractProject
 
 
 project = ContractProject.load(
@@ -342,7 +342,7 @@ contract:
 
 but only `customer@1.0.0` exists.
 
-PipelineModel should emit a structured diagnostic rather than silently selecting
+Pipelantic should emit a structured diagnostic rather than silently selecting
 another version.
 
 Example:
@@ -360,7 +360,7 @@ Available versions:
 
 ## Step 7 — Generate Typed Python Models
 
-PipelineModel may generate typed Python interfaces:
+Pipelantic may generate typed Python interfaces:
 
 ```python
 project.generate_python(
@@ -410,7 +410,7 @@ The contract artifacts remain authoritative in a contract-first project.
 A generated `transformations.py` may resemble:
 
 ```python
-from pipelinemodel import Input, Output, Parameter, Transformation
+from pipelantic import Input, Output, Parameter, Transformation
 
 from .contracts import Customer, RawCustomer
 
@@ -427,7 +427,7 @@ class NormalizeCustomers(Transformation):
 A generated `pipelines.py` may resemble:
 
 ```python
-from pipelinemodel import Pipeline, Sink, Source
+from pipelantic import Pipeline, Sink, Source
 
 from .contracts import Customer, RawCustomer
 from .transformations import NormalizeCustomers
@@ -508,7 +508,7 @@ The implementation binds to the generated transformation interface.
 
 ## Implementation Without Code Generation
 
-PipelineModel may also support direct binding by contract identity.
+Pipelantic may also support direct binding by contract identity.
 
 Conceptually:
 
@@ -567,7 +567,7 @@ fail before execution.
 Create `src/contract_first/profiles.py`:
 
 ```python
-from pipelinemodel import Profile
+from pipelantic import Profile
 
 
 local = Profile(
@@ -604,7 +604,7 @@ pipeline = project.pipeline(
 )
 ```
 
-The returned object should behave like a normalized PipelineModel pipeline.
+The returned object should behave like a normalized Pipelantic pipeline.
 
 ## Step 12 — Validate the Profile
 
@@ -642,7 +642,7 @@ Both workflows should converge:
 Contract-first artifacts
           │
           ▼
-Normalized PipelineModel objects
+Normalized Pipelantic objects
           │
           ▼
 Pipeline Plan
@@ -654,7 +654,7 @@ and:
 Code-first Python classes
           │
           ▼
-Normalized PipelineModel objects
+Normalized Pipelantic objects
           │
           ▼
 Pipeline Plan
@@ -731,7 +731,7 @@ flowchart LR
 
 ## Step 17 — Regenerate Contracts from the Normalized Model
 
-PipelineModel may support round-trip export:
+Pipelantic may support round-trip export:
 
 ```python
 project.write_contracts(
@@ -790,13 +790,13 @@ Implementation files remain authored.
 
 ## Preventing Drift
 
-PipelineModel should detect when generated Python no longer matches the source
+Pipelantic should detect when generated Python no longer matches the source
 contracts.
 
 Conceptually:
 
 ```bash
-pipelinemodel generate --check
+pipelantic generate --check
 ```
 
 CI should fail if regeneration changes committed generated files.
@@ -838,7 +838,7 @@ canonical dependency identity.
 
 Suppose `customer@1.1.0` adds an optional field.
 
-PipelineModel may determine that:
+Pipelantic may determine that:
 
 - The output implementation can still satisfy the contract.
 - Existing consumers remain compatible.
@@ -932,7 +932,7 @@ Loading a contract must never import arbitrary Python code.
 
 Standards may allow extension fields.
 
-PipelineModel should preserve supported extensions without letting them override
+Pipelantic should preserve supported extensions without letting them override
 core semantics silently.
 
 Vendor extensions should be namespaced.
@@ -997,7 +997,7 @@ manually by identity.
 
 This reduces generated files but provides less static typing.
 
-PipelineModel should support both styles.
+Pipelantic should support both styles.
 
 ## Mixed Code-First and Contract-First Projects
 
@@ -1028,7 +1028,7 @@ Source metadata improves diagnostics and governance.
 
 Suppose both a Python class and ODCS artifact define `customer@1.0.0`.
 
-PipelineModel should compare them.
+Pipelantic should compare them.
 
 Possible policies include:
 
@@ -1050,7 +1050,7 @@ Conflict detection should compare normalized semantics rather than raw text.
 Create `tests/test_contract_loading.py`:
 
 ```python
-from pipelinemodel.contracts import ContractProject
+from pipelantic.contracts import ContractProject
 
 
 def test_contract_project_loads() -> None:
@@ -1191,12 +1191,12 @@ A contract-first CI pipeline may run:
 Conceptually:
 
 ```bash
-pipelinemodel contracts validate contracts/
-pipelinemodel contracts lock contracts/
-pipelinemodel generate python contracts/ --output src/generated/
-pipelinemodel implementations validate
-pipelinemodel plan customer-curation@1.0.0 --profile local
-pipelinemodel docs build
+pipelantic contracts validate contracts/
+pipelantic contracts lock contracts/
+pipelantic generate python contracts/ --output src/generated/
+pipelantic implementations validate
+pipelantic plan customer-curation@1.0.0 --profile local
+pipelantic docs build
 ```
 
 The exact CLI may evolve.
@@ -1220,7 +1220,7 @@ The exact CLI may evolve.
 - Familiar class-based APIs
 - Simple experimentation
 
-PipelineModel should not force one workflow.
+Pipelantic should not force one workflow.
 
 ## Recommended Workflow
 
@@ -1293,7 +1293,7 @@ Avoid:
 
 ## Key Principle
 
-> Contract-first PipelineModel projects author ODCS, DTCS, and DPCS artifacts as
+> Contract-first Pipelantic projects author ODCS, DTCS, and DPCS artifacts as
 > the portable source of truth, then derive typed interfaces, implementation
 > bindings, Pipeline Plans, execution, lineage, and documentation from those
 > validated contracts.

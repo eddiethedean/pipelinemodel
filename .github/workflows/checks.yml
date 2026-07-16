@@ -34,6 +34,10 @@ jobs:
       - name: Pytest
         run: uv run pytest -q
 
+      - name: MkDocs
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+        run: uv run mkdocs build --strict
+
   package:
     name: Build and test wheel
     runs-on: ubuntu-latest

@@ -1,6 +1,6 @@
 # Run Reports
 
-Every PipelineModel run returns a structured `PipelineRunReport`.
+Every Pipelantic run returns a structured `PipelineRunReport`.
 
 The report is the canonical, backend-independent summary of what was planned,
 executed, produced, validated, retried, skipped, and failed. It preserves the
@@ -28,7 +28,7 @@ report = await CustomerPipeline.arun(profile="production")
 
 ## Report Versus Result
 
-PipelineModel uses one public run object:
+Pipelantic uses one public run object:
 
 ```text
 PipelineRunReport
@@ -101,7 +101,7 @@ RunSummary(
 ```
 
 Counts may be unavailable or expensive for some backends. Unknown values must
-remain `None`; PipelineModel must not report zero when the backend did not
+remain `None`; Pipelantic must not report zero when the backend did not
 measure them.
 
 ## Step Reports
@@ -119,7 +119,7 @@ StepRunReport(
     ended_at=...,
     duration=...,
     implementation="polars",
-    plugin="pipelinemodel-polars",
+    plugin="pipelantic-polars",
     physical_unit_id="polars-region-2",
     inputs=(...),
     outputs=(...),
@@ -272,10 +272,10 @@ report.to_html()
 CLI examples:
 
 ```bash
-pipelinemodel run customer.py:CustomerPipeline
-pipelinemodel run customer.py:CustomerPipeline --output json
-pipelinemodel report show RUN_ID
-pipelinemodel report export RUN_ID --format html
+pipelantic run customer.py:CustomerPipeline
+pipelantic run customer.py:CustomerPipeline --output json
+pipelantic report show RUN_ID
+pipelantic report export RUN_ID --format html
 ```
 
 HTML reports may add diagrams and styling, but they consume the same canonical
@@ -349,7 +349,7 @@ meaning requires a major report-schema version.
 
 ## Relationship to SparkForge
 
-PipelineModel preserves SparkForge's useful reporting concepts:
+Pipelantic preserves SparkForge's useful reporting concepts:
 
 - run ID and mode
 - timestamps and duration

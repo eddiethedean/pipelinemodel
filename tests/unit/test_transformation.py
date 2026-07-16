@@ -1,6 +1,6 @@
 """Unit tests for transformation ports and implementations."""
 
-from pipelinemodel import Input, Output, Parameter, Transformation
+from pipelantic import Input, Output, Parameter, Transformation
 from tests.conftest import Customer, RawCustomer
 
 

@@ -2,19 +2,19 @@
 
 ## Overview
 
-PipelineModel adopts the **Data Transformation Contract Standard (DTCS)** as the
+Pipelantic adopts the **Data Transformation Contract Standard (DTCS)** as the
 canonical portable representation of transformation contracts.
 
-DTCS defines **what a transformation means**. PipelineModel provides the
+DTCS defines **what a transformation means**. Pipelantic provides the
 Python-first authoring experience and generates DTCS artifacts from typed
 transformation classes.
 
 The DTCS specification is the normative definition of transformation semantics.
-This document explains how PipelineModel integrates with that specification.
+This document explains how Pipelantic integrates with that specification.
 
 ---
 
-## Why PipelineModel Uses DTCS
+## Why Pipelantic Uses DTCS
 
 Transformation logic should be portable.
 
@@ -30,7 +30,7 @@ DTCS provides a vendor-neutral representation of:
 - transformation identity
 - compatibility information
 
-PipelineModel treats DTCS as the portable artifact for transformation
+Pipelantic treats DTCS as the portable artifact for transformation
 definitions.
 
 ---
@@ -44,7 +44,7 @@ Python Transformation
 Transformation
         │
         ▼
-PipelineModel
+Pipelantic
         │
         ▼
 DTCS Artifact
@@ -53,7 +53,7 @@ DTCS Artifact
 Execution Planning
 ```
 
-PipelineModel owns the Python API.
+Pipelantic owns the Python API.
 
 DTCS owns the portable transformation representation.
 
@@ -70,7 +70,7 @@ class NormalizeCustomers(Transformation):
     result: Output[Customer]
 ```
 
-PipelineModel generates the corresponding DTCS artifact.
+Pipelantic generates the corresponding DTCS artifact.
 
 In a code-first project, the Python class remains the authoring source of
 truth.
@@ -79,7 +79,7 @@ truth.
 
 ## Contract-First Workflow
 
-PipelineModel may load existing DTCS artifacts and reconstruct transformation
+Pipelantic may load existing DTCS artifacts and reconstruct transformation
 definitions through its public loading APIs.
 
 Whether authored in Python or imported from DTCS, transformations participate
@@ -104,7 +104,7 @@ control and reproduced in CI.
 
 ## Validation
 
-PipelineModel validates transformation contracts before execution.
+Pipelantic validates transformation contracts before execution.
 
 Examples include:
 
@@ -132,7 +132,7 @@ Typical metadata includes:
 - owner
 - tags
 
-Compatibility decisions should follow the DTCS specification and PipelineModel's
+Compatibility decisions should follow the DTCS specification and Pipelantic's
 planning rules.
 
 ---
@@ -176,13 +176,13 @@ DPCS
   Pipeline Contracts
 ```
 
-PipelineModel unifies these standards through strongly typed Python models.
+Pipelantic unifies these standards through strongly typed Python models.
 
 ---
 
 ## Design Principles
 
-PipelineModel follows these principles when integrating with DTCS:
+Pipelantic follows these principles when integrating with DTCS:
 
 - Python classes are the preferred authoring interface.
 - DTCS is the portable artifact.
@@ -198,5 +198,5 @@ PipelineModel follows these principles when integrating with DTCS:
 For the normative definition of DTCS, refer to the
 [DTCS 1.0 Specification](../specifications/DTCS_SPEC.md).
 
-This document describes **how PipelineModel integrates with DTCS**, not the DTCS
+This document describes **how Pipelantic integrates with DTCS**, not the DTCS
 specification itself.

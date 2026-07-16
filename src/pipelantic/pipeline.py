@@ -8,9 +8,9 @@ from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Any, ClassVar, TypeVar
 
-from pipelinemodel.contracts import is_data_contract_type
-from pipelinemodel.identity import contract_id, node_id, pipeline_id
-from pipelinemodel.model import (
+from pipelantic.contracts import is_data_contract_type
+from pipelantic.identity import contract_id, node_id, pipeline_id
+from pipelantic.model import (
     Edge,
     LogicalGraph,
     Node,
@@ -18,8 +18,8 @@ from pipelinemodel.model import (
     ParameterSpec,
     PortSpec,
 )
-from pipelinemodel.refs import OutputRef, as_output_ref
-from pipelinemodel.transformation import Step
+from pipelantic.refs import OutputRef, as_output_ref
+from pipelantic.transformation import Step
 
 T = TypeVar("T")
 
@@ -278,21 +278,21 @@ class Pipeline(metaclass=_PipelineMeta):
     @classmethod
     def inspect(cls) -> LogicalGraph:
         """Return the read-only logical graph for this pipeline."""
-        from pipelinemodel.inspection import inspect_pipeline
+        from pipelantic.inspection import inspect_pipeline
 
         return inspect_pipeline(cls)
 
     @classmethod
     def validate(cls):  # type: ignore[no-untyped-def]
         """Validate the pipeline and return a structured report."""
-        from pipelinemodel.validation import validate_pipeline
+        from pipelantic.validation import validate_pipeline
 
         return validate_pipeline(cls)
 
     @classmethod
     def to_mermaid(cls) -> str:
         """Generate a Mermaid flowchart from the logical graph."""
-        from pipelinemodel.mermaid import graph_to_mermaid
+        from pipelantic.mermaid import graph_to_mermaid
 
         return graph_to_mermaid(cls.build_graph())
 

@@ -1,6 +1,6 @@
 # Sinks
 
-A `Sink[T]` defines a typed exit point from a PipelineModel pipeline.
+A `Sink[T]` defines a typed exit point from a Pipelantic pipeline.
 
 Sinks publish validated data to external systems. Like `Source[T]`, a sink
 declares **what** data crosses the pipeline boundary while execution plugins
@@ -12,14 +12,14 @@ A sink answers one question:
 
 > Where does the pipeline publish its results?
 
-Because every sink is typed, PipelineModel can validate publication boundaries,
+Because every sink is typed, Pipelantic can validate publication boundaries,
 generate DPCS artifacts, derive lineage, and plan execution without depending
 on a specific storage technology.
 
 ## Basic Example
 
 ```python
-from pipelinemodel import Sink
+from pipelantic import Sink
 
 warehouse = Sink[Customer](
     input=normalized.result,
@@ -69,7 +69,7 @@ profile or plugin.
 
 Sink inputs are the final validation boundary.
 
-PipelineModel may validate:
+Pipelantic may validate:
 
 - Contract compatibility
 - Required fields
@@ -82,7 +82,7 @@ The recommended default is full validation before data leaves the pipeline.
 
 ## Planning
 
-During planning PipelineModel resolves:
+During planning Pipelantic resolves:
 
 - Destination binding
 - Execution plugin
@@ -107,7 +107,7 @@ Each sink becomes part of the generated DPCS pipeline contract, including:
 
 Sinks form the terminal nodes of the lineage graph.
 
-PipelineModel can automatically derive:
+Pipelantic can automatically derive:
 
 - Published datasets
 - Upstream dependencies

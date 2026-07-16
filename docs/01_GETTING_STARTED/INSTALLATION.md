@@ -1,6 +1,6 @@
 # Installation
 
-PipelineModel 0.1 provides the typed modeling kernel. Planning, execution
+Pipelantic 0.1 provides the typed modeling kernel. Planning, execution
 plugins, and contract serialization arrive in later milestones.
 
 ## Requirements
@@ -12,8 +12,8 @@ plugins, and contract serialization arrive in later milestones.
 ## Development Setup
 
 ```bash
-git clone https://github.com/eddiethedean/pipelinemodel.git
-cd pipelinemodel
+git clone https://github.com/eddiethedean/pipelantic.git
+cd pipelantic
 uv sync
 uv run pytest
 uv run ruff check .
@@ -40,7 +40,7 @@ group (pytest, ruff). The lockfile `uv.lock` pins exact versions.
 pyproject.toml
 uv.lock
 .python-version
-src/pipelinemodel/
+src/pipelantic/
 tests/
 docs/
 ```
@@ -48,7 +48,7 @@ docs/
 ## Verification
 
 ```bash
-uv run python -c "import pipelinemodel; print(pipelinemodel.__version__)"
+uv run python -c "import pipelantic; print(pipelantic.__version__)"
 ```
 
 ## User Installation (future)
@@ -56,9 +56,9 @@ uv run python -c "import pipelinemodel; print(pipelinemodel.__version__)"
 Once published to PyPI:
 
 ```bash
-pip install pipelinemodel
+pip install pipelantic
 # or
-uv add pipelinemodel
+uv add pipelantic
 ```
 
 Backend plugins will remain independently installable and must not be required
@@ -66,7 +66,7 @@ by the core package.
 
 ## Dependency Philosophy
 
-PipelineModel keeps the core install small. Dataframe engines, orchestrators,
+Pipelantic keeps the core install small. Dataframe engines, orchestrators,
 and storage clients belong in optional plugins—not the base package.
 
 See [Dependency Strategy](../11_DEVELOPMENT/DEPENDENCY_STRATEGY.md) for the

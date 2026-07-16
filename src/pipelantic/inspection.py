@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pipelinemodel.model import LogicalGraph
+from pipelantic.model import LogicalGraph
 
 if TYPE_CHECKING:
-    from pipelinemodel.pipeline import Pipeline
+    from pipelantic.pipeline import Pipeline
 
 
 def inspect_pipeline(pipeline_cls: type[Pipeline]) -> LogicalGraph:

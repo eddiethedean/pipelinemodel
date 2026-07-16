@@ -1,6 +1,6 @@
 # Exceptions Reference
 
-PipelineModel uses structured diagnostics for expected contract and pipeline
+Pipelantic uses structured diagnostics for expected contract and pipeline
 problems. Exceptions represent failures in API usage, loading, configuration,
 plugins, or runtime execution.
 
@@ -9,8 +9,8 @@ plugins, or runtime execution.
 ## Base Exception
 
 ```python
-class PipelineModelError(Exception):
-    """Base class for public PipelineModel exceptions."""
+class PipelanticError(Exception):
+    """Base class for public Pipelantic exceptions."""
 ```
 
 Applications may catch this base class at integration boundaries, but should
@@ -19,7 +19,7 @@ usually catch a more specific exception.
 ## Proposed Hierarchy
 
 ```text
-PipelineModelError
+PipelanticError
 ├── ConfigurationError
 ├── SourceLoadError
 ├── ModelDefinitionError
@@ -38,7 +38,7 @@ PipelineModelError
 │   ├── DataValidationError
 │   ├── PipelineTimeoutError
 │   └── PipelineCancelledError
-└── InternalPipelineModelError
+└── InternalPipelanticError
 ```
 
 ## `ConfigurationError`
@@ -127,13 +127,13 @@ failure.
 
 ## Internal Errors
 
-`InternalPipelineModelError` indicates a broken framework invariant. It should
+`InternalPipelanticError` indicates a broken framework invariant. It should
 include a diagnostic code and enough context for a bug report, while redacting
 secrets.
 
 ## Exception Chaining
 
-PipelineModel should retain the original cause:
+Pipelantic should retain the original cause:
 
 ```python
 raise NodeExecutionError(context=ctx) from original_exception

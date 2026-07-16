@@ -1,6 +1,6 @@
 # SQL Execution
 
-The SQL Execution subsystem defines how PipelineModel executes validated
+The SQL Execution subsystem defines how Pipelantic executes validated
 Pipeline Plans directly within SQL databases.
 
 Unlike dataframe execution backends, SQL execution compiles eligible
@@ -218,13 +218,13 @@ Avoid:
 
 ## Key Principle
 
-> SQL execution is a backend implementation of the PipelineModel execution
+> SQL execution is a backend implementation of the Pipelantic execution
 model. It executes validated Pipeline Plans inside relational databases while
 preserving the same portable semantics available through every other execution
 backend.
 
 ## Next Step
 
-Continue with **SQL_PUSHDOWN.md** to learn how PipelineModel optimizes SQL
+Continue with **SQL_PUSHDOWN.md** to learn how Pipelantic optimizes SQL
 execution through predicate, projection, aggregation, and join pushdown while
 preserving correctness.

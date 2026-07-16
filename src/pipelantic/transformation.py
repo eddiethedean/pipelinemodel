@@ -8,10 +8,10 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any, ClassVar, TypeVar
 
-from pipelinemodel.exceptions import ModelDefinitionError
-from pipelinemodel.identity import implementation_id, transformation_id
-from pipelinemodel.ports import Input, Output, Parameter, unwrap_port_marker
-from pipelinemodel.refs import OutputRef
+from pipelantic.exceptions import ModelDefinitionError
+from pipelantic.identity import implementation_id, transformation_id
+from pipelantic.ports import Input, Output, Parameter, unwrap_port_marker
+from pipelantic.refs import OutputRef
 
 F = TypeVar("F", bound=Callable[..., Any])
 

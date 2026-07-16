@@ -1,6 +1,6 @@
 # PySpark Plugin
 
-A **PySpark Plugin** implements the PipelineModel PySpark Plugin API for Apache
+A **PySpark Plugin** implements the Pipelantic PySpark Plugin API for Apache
 Spark execution environments.
 
 The plugin converts Spark-capable regions of a validated Pipeline Plan into
@@ -31,7 +31,7 @@ It is **not** responsible for:
 
 - Defining pipeline semantics
 - Defining transformation contracts
-- Replacing the PipelineModel planner
+- Replacing the Pipelantic planner
 - Replanning a pipeline during execution
 - Embedding cluster configuration into contracts
 - Silently weakening validation or failure behavior
@@ -122,7 +122,7 @@ class PySparkPlugin:
 ```
 
 The exact SDK may evolve, but plugins should expose stable structured objects
-rather than requiring PipelineModel to call private Spark internals.
+rather than requiring Pipelantic to call private Spark internals.
 
 ## Typed Spark DataFrames
 
@@ -242,7 +242,7 @@ Capabilities should distinguish:
 
 Every plugin should publish compatibility for:
 
-- PipelineModel
+- Pipelantic
 - Plugin SDK
 - PySpark
 - Apache Spark
@@ -1166,7 +1166,7 @@ Requirements include:
 Conceptually:
 
 ```python
-from pipelinemodel.plugins import register_pyspark_plugin
+from pipelantic.plugins import register_pyspark_plugin
 
 register_pyspark_plugin(
     DefaultPySparkPlugin(),
@@ -1180,12 +1180,12 @@ registration.
 
 Recommended package names include:
 
-- `pipelinemodel-pyspark`
-- `pipelinemodel-databricks`
-- `pipelinemodel-emr`
-- `pipelinemodel-spark-kubernetes`
-- `pipelinemodel-delta`
-- `pipelinemodel-iceberg`
+- `pipelantic-pyspark`
+- `pipelantic-databricks`
+- `pipelantic-emr`
+- `pipelantic-spark-kubernetes`
+- `pipelantic-delta`
+- `pipelantic-iceberg`
 
 A shared PySpark package may provide the core executor and conformance suite,
 while environment packages provide Resource Providers and deployment adapters.

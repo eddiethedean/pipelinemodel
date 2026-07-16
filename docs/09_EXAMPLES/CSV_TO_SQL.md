@@ -1,10 +1,10 @@
 # CSV to SQL
 
-This example builds a complete PipelineModel pipeline that reads customer data
+This example builds a complete Pipelantic pipeline that reads customer data
 from a CSV file, validates it against data contracts, normalizes the records
 with a typed transformation, and writes the curated results to a SQL database.
 
-The example demonstrates how PipelineModel keeps the logical pipeline unchanged
+The example demonstrates how Pipelantic keeps the logical pipeline unchanged
 while execution profiles and plugins supply the physical source, sink, and
 dataframe implementations.
 
@@ -93,7 +93,7 @@ The contracts remain independent of both CSV and SQL.
 ```python
 # src/csv_to_sql/transformations.py
 
-from pipelinemodel import Input, Output, Parameter, Transformation
+from pipelantic import Input, Output, Parameter, Transformation
 
 from .contracts import Customer, RawCustomer
 
@@ -147,7 +147,7 @@ The runtime-specific code is isolated in the implementation module.
 ```python
 # src/csv_to_sql/pipeline.py
 
-from pipelinemodel import Pipeline, Sink, Source
+from pipelantic import Pipeline, Sink, Source
 
 from .contracts import Customer, RawCustomer
 from .transformations import NormalizeCustomers
@@ -188,7 +188,7 @@ Neither the CSV path nor SQL connection string appears in the pipeline class.
 ```python
 # src/csv_to_sql/profiles.py
 
-from pipelinemodel import Profile
+from pipelantic import Profile
 
 
 local = Profile(
@@ -551,7 +551,7 @@ A SQL write may fail because of:
 - Transaction conflicts
 
 The storage plugin should translate backend exceptions into structured
-PipelineModel diagnostics.
+Pipelantic diagnostics.
 
 A failure callback may choose a declarative retry or fail action when supported
 by the active execution environment.

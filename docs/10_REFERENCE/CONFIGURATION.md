@@ -1,10 +1,10 @@
 # Configuration Reference
 
-PipelineModel configuration binds portable pipeline models to concrete
+Pipelantic configuration binds portable pipeline models to concrete
 environments without embedding execution details in `Pipeline`,
 `Transformation`, or data-contract classes.
 
-> This chapter defines the proposed configuration model for PipelineModel 1.0.
+> This chapter defines the proposed configuration model for Pipelantic 1.0.
 
 ## Configuration Sources
 
@@ -24,7 +24,7 @@ Later sources take precedence over earlier sources.
 The preferred project file is:
 
 ```text
-pipelinemodel.toml
+pipelantic.toml
 ```
 
 Example:
@@ -129,7 +129,7 @@ default_pool = "etl"
 streaming = true
 ```
 
-PipelineModel preserves the settings as typed plugin configuration; it should
+Pipelantic preserves the settings as typed plugin configuration; it should
 not silently accept unknown fields.
 
 ## Resource Providers
@@ -224,7 +224,7 @@ It must not change pipeline semantics or the canonical plan hash.
 Plugin-specific logger configuration should use a namespace:
 
 ```toml
-[logging.loggers."pipelinemodel.plugin.airflow"]
+[logging.loggers."pipelantic.plugin.airflow"]
 level = "DEBUG"
 ```
 
@@ -235,7 +235,7 @@ The effective configuration model should retain the origin of every value:
 ```text
 profiles.production.orchestrator
 value: airflow
-source: pipelinemodel.toml:24
+source: pipelantic.toml:24
 ```
 
 This makes overrides diagnosable.
@@ -245,7 +245,7 @@ This makes overrides diagnosable.
 Applications may construct configuration explicitly:
 
 ```python
-from pipelinemodel import PipelineRuntime, Profile
+from pipelantic import PipelineRuntime, Profile
 
 runtime = PipelineRuntime(
     profile=Profile(

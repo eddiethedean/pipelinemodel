@@ -1,4 +1,4 @@
-"""PipelineModel — typed, contract-driven data pipeline modeling.
+"""Pipelantic — typed, contract-driven data pipeline modeling.
 
 0.1 provides the authoring model, logical graph construction, topology and
 compatibility diagnostics, inspection, and Mermaid output.
@@ -8,19 +8,19 @@ Data contracts are provided by ContractModel. This package re-exports
 documentation-aligned imports.
 """
 
-from pipelinemodel._version import __version__
-from pipelinemodel.contracts import DataContractModel
-from pipelinemodel.diagnostics import Diagnostic, Severity, ValidationReport
-from pipelinemodel.exceptions import (
+from pipelantic._version import __version__
+from pipelantic.contracts import DataContractModel
+from pipelantic.diagnostics import Diagnostic, Severity, ValidationReport
+from pipelantic.exceptions import (
     ModelDefinitionError,
-    PipelineModelError,
+    PipelanticError,
     PipelineValidationError,
 )
-from pipelinemodel.model import Edge, LogicalGraph, Node, NodeKind
-from pipelinemodel.pipeline import Pipeline, Sink, Source, SubpipelineInstance
-from pipelinemodel.ports import Input, Output, Parameter
-from pipelinemodel.refs import OutputRef
-from pipelinemodel.transformation import ImplementationRecord, Step, Transformation
+from pipelantic.model import Edge, LogicalGraph, Node, NodeKind
+from pipelantic.pipeline import Pipeline, Sink, Source, SubpipelineInstance
+from pipelantic.ports import Input, Output, Parameter
+from pipelantic.refs import OutputRef
+from pipelantic.transformation import ImplementationRecord, Step, Transformation
 
 __all__ = [
     "DataContractModel",
@@ -35,8 +35,8 @@ __all__ = [
     "Output",
     "OutputRef",
     "Parameter",
+    "PipelanticError",
     "Pipeline",
-    "PipelineModelError",
     "PipelineValidationError",
     "Severity",
     "Sink",

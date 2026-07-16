@@ -1,9 +1,9 @@
 # Logging
 
-PipelineModel provides structured, contextual logging for validation, planning,
+Pipelantic provides structured, contextual logging for validation, planning,
 execution, and plugin coordination.
 
-Logging is part of the shared execution experience, but PipelineModel is not a
+Logging is part of the shared execution experience, but Pipelantic is not a
 log-storage platform. The core defines records, context, redaction, and
 lifecycle integration. Logging and observability providers route those records
 to the Python logging system, console, files, OpenTelemetry, cloud services, or
@@ -11,7 +11,7 @@ other destinations.
 
 ## Goals
 
-PipelineModel logging should be:
+Pipelantic logging should be:
 
 - structured
 - correlated by pipeline, plan, run, step, and attempt
@@ -23,7 +23,7 @@ PipelineModel logging should be:
 
 ## Logging Versus Results and Events
 
-PipelineModel distinguishes three related concepts:
+Pipelantic distinguishes three related concepts:
 
 ```text
 Lifecycle event
@@ -63,7 +63,7 @@ LogRecord(
     run_id="run_01...",
     step_id="normalize_customers",
     attempt=1,
-    plugin="pipelinemodel-polars",
+    plugin="pipelantic-polars",
     backend="polars",
     event="step.started",
     attributes={
@@ -209,7 +209,7 @@ json = true
 Run-scoped overrides may increase verbosity:
 
 ```bash
-pipelinemodel run customer.py:CustomerPipeline --log-level DEBUG
+pipelantic run customer.py:CustomerPipeline --log-level DEBUG
 ```
 
 Changing log verbosity must not change pipeline semantics or plan identity.
@@ -221,22 +221,22 @@ The default provider should integrate with `logging`:
 ```python
 import logging
 
-logging.getLogger("pipelinemodel").setLevel(logging.INFO)
-logging.getLogger("pipelinemodel.plugin.airflow").setLevel(logging.DEBUG)
+logging.getLogger("pipelantic").setLevel(logging.INFO)
+logging.getLogger("pipelantic.plugin.airflow").setLevel(logging.DEBUG)
 ```
 
 Recommended logger hierarchy:
 
 ```text
-pipelinemodel
-pipelinemodel.loading
-pipelinemodel.validation
-pipelinemodel.planning
-pipelinemodel.execution
-pipelinemodel.plugin.<plugin-name>
+pipelantic
+pipelantic.loading
+pipelantic.validation
+pipelantic.planning
+pipelantic.execution
+pipelantic.plugin.<plugin-name>
 ```
 
-PipelineModel should not call `logging.basicConfig()` automatically in library
+Pipelantic should not call `logging.basicConfig()` automatically in library
 usage. The CLI may configure its own handlers.
 
 ## Secret and Data Safety
@@ -269,7 +269,7 @@ DataLoggingPolicy(
 
 Plugins must:
 
-- use the logging context supplied by PipelineModel
+- use the logging context supplied by Pipelantic
 - preserve correlation identifiers
 - avoid adding their own global handlers
 - classify expected failures with stable error categories
@@ -283,13 +283,13 @@ Plugins may attach backend metadata such as job, query, task, or cluster IDs.
 External runtimes often own their own logs. The orchestration plugin should map:
 
 ```text
-PipelineModel run_id   ↔ orchestrator run identifier
-PipelineModel step_id  ↔ task identifier
-PipelineModel attempt  ↔ task attempt
-PipelineModel trace_id ↔ native trace context
+Pipelantic run_id   ↔ orchestrator run identifier
+Pipelantic step_id  ↔ task identifier
+Pipelantic attempt  ↔ task attempt
+Pipelantic trace_id ↔ native trace context
 ```
 
-PipelineModel should link to native logs rather than copying an unlimited
+Pipelantic should link to native logs rather than copying an unlimited
 remote log stream into the core result.
 
 ## Local Debugging
@@ -327,7 +327,7 @@ Conformance tests should verify:
 
 ## Key Principle
 
-> PipelineModel defines one safe, structured logging context across every
+> Pipelantic defines one safe, structured logging context across every
 > backend. Providers control routing and storage; logs never replace lifecycle
 > events or normalized results.
 

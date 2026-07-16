@@ -12,13 +12,13 @@ Parameters answer a single question:
 
 > How should this transformation behave?
 
-Because parameters are strongly typed, PipelineModel can validate them,
+Because parameters are strongly typed, Pipelantic can validate them,
 document them, and include them in DTCS artifacts.
 
 ## Basic Example
 
 ```python
-from pipelinemodel import Input, Output, Parameter, Transformation
+from pipelantic import Input, Output, Parameter, Transformation
 
 class NormalizeCustomers(Transformation):
     customers: Input[RawCustomer]
@@ -65,7 +65,7 @@ enabled: Parameter[bool]
 mode: Parameter[str]
 ```
 
-PipelineModel validates parameter values before execution.
+Pipelantic validates parameter values before execution.
 
 ## Defaults
 
@@ -115,7 +115,7 @@ Enums improve validation, documentation, and editor support.
 
 ## Validation
 
-PipelineModel validates:
+Pipelantic validates:
 
 - Required parameters
 - Parameter types

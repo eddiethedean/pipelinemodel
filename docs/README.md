@@ -1,6 +1,17 @@
-# PipelineModel Documentation
+<div class="pipelantic-hero">
+  <div class="pipelantic-hero__content">
+    <h1>Pipelantic</h1>
+    <p>Typed, contract-driven data pipeline modeling for Python.</p>
+    <div class="pipelantic-hero__actions">
+      <a class="md-button md-button--primary" href="01_GETTING_STARTED/QUICKSTART/">Quickstart</a>
+      <a class="md-button" href="02_FOUNDATIONS/ARCHITECTURE/">Architecture</a>
+    </div>
+  </div>
+</div>
 
-PipelineModel is a proposed Python framework for defining typed,
+# Pipelantic Documentation
+
+Pipelantic is a proposed Python framework for defining typed,
 contract-driven data pipelines and coordinating their execution through the
 tools users already choose.
 
@@ -9,13 +20,13 @@ Its central idea is simple:
 > Define data, transformations, and pipelines with typed Python classes.
 > Validate and plan them once. Execute them through interchangeable backends.
 
-PipelineModel is inspired by FastAPI's type-driven developer experience, but it
+Pipelantic is inspired by FastAPI's type-driven developer experience, but it
 does not turn ETL into a web API metaphor. It applies the same principle—types
 as executable interface declarations—to data engineering.
 
 ## Project Status
 
-PipelineModel is currently **design-first and pre-implementation**. These
+Pipelantic is currently **design-first and pre-implementation**. These
 documents define the intended product, public API, architecture, Plugin SDK,
 and 1.0 direction.
 
@@ -29,7 +40,7 @@ See the [Roadmap](11_DEVELOPMENT/ROADMAP.md) for implementation sequencing.
 
 ```python
 from contractmodel import DataContractModel
-from pipelinemodel import Input, Output, Pipeline, Sink, Source, Transformation
+from pipelantic import Input, Output, Pipeline, Sink, Source, Transformation
 
 
 class RawCustomer(DataContractModel):
@@ -57,7 +68,7 @@ class CustomerPipeline(Pipeline):
     )
 ```
 
-From these declarations, PipelineModel can derive:
+From these declarations, Pipelantic can derive:
 
 - ODCS data contracts
 - A DTCS transformation contract
@@ -104,14 +115,14 @@ Typed Python authoring or portable contracts
       Plugins   Airflow/SQL  Docs/graphs
 ```
 
-PipelineModel owns modeling, validation, planning, and coordination.
+Pipelantic owns modeling, validation, planning, and coordination.
 
 Standards own contract meaning. ContractModel owns data-contract
 operationalization. Plugins and external systems perform the work.
 
 ## The Three Contract Authorities
 
-PipelineModel intentionally recognizes only three top-level contract families:
+Pipelantic intentionally recognizes only three top-level contract families:
 
 | Contract | Authority | Answers |
 |---|---|---|
@@ -126,7 +137,7 @@ implementation or runtime concepts—not additional contract standards.
 
 ### I want to understand the idea
 
-1. [Manifesto](PIPELINEMODEL_MANIFESTO.md)
+1. [Manifesto](PIPELANTIC_MANIFESTO.md)
 2. [Vision](02_FOUNDATIONS/VISION.md)
 3. [Core Concepts](02_FOUNDATIONS/CORE_CONCEPTS.md)
 4. [Architecture](02_FOUNDATIONS/ARCHITECTURE.md)
@@ -193,7 +204,7 @@ implementation or runtime concepts—not additional contract standards.
 
 ## Non-Goals
 
-PipelineModel is not intended to become:
+Pipelantic is not intended to become:
 
 - A dataframe engine
 - A distributed scheduler

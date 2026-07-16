@@ -1,40 +1,40 @@
 # Frequently Asked Questions
 
-## What is PipelineModel?
+## What is Pipelantic?
 
-PipelineModel is a Python framework for building typed, contract-driven
+Pipelantic is a Python framework for building typed, contract-driven
 ETL pipelines. It models data pipelines using Python classes and type
 annotations, validates them, generates portable contracts, and delegates
 execution to external execution engines.
 
 ------------------------------------------------------------------------
 
-## Is PipelineModel an orchestration framework?
+## Is Pipelantic an orchestration framework?
 
 No.
 
-PipelineModel models pipelines and produces resolved `PipelinePlan` objects. It intentionally
+Pipelantic models pipelines and produces resolved `PipelinePlan` objects. It intentionally
 delegates scheduling and orchestration to external systems such as
 Airflow or other orchestration plugins.
 
 ------------------------------------------------------------------------
 
-## Is PipelineModel an ETL engine?
+## Is Pipelantic an ETL engine?
 
 No.
 
-PipelineModel does not implement dataframe operations, database
+Pipelantic does not implement dataframe operations, database
 connectors, schedulers, or distributed execution.
 
 Instead, it coordinates existing tools through a common typed model.
 
 ------------------------------------------------------------------------
 
-## Why create PipelineModel instead of using Airflow or Dagster?
+## Why create Pipelantic instead of using Airflow or Dagster?
 
 Airflow and Dagster are excellent orchestration systems.
 
-PipelineModel solves a different problem.
+Pipelantic solves a different problem.
 
 Its focus is:
 
@@ -44,17 +44,17 @@ Its focus is:
 -   portability
 -   execution abstraction
 
-PipelineModel can generate plans and backend artifacts for multiple orchestration
+Pipelantic can generate plans and backend artifacts for multiple orchestration
 systems without changing pipeline definitions.
 
 ------------------------------------------------------------------------
 
-## Why is PipelineModel inspired by FastAPI?
+## Why is Pipelantic inspired by FastAPI?
 
 FastAPI demonstrated that Python type annotations can become the
 foundation for an outstanding developer experience.
 
-PipelineModel applies the same philosophy to data engineering.
+Pipelantic applies the same philosophy to data engineering.
 
 Types define interfaces.
 
@@ -66,7 +66,7 @@ Everything else can be inferred.
 
 Data contracts describe datasets.
 
-PipelineModel uses ContractModel-compatible Pydantic models as the
+Pipelantic uses ContractModel-compatible Pydantic models as the
 source of truth and generates Open Data Contract Standard (ODCS)
 documents from those models.
 
@@ -93,7 +93,7 @@ They intentionally do not specify implementation details.
 Pipeline contracts describe how data contracts and transformation
 contracts are connected together.
 
-PipelineModel can generate Data Pipeline Contract Standard (DPCS)
+Pipelantic can generate Data Pipeline Contract Standard (DPCS)
 documents directly from pipeline classes.
 
 ------------------------------------------------------------------------
@@ -117,7 +117,7 @@ Business logic remains unchanged.
 
 ## Which dataframe engine should I use?
 
-PipelineModel is dataframe-engine neutral.
+Pipelantic is dataframe-engine neutral.
 
 For new projects, Polars is generally recommended because of its modern
 execution model and performance characteristics.
@@ -126,14 +126,14 @@ Pandas remains a fully supported execution option.
 
 ------------------------------------------------------------------------
 
-## Does PipelineModel support asynchronous execution?
+## Does Pipelantic support asynchronous execution?
 
 Yes.
 
 Users may write synchronous (`def`) or asynchronous (`async def`)
 implementations.
 
-PipelineModel normalizes invocation internally so authors do not need to
+Pipelantic normalizes invocation internally so authors do not need to
 manage event loops, worker threads, or execution scheduling.
 
 ------------------------------------------------------------------------
@@ -144,7 +144,7 @@ No.
 
 The preferred workflow is code-first.
 
-PipelineModel generates ODCS, DTCS, and DPCS contracts automatically
+Pipelantic generates ODCS, DTCS, and DPCS contracts automatically
 from Python definitions.
 
 Existing contracts can also be loaded and consumed.
@@ -155,7 +155,7 @@ Existing contracts can also be loaded and consumed.
 
 Yes.
 
-PipelineModel supports loading existing ODCS contracts and integrating
+Pipelantic supports loading existing ODCS contracts and integrating
 them into typed pipeline definitions.
 
 ------------------------------------------------------------------------
@@ -164,7 +164,7 @@ them into typed pipeline definitions.
 
 Validation is a core feature.
 
-PipelineModel validates contracts, pipeline wiring, parameter types, and
+Pipelantic validates contracts, pipeline wiring, parameter types, and
 implementation compatibility before execution whenever possible.
 
 ------------------------------------------------------------------------
@@ -183,21 +183,21 @@ The logical transformation remains unchanged.
 
 ------------------------------------------------------------------------
 
-## Is PipelineModel tied to a specific cloud provider?
+## Is Pipelantic tied to a specific cloud provider?
 
 No.
 
-PipelineModel is designed to be cloud-agnostic.
+Pipelantic is designed to be cloud-agnostic.
 
 Cloud-specific integrations are implemented through plugins.
 
 ------------------------------------------------------------------------
 
-## Can PipelineModel generate documentation?
+## Can Pipelantic generate documentation?
 
 Yes.
 
-PipelineModel is designed to generate:
+Pipelantic is designed to generate:
 
 -   contract documentation
 -   pipeline documentation
@@ -210,9 +210,9 @@ from the same Python source code.
 
 ------------------------------------------------------------------------
 
-## Who should use PipelineModel?
+## Who should use Pipelantic?
 
-PipelineModel is intended for:
+Pipelantic is intended for:
 
 -   data engineers
 -   analytics engineers
@@ -225,4 +225,4 @@ PipelineModel is intended for:
 ## Where should I go next?
 
 Continue with the **Foundations** section to learn the design
-philosophy, architecture, and core concepts behind PipelineModel.
+philosophy, architecture, and core concepts behind Pipelantic.

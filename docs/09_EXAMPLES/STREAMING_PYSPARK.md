@@ -1,11 +1,11 @@
 # Streaming PySpark
 
-This example builds a complete PipelineModel pipeline that consumes customer
+This example builds a complete Pipelantic pipeline that consumes customer
 order events from Kafka with PySpark Structured Streaming, validates the events
 against typed contracts, applies event-time aggregation with watermarks, and
 publishes rolling customer summaries to Delta Lake.
 
-The example demonstrates how PipelineModel extends the same portable contracts,
+The example demonstrates how Pipelantic extends the same portable contracts,
 transformations, planning, validation, lineage, and execution model used for
 batch pipelines into unbounded streaming workloads.
 
@@ -113,7 +113,7 @@ These contracts are independent of Kafka, Spark, and Delta Lake.
 ## Step 2 — Define the Transformation Contract
 
 ```python
-from pipelinemodel import Input, Output, Parameter, Transformation
+from pipelantic import Input, Output, Parameter, Transformation
 
 
 class AggregateCustomerOrders(Transformation):
@@ -133,7 +133,7 @@ syntax.
 ```python
 from pyspark.sql import functions as F
 
-from pipelinemodel.pyspark import SparkDataFrame
+from pipelantic.pyspark import SparkDataFrame
 
 from .contracts import CustomerOrderWindow, OrderEvent
 from .transformations import AggregateCustomerOrders
@@ -196,7 +196,7 @@ The implementation builds a streaming logical plan and does not start the query.
 ## Step 4 — Define the Streaming Pipeline
 
 ```python
-from pipelinemodel import Pipeline, Sink, Source
+from pipelantic import Pipeline, Sink, Source
 
 from .contracts import (
     CustomerOrderWindow,
@@ -234,7 +234,7 @@ validation model.
 ## Step 5 — Define the Streaming Profile
 
 ```python
-from pipelinemodel import Profile
+from pipelantic import Profile
 
 
 production = Profile(
@@ -290,7 +290,7 @@ production = Profile(
         },
         "checkpoints": {
             "provider": "cloud-storage",
-            "root": "s3://company-checkpoints/pipelinemodel/",
+            "root": "s3://company-checkpoints/pipelantic/",
         },
     },
 )
@@ -696,7 +696,7 @@ Changing:
 
 may make existing checkpoints incompatible.
 
-PipelineModel should detect known incompatibilities before restart.
+Pipelantic should detect known incompatibilities before restart.
 
 ## Restart and Recovery
 
@@ -1115,7 +1115,7 @@ Avoid:
 
 ## Key Principle
 
-> Streaming PySpark execution extends PipelineModel to unbounded event-time
+> Streaming PySpark execution extends Pipelantic to unbounded event-time
 > workflows while preserving typed contracts, explicit watermarks, bounded
 > state, durable recovery, lineage, validation, and sink guarantees.
 

@@ -3,7 +3,7 @@
 
 This example demonstrates the complementary workflow to **CONTRACT_FIRST.md**.
 Instead of authoring ODCS, DTCS, and DPCS documents first, developers begin
-with strongly typed Python classes and allow PipelineModel to generate portable
+with strongly typed Python classes and allow Pipelantic to generate portable
 contracts automatically.
 
 ## Philosophy
@@ -80,7 +80,7 @@ class Customer(DataContractModel):
 ## Transformation
 
 ```python
-from pipelinemodel import Input, Output, Parameter, Transformation
+from pipelantic import Input, Output, Parameter, Transformation
 
 class NormalizeCustomers(Transformation):
     customers: Input[RawCustomer]
@@ -230,6 +230,6 @@ multiple languages.
 Code-first is ideal when Python is the primary authoring environment and
 developers want rapid iteration with strong typing.
 
-Both workflows intentionally converge to the same normalized PipelineModel,
+Both workflows intentionally converge to the same normalized Pipelantic,
 Pipeline Plan, execution behavior, documentation, and portable contract
 artifacts.

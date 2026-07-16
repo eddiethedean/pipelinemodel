@@ -6,7 +6,7 @@ If **Data Contracts** define *what* data looks like and **Transformations**
 define *how* data changes, then **Pipelines** define *how those transformations
 are connected*.
 
-PipelineModel models pipelines using the **Data Pipeline Contract Standard
+Pipelantic models pipelines using the **Data Pipeline Contract Standard
 (DPCS)** while remaining independent of any execution engine.
 
 ## What This Section Covers
@@ -27,7 +27,7 @@ This section explains how to:
 A pipeline is declared using ordinary Python.
 
 ```python
-from pipelinemodel import Pipeline, Sink, Source
+from pipelantic import Pipeline, Sink, Source
 
 
 class CustomerPipeline(Pipeline):
@@ -56,7 +56,7 @@ Every pipeline has a portable representation.
 Python Pipeline
        │
        ▼
-PipelineModel
+Pipelantic
        │
        ▼
 DPCS Pipeline Contract
@@ -68,7 +68,7 @@ DPCS is the portable artifact.
 
 ## Planning vs. Execution
 
-PipelineModel separates planning from execution.
+Pipelantic separates planning from execution.
 
 Planning determines:
 
@@ -102,7 +102,7 @@ Every connection is validated through data contracts.
 
 ## Validation
 
-Before execution, PipelineModel validates:
+Before execution, Pipelantic validates:
 
 - Graph structure
 - Contract compatibility

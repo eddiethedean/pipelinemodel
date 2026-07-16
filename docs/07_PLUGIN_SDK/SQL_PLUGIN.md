@@ -1,6 +1,6 @@
 # SQL Plugin
 
-A **SQL Plugin** implements the PipelineModel SQL Plugin API for a specific SQL
+A **SQL Plugin** implements the Pipelantic SQL Plugin API for a specific SQL
 execution environment.
 
 SQL plugins compile and execute eligible transformation regions inside relational
@@ -116,12 +116,12 @@ class SqlPlugin:
 ```
 
 The exact public SDK will evolve, but SQL plugins should expose stable,
-structured operations rather than requiring PipelineModel to invoke private
+structured operations rather than requiring Pipelantic to invoke private
 database-library internals.
 
 ## Logical SQL Representation
 
-PipelineModel should define or adopt a safe logical SQL representation.
+Pipelantic should define or adopt a safe logical SQL representation.
 
 A SQL implementation should return structured expressions rather than use raw
 string concatenation as the primary interface.
@@ -160,7 +160,7 @@ def build_customer_summary(
 
 Possible implementation foundations include:
 
-- PipelineModel's own SQL expression IR
+- Pipelantic's own SQL expression IR
 - SQLAlchemy Core
 - A supported relational algebra library
 - A carefully constrained adapter interface
@@ -718,7 +718,7 @@ A SQL plugin may support:
 - Asynchronous drivers
 - Both
 
-PipelineModel should normalize invocation while respecting driver constraints.
+Pipelantic should normalize invocation while respecting driver constraints.
 
 A synchronous database client may run through an appropriate thread or worker
 strategy when used inside an asynchronous execution environment.
@@ -896,7 +896,7 @@ Requirements include:
 Conceptually:
 
 ```python
-from pipelinemodel.plugins import register_sql_plugin
+from pipelantic.plugins import register_sql_plugin
 
 
 register_sql_plugin(
@@ -905,19 +905,19 @@ register_sql_plugin(
 ```
 
 Normal deployments should prefer automatic discovery through package entry
-points or the standard PipelineModel plugin registry.
+points or the standard Pipelantic plugin registry.
 
 ## Package Naming
 
 Recommended distribution names include:
 
-- `pipelinemodel-sql`
-- `pipelinemodel-postgresql`
-- `pipelinemodel-sqlite`
-- `pipelinemodel-duckdb`
-- `pipelinemodel-snowflake`
-- `pipelinemodel-bigquery`
-- `pipelinemodel-databricks-sql`
+- `pipelantic-sql`
+- `pipelantic-postgresql`
+- `pipelantic-sqlite`
+- `pipelantic-duckdb`
+- `pipelantic-snowflake`
+- `pipelantic-bigquery`
+- `pipelantic-databricks-sql`
 
 A shared SQL core package may provide common IR, compiler, and test utilities.
 
@@ -926,7 +926,7 @@ A shared SQL core package may provide common IR, compiler, and test utilities.
 Every SQL plugin should publish:
 
 - Plugin version
-- Supported PipelineModel version
+- Supported Pipelantic version
 - Supported Plugin SDK version
 - Supported DTCS version
 - Supported DPCS version

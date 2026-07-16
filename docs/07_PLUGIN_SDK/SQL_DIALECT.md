@@ -1,6 +1,6 @@
 # SQL Dialect
 
-A **SQL Dialect** defines the database-specific rules used by a PipelineModel
+A **SQL Dialect** defines the database-specific rules used by a Pipelantic
 SQL Plugin to compile logical SQL expressions into valid, semantically
 equivalent SQL for a target database.
 
@@ -75,7 +75,7 @@ Differences include:
 - Parameter styles
 
 The dialect layer prevents these differences from leaking into portable
-PipelineModel contracts.
+Pipelantic contracts.
 
 ## Dialect Identity
 
@@ -388,7 +388,7 @@ Examples include:
 - Numeric parameters
 - Driver-native bind objects
 
-The dialect or driver adapter should translate PipelineModel's logical
+The dialect or driver adapter should translate Pipelantic's logical
 parameters into the required format.
 
 ## Expression Compilation
@@ -602,7 +602,7 @@ The dialect should describe:
 - Concurrency behavior
 - Return values
 
-A generic PipelineModel merge strategy should compile only when equivalent
+A generic Pipelantic merge strategy should compile only when equivalent
 semantics can be guaranteed.
 
 ## Table Creation
@@ -675,7 +675,7 @@ Examples include:
 - Serializable
 - Snapshot
 
-PipelineModel should request logical isolation requirements rather than
+Pipelantic should request logical isolation requirements rather than
 hard-code vendor syntax.
 
 ## Locking
@@ -772,7 +772,7 @@ management.
 
 ## Metadata Normalization
 
-Database metadata should be normalized into PipelineModel structures.
+Database metadata should be normalized into Pipelantic structures.
 
 The core should not depend on vendor-specific catalog row formats.
 
@@ -993,7 +993,7 @@ Tests should emphasize observable semantics over formatting.
 A possible package layout:
 
 ```text
-pipelinemodel_sql/
+pipelantic_sql/
 ├── dialects/
 │   ├── base.py
 │   ├── sqlite.py
@@ -1038,7 +1038,7 @@ Avoid:
 
 ## Key Principle
 
-> A SQL Dialect translates PipelineModel's logical SQL semantics into
+> A SQL Dialect translates Pipelantic's logical SQL semantics into
 > database-specific syntax while making every capability, limitation, type
 > mapping, and portability tradeoff explicit.
 

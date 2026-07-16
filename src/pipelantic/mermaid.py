@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pipelinemodel.model import LogicalGraph, NodeKind
+from pipelantic.model import LogicalGraph, NodeKind
 
 
 def graph_to_mermaid(graph: LogicalGraph) -> str:

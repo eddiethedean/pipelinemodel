@@ -1,6 +1,6 @@
 """Data-contract integration boundary for ContractModel.
 
-PipelineModel docs refer to ``DataContractModel``. The published ContractModel
+Pipelantic docs refer to ``DataContractModel``. The published ContractModel
 package exposes ``ContractModel`` as the Pydantic authoring base. This module
 aliases that type and provides helpers for identity and compatibility checks.
 """

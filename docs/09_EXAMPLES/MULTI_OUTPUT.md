@@ -1,6 +1,6 @@
 # Multi-Output Pipeline
 
-This example builds a PipelineModel pipeline with a transformation that produces
+This example builds a Pipelantic pipeline with a transformation that produces
 multiple typed outputs.
 
 Multi-output transformations are useful when one logical operation naturally
@@ -140,7 +140,7 @@ Each output has a distinct contract and purpose.
 ```python
 # src/multi_output/transformations.py
 
-from pipelinemodel import Input, Output, Transformation
+from pipelantic import Input, Output, Transformation
 
 from .contracts import (
     Customer,
@@ -187,7 +187,7 @@ Named outputs make generated contracts, diagnostics, and lineage more stable.
 
 import polars as pl
 
-from pipelinemodel import TransformationOutputs
+from pipelantic import TransformationOutputs
 
 from .transformations import ValidateAndNormalizeCustomers
 
@@ -275,7 +275,7 @@ Its purpose is to associate each returned dataset with its declared output name.
 
 ## Output Type Checking
 
-PipelineModel should verify that:
+Pipelantic should verify that:
 
 - Every required output is returned.
 - No undeclared output is returned.
@@ -289,7 +289,7 @@ A missing `metrics` output should fail before downstream execution.
 ```python
 # src/multi_output/pipeline.py
 
-from pipelinemodel import Pipeline, Sink, Source
+from pipelantic import Pipeline, Sink, Source
 
 from .contracts import (
     Customer,
@@ -332,7 +332,7 @@ Each sink consumes one named output.
 ```python
 # src/multi_output/profiles.py
 
-from pipelinemodel import Profile
+from pipelantic import Profile
 
 
 local = Profile(
@@ -487,7 +487,7 @@ customer_export = ExportCustomers.step(
 )
 ```
 
-PipelineModel should preserve one output identity across all edges.
+Pipelantic should preserve one output identity across all edges.
 
 ## Output Validation
 
@@ -522,7 +522,7 @@ Suppose:
 
 The transformation result is incomplete.
 
-By default, PipelineModel should fail the step because one declared output is
+By default, Pipelantic should fail the step because one declared output is
 invalid.
 
 A profile may permit output-specific failure behavior only when the
@@ -530,7 +530,7 @@ transformation contract explicitly allows it.
 
 ## Required and Optional Outputs
 
-PipelineModel may eventually support optional outputs.
+Pipelantic may eventually support optional outputs.
 
 Conceptually:
 
@@ -809,7 +809,7 @@ return TransformationOutputs(
 )
 ```
 
-PipelineModel should avoid evaluating each output through redundant Spark
+Pipelantic should avoid evaluating each output through redundant Spark
 actions.
 
 Shared upstream plans should be reused or cached when beneficial.
@@ -1126,7 +1126,7 @@ Avoid:
 ## Key Principle
 
 > A multi-output transformation is one typed logical operation with several
-> stable, independently contract-governed results. PipelineModel preserves each
+> stable, independently contract-governed results. Pipelantic preserves each
 > output's identity, validation, lineage, and downstream behavior without
 > requiring duplicate transformation execution.
 

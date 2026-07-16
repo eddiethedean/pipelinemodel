@@ -1,6 +1,6 @@
 # Project Structure
 
-A well-organized PipelineModel project separates **modeling** from
+A well-organized Pipelantic project separates **modeling** from
 **execution**. Your Python classes define contracts and pipelines, while
 runtime configuration and generated artifacts remain outside your source
 code.
@@ -95,7 +95,7 @@ A single transformation contract may have multiple implementations.
 
 ### pipelines/
 
-Contains PipelineModel pipeline definitions.
+Contains Pipelantic pipeline definitions.
 
 ``` python
 class CustomerPipeline(Pipeline):
@@ -163,13 +163,13 @@ Separate contract validation from execution testing whenever possible.
 
 Keep project-specific documentation in a local `docs/` directory.
 
-PipelineModel itself has its own documentation, while each project
+Pipelantic itself has its own documentation, while each project
 documents business-specific pipelines, assumptions, and operational
 guidance.
 
 ## Design Principles
 
-A PipelineModel project should follow these principles:
+A Pipelantic project should follow these principles:
 
 -   Data contracts are isolated from execution code.
 -   Transformations define interfaces before implementations.
@@ -190,4 +190,4 @@ existing implementations.
 ## Next Step
 
 Continue with **FAQ.md** for answers to common questions about
-PipelineModel's architecture and philosophy.
+Pipelantic's architecture and philosophy.

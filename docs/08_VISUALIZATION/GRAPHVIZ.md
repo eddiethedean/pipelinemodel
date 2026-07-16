@@ -1,10 +1,10 @@
 # Graphviz
 
-PipelineModel can generate **Graphviz** diagrams from a validated Pipeline Plan.
+Pipelantic can generate **Graphviz** diagrams from a validated Pipeline Plan.
 
 Graphviz is well suited for complex pipeline graphs, detailed lineage views,
 publication-quality diagrams, and programmatic export to formats such as SVG,
-PNG, and PDF. Like every PipelineModel visualization, Graphviz output is derived
+PNG, and PDF. Like every Pipelantic visualization, Graphviz output is derived
 from the canonical Pipeline Plan rather than handwritten diagram source.
 
 ## Purpose
@@ -152,7 +152,7 @@ friendly to version control.
 
 ## Layout
 
-PipelineModel may support Graphviz layout engines such as:
+Pipelantic may support Graphviz layout engines such as:
 
 - `dot` for directed graphs
 - `neato` for relationship graphs
@@ -200,7 +200,7 @@ This minimizes unnecessary version-control changes.
 
 ## Large Pipelines
 
-For large graphs, PipelineModel should support:
+For large graphs, Pipelantic should support:
 
 - Filtering by source or sink
 - Limiting traversal depth
@@ -239,7 +239,7 @@ review documents.
 
 ## Mermaid and Graphviz
 
-PipelineModel should support both formats.
+Pipelantic should support both formats.
 
 ### Mermaid
 
@@ -288,6 +288,6 @@ Avoid:
 
 ## Next Step
 
-Continue with **HTML.md** to learn how PipelineModel can generate navigable,
+Continue with **HTML.md** to learn how Pipelantic can generate navigable,
 self-contained pipeline documentation from contracts, lineage, diagnostics, and
 visualizations.

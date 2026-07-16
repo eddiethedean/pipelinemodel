@@ -1,6 +1,6 @@
 # Documentation Status and Conventions
 
-PipelineModel is currently a design-first, pre-implementation project. The
+Pipelantic is currently a design-first, pre-implementation project. The
 documentation serves three related purposes:
 
 1. Explain the product vision and user experience.
@@ -32,10 +32,10 @@ The source of truth depends on the subject:
 | Transformation-contract meaning | `DTCS_SPEC.md` |
 | Pipeline-contract meaning | `DPCS_SPEC.md` |
 | ContractModel behavior | ContractModel project |
-| PipelineModel architecture and API | This documentation until code and tests supersede it |
+| Pipelantic architecture and API | This documentation until code and tests supersede it |
 | Backend behavior | Plugin documentation and conformance tests |
 
-Integration guides explain how PipelineModel uses a standard; they do not
+Integration guides explain how Pipelantic uses a standard; they do not
 replace normative specifications.
 
 ## Requirement Language

@@ -1,8 +1,8 @@
 # Glossary
 
 This glossary defines the core terminology used throughout the
-PipelineModel documentation. Unless otherwise noted, these definitions
-reflect PipelineModel's architecture and may differ from how similar
+Pipelantic documentation. Unless otherwise noted, these definitions
+reflect Pipelantic's architecture and may differ from how similar
 terms are used in other ETL frameworks.
 
 ## Artifact
@@ -26,7 +26,7 @@ as invalid data, execution failure, or pipeline completion.
 ## Contract
 
 A portable, declarative description of part of a data pipeline.
-PipelineModel recognizes three primary contract types:
+Pipelantic recognizes three primary contract types:
 
 -   Data Contract
 -   Transformation Contract
@@ -54,7 +54,7 @@ including its inputs, outputs, parameters, and metadata.
 
 ## Data Contract
 
-A typed description of a dataset. In PipelineModel, data contracts are
+A typed description of a dataset. In Pipelantic, data contracts are
 authored as ContractModel-compatible Pydantic models and can be
 represented as ODCS documents.
 
@@ -72,7 +72,7 @@ or a remote processing service.
 
 A resolved representation of a logical pipeline that identifies
 dependencies, runtime bindings, and the order of execution. An execution
-plan is produced by PipelineModel but executed by plugins.
+plan is produced by Pipelantic but executed by plugins.
 
 The preferred public term is `PipelinePlan`.
 
@@ -91,7 +91,7 @@ A typed input port declared by a transformation using `Input[T]`.
 
 ## Intermediate Representation (IR)
 
-A model between authoring and backend execution. PipelineModel distinguishes
+A model between authoring and backend execution. Pipelantic distinguishes
 the typed logical graph from the resolved `PipelinePlan`; the latter is the
 primary execution-facing IR.
 
@@ -126,16 +126,16 @@ becoming part of the pipeline graph.
 A logical description of how transformations and data contracts are
 connected. A pipeline models intent rather than execution.
 
-## PipelineModel
+## Pipelantic
 
-The framework described by this documentation. PipelineModel models,
+The framework described by this documentation. Pipelantic models,
 validates, documents, and plans pipelines while delegating execution to
 external plugins.
 
 ## Plugin
 
 An extension that provides runtime functionality not implemented by the
-PipelineModel core, such as dataframe processing, orchestration,
+Pipelantic core, such as dataframe processing, orchestration,
 storage, or compilation.
 
 ## Physical Graph
@@ -191,7 +191,7 @@ HTML, or lineage diagrams, derived from the logical model.
 
 ## Summary
 
-PipelineModel intentionally distinguishes between:
+Pipelantic intentionally distinguishes between:
 
 -   **Modeling** --- describing pipelines with typed Python classes.
 -   **Planning** --- validating and preparing those models for
@@ -199,4 +199,4 @@ PipelineModel intentionally distinguishes between:
 -   **Execution** --- performing work through interchangeable plugins.
 
 Keeping these concepts separate is fundamental to the architecture and
-developer experience of PipelineModel.
+developer experience of Pipelantic.

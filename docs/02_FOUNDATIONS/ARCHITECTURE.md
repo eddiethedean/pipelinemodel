@@ -1,6 +1,6 @@
 # Architecture
 
-PipelineModel is a typed modeling, validation, planning, and coordination
+Pipelantic is a typed modeling, validation, planning, and coordination
 framework for data pipelines.
 
 It does not implement dataframe computation, distributed scheduling, storage,
@@ -13,12 +13,12 @@ external systems.
 ```text
 Standards own meaning.
 ContractModel operationalizes data contracts.
-PipelineModel owns the logical model and resolved plan.
+Pipelantic owns the logical model and resolved plan.
 Plugins own backend adaptation and execution.
 External systems perform the work.
 ```
 
-This boundary is the primary defense against PipelineModel becoming another
+This boundary is the primary defense against Pipelantic becoming another
 monolithic ETL framework.
 
 Security is a cross-cutting architectural constraint, not a plugin feature.
@@ -68,7 +68,7 @@ See the [Security Model](SECURITY.md).
 
 ## Authoring Layer
 
-PipelineModel supports complementary authoring paths.
+Pipelantic supports complementary authoring paths.
 
 ### Code-first
 
@@ -79,11 +79,11 @@ PipelineModel supports complementary authoring paths.
 ### Contract-first
 
 - ContractModel loads ODCS data contracts.
-- PipelineModel integrations load DTCS transformations.
-- PipelineModel loads DPCS pipelines.
+- Pipelantic integrations load DTCS transformations.
+- Pipelantic loads DPCS pipelines.
 
 Both paths converge on semantically equivalent domain models and one typed
-logical pipeline graph. PipelineModel does not flatten ODCS, DTCS, and DPCS
+logical pipeline graph. Pipelantic does not flatten ODCS, DTCS, and DPCS
 into one universal contract object.
 
 ## Typed Logical Model
@@ -174,12 +174,12 @@ It should be:
 
 The plan preserves mappings between logical nodes and physical execution units.
 This is essential because a backend may fuse several logical transformations
-into one SQL statement or Spark plan while PipelineModel still needs
+into one SQL statement or Spark plan while Pipelantic still needs
 step-level lineage, diagnostics, and failure attribution.
 
 ## Logical and Physical Graphs
 
-PipelineModel distinguishes:
+Pipelantic distinguishes:
 
 ```text
 Logical graph
@@ -249,13 +249,13 @@ Airflow, Spark, dbt, remote service
     → plugin-managed external execution
 ```
 
-PipelineModel coordinates invocation, concurrency limits, cancellation,
+Pipelantic coordinates invocation, concurrency limits, cancellation,
 timeouts, context propagation, and cleanup. It does not assume worker threads
 make CPU-heavy Python parallel.
 
 ## Lifecycle Extension Architecture
 
-PipelineModel uses separate mechanisms for distinct lifecycle concerns:
+Pipelantic uses separate mechanisms for distinct lifecycle concerns:
 
 ```text
 Runtime lifespan

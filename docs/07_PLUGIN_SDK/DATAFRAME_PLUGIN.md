@@ -1,13 +1,13 @@
 # Dataframe Plugin
 
-A **Dataframe Plugin** implements the PipelineModel Dataframe Plugin API for a
+A **Dataframe Plugin** implements the Pipelantic Dataframe Plugin API for a
 specific dataframe engine.
 
 Dataframe plugins execute transformation implementations using a concrete
 dataframe library while preserving the logical semantics defined by the
 Pipeline Plan, DTCS, and the associated data contracts.
 
-PipelineModel itself is dataframe-independent. Dataframe plugins provide the
+Pipelantic itself is dataframe-independent. Dataframe plugins provide the
 physical execution layer.
 
 ## Purpose
@@ -124,13 +124,13 @@ Planning compares required capabilities against those provided by the plugin.
 
 Plugins should support synchronous and asynchronous implementations.
 
-PipelineModel normalizes invocation so plugin authors do not need separate
+Pipelantic normalizes invocation so plugin authors do not need separate
 public APIs.
 
 ## Error Handling
 
 Plugins should translate backend-specific exceptions into structured
-PipelineModel diagnostics.
+Pipelantic diagnostics.
 
 Diagnostics should preserve:
 
@@ -158,7 +158,7 @@ Optimizations must never change observable semantics.
 - Keep contracts backend-independent.
 - Validate outputs.
 - Advertise capabilities accurately.
-- Translate backend errors into PipelineModel diagnostics.
+- Translate backend errors into Pipelantic diagnostics.
 
 ## Anti-Patterns
 
@@ -174,7 +174,7 @@ Avoid:
 
 > A dataframe plugin executes transformation implementations using a specific
 > dataframe engine while preserving the portable semantics defined by
-> PipelineModel contracts and Pipeline Plans.
+> Pipelantic contracts and Pipeline Plans.
 
 ## Next Step
 

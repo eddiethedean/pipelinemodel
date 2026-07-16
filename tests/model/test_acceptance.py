@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pipelinemodel import (
+from pipelantic import (
     Input,
     Output,
     Parameter,

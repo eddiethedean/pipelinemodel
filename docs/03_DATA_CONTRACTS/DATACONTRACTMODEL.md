@@ -1,6 +1,6 @@
 # DataContractModel
 
-`DataContractModel` is the typed foundation of PipelineModel's data layer.
+`DataContractModel` is the typed foundation of Pipelantic's data layer.
 
 It is provided by ContractModel and extends Pydantic's modeling experience so a single Python class can serve as:
 
@@ -10,7 +10,7 @@ It is provided by ContractModel and extends Pydantic's modeling experience so a 
 - a typed pipeline interface
 - a source for generated documentation and contract artifacts
 
-PipelineModel consumes `DataContractModel` classes directly. It does not redefine them.
+Pipelantic consumes `DataContractModel` classes directly. It does not redefine them.
 
 ## Basic Definition
 
@@ -35,10 +35,10 @@ customer = Customer(
 )
 ```
 
-It can also be referenced by PipelineModel:
+It can also be referenced by Pipelantic:
 
 ```python
-from pipelinemodel import Input, Output, Transformation
+from pipelantic import Input, Output, Transformation
 
 
 class NormalizeCustomers(Transformation):
@@ -48,9 +48,9 @@ class NormalizeCustomers(Transformation):
 
 The same class participates in runtime validation, contract generation, and pipeline type checking.
 
-## Why PipelineModel Uses ContractModel
+## Why Pipelantic Uses ContractModel
 
-PipelineModel should not implement a second data-modeling system.
+Pipelantic should not implement a second data-modeling system.
 
 ContractModel already owns the concerns specific to data contracts:
 
@@ -64,7 +64,7 @@ ContractModel already owns the concerns specific to data contracts:
 - compatibility analysis
 - data-contract-specific diagnostics
 
-PipelineModel uses these capabilities to understand what data may enter or leave a pipeline node.
+Pipelantic uses these capabilities to understand what data may enter or leave a pipeline node.
 
 The architectural boundary is:
 
@@ -72,7 +72,7 @@ The architectural boundary is:
 ContractModel
     Defines and operationalizes data contracts
 
-PipelineModel
+Pipelantic
     Connects data contracts through typed transformations and pipelines
 ```
 
@@ -130,7 +130,7 @@ class Customer(DataContractModel):
     ] = None
 ```
 
-PipelineModel should reuse this metadata rather than requiring equivalent declarations elsewhere.
+Pipelantic should reuse this metadata rather than requiring equivalent declarations elsewhere.
 
 ## Contract Metadata
 
@@ -167,7 +167,7 @@ class Customer(DataContractModel):
     )
 ```
 
-The final ContractModel API may use a different configuration name or structure. PipelineModel should consume the public ContractModel metadata API rather than depending on private implementation details.
+The final ContractModel API may use a different configuration name or structure. Pipelantic should consume the public ContractModel metadata API rather than depending on private implementation details.
 
 ## Inheritance
 
@@ -189,7 +189,7 @@ class Customer(AuditedRecord):
 
 Inheritance should remain ordinary Pydantic inheritance.
 
-However, contract identity and version metadata must be explicit for each concrete published contract. PipelineModel should not guess whether a subclass represents a new contract, a new contract version, or an internal reusable model.
+However, contract identity and version metadata must be explicit for each concrete published contract. Pipelantic should not guess whether a subclass represents a new contract, a new contract version, or an internal reusable model.
 
 ## Nested Models
 
@@ -207,7 +207,7 @@ class Customer(DataContractModel):
     address: Address
 ```
 
-PipelineModel should treat `Customer` as the pipeline-level data contract. Nested contract behavior remains a ContractModel concern.
+Pipelantic should treat `Customer` as the pipeline-level data contract. Nested contract behavior remains a ContractModel concern.
 
 ## Collections
 
@@ -242,7 +242,7 @@ class Customer(DataContractModel):
     email: str | None = None
 ```
 
-PipelineModel should rely on ContractModel and Pydantic to determine whether a field is required, nullable, or has a default.
+Pipelantic should rely on ContractModel and Pydantic to determine whether a field is required, nullable, or has a default.
 
 It should not reinterpret Pydantic's field semantics.
 
@@ -290,7 +290,7 @@ ContractModel must define which name is canonical in:
 - database mappings
 - generated documentation
 
-PipelineModel should consume that decision consistently.
+Pipelantic should consume that decision consistently.
 
 ## Custom Validators
 
@@ -318,13 +318,13 @@ ContractModel should distinguish between:
 - Python-only validation behavior
 - engine-supported pushdown constraints
 
-PipelineModel should surface that distinction during planning when it affects execution.
+Pipelantic should surface that distinction during planning when it affects execution.
 
 ## Data Contract Identity
 
 Every published data contract should have a stable identity.
 
-At minimum, PipelineModel needs access to:
+At minimum, Pipelantic needs access to:
 
 - contract identifier
 - contract version
@@ -332,7 +332,7 @@ At minimum, PipelineModel needs access to:
 - Python model type
 - generated artifact location, when available
 
-Stable identity allows PipelineModel to:
+Stable identity allows Pipelantic to:
 
 - detect duplicate contracts
 - validate pipeline connections
@@ -352,7 +352,7 @@ class ValidateCustomers(Transformation):
     rejected: Output[RejectedCustomer]
 ```
 
-PipelineModel compares the declared output contract of one node with the declared input contract of the next.
+Pipelantic compares the declared output contract of one node with the declared input contract of the next.
 
 This comparison should be semantic, not merely based on Python class identity.
 
@@ -371,7 +371,7 @@ The detailed compatibility rules remain owned by ContractModel and ODCS integrat
 Sources declare the contract of data entering the pipeline:
 
 ```python
-from pipelinemodel import Source
+from pipelantic import Source
 
 
 raw_customers: Source[RawCustomer] = Source(
@@ -381,14 +381,14 @@ raw_customers: Source[RawCustomer] = Source(
 
 The source's execution plugin is responsible for reading data.
 
-PipelineModel and ContractModel are responsible for validating the resulting data against `RawCustomer`.
+Pipelantic and ContractModel are responsible for validating the resulting data against `RawCustomer`.
 
 ## Sinks
 
 Sinks declare the contract of data being published:
 
 ```python
-from pipelinemodel import Sink
+from pipelantic import Sink
 
 
 curated_customers: Sink[Customer] = Sink(
@@ -397,11 +397,11 @@ curated_customers: Sink[Customer] = Sink(
 )
 ```
 
-Before a sink writes data, PipelineModel may invoke ContractModel validation according to the active profile and validation policy.
+Before a sink writes data, Pipelantic may invoke ContractModel validation according to the active profile and validation policy.
 
 ## Runtime Validation
 
-PipelineModel coordinates validation at data boundaries:
+Pipelantic coordinates validation at data boundaries:
 
 ```text
 Source read
@@ -450,12 +450,12 @@ Changing the policy must not change the meaning of the underlying data contract.
 
 ## Invalid Data Handling
 
-When data violates a contract, PipelineModel should create a typed invalid-data event.
+When data violates a contract, Pipelantic should create a typed invalid-data event.
 
 A callback may then choose a declarative action:
 
 ```python
-from pipelinemodel import (
+from pipelantic import (
     InvalidDataAction,
     InvalidDataContext,
     on_invalid_data,
@@ -472,7 +472,7 @@ def quarantine_customer_rows(
     )
 ```
 
-PipelineModel coordinates the decision.
+Pipelantic coordinates the decision.
 
 Execution and storage plugins carry out the actual filtering, quarantine, or write behavior.
 
@@ -492,7 +492,7 @@ A pipeline may generate all referenced contracts at once:
 CustomerPipeline.write_contracts("contracts/")
 ```
 
-PipelineModel should delegate ODCS generation to ContractModel rather than maintaining an independent generator.
+Pipelantic should delegate ODCS generation to ContractModel rather than maintaining an independent generator.
 
 ## Loading Existing Contracts
 
@@ -517,7 +517,7 @@ The loading API should preserve:
 
 ## Generated Versus Authored Models
 
-PipelineModel should not care whether a contract class was:
+Pipelantic should not care whether a contract class was:
 
 - authored directly in Python
 - generated from ODCS
@@ -539,11 +539,11 @@ A pipeline may bind to:
 
 ContractModel should determine whether two versions are compatible.
 
-PipelineModel should use that result when validating graph connections.
+Pipelantic should use that result when validating graph connections.
 
 ## Contract Discovery
 
-PipelineModel should be able to discover every data contract referenced by:
+Pipelantic should be able to discover every data contract referenced by:
 
 - sources
 - transformation inputs
@@ -567,7 +567,7 @@ Reference them from DTCS and DPCS
 
 ## Public Boundary Requirements
 
-For PipelineModel integration, ContractModel should expose stable public operations conceptually equivalent to:
+For Pipelantic integration, ContractModel should expose stable public operations conceptually equivalent to:
 
 ```python
 get_contract_identity(Customer)
@@ -580,7 +580,7 @@ compare_contracts(previous, current)
 
 The exact names belong to ContractModel's API design.
 
-PipelineModel should never depend on private attributes, Pydantic internals, or undocumented ODCS conversion behavior.
+Pipelantic should never depend on private attributes, Pydantic internals, or undocumented ODCS conversion behavior.
 
 ## Recommended Practices
 
@@ -617,8 +617,8 @@ The logical contract describes the records. Plugins decide how those records are
 
 ## Key Principle
 
-> A `DataContractModel` describes what valid data means. PipelineModel uses that type to connect the pipeline. Execution plugins decide how the data is physically represented and processed.
+> A `DataContractModel` describes what valid data means. Pipelantic uses that type to connect the pipeline. Execution plugins decide how the data is physically represented and processed.
 
 ## Next Step
 
-Continue with **PYDANTIC_INTEGRATION.md** for a detailed explanation of how PipelineModel and ContractModel use Pydantic types, constraints, metadata, validation, and generated schemas.
+Continue with **PYDANTIC_INTEGRATION.md** for a detailed explanation of how Pipelantic and ContractModel use Pydantic types, constraints, metadata, validation, and generated schemas.

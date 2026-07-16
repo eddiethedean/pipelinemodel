@@ -1,7 +1,7 @@
 
 # End-to-End Pipeline Example
 
-This example demonstrates the complete PipelineModel lifecycle from initial
+This example demonstrates the complete Pipelantic lifecycle from initial
 authoring through execution, validation, documentation, publication, and
 governance.
 
@@ -151,7 +151,7 @@ Execution Documentation Contracts
 
 ## Key Principle
 
-> Every PipelineModel workflow—whether code-first or contract-first—should
+> Every Pipelantic workflow—whether code-first or contract-first—should
 > converge on one validated, deterministic Pipeline Plan that becomes the
 > source for execution, documentation, governance, lineage, and portable
 > contract generation.

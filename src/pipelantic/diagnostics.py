@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any
 
-from pipelinemodel.exceptions import PipelineValidationError
+from pipelantic.exceptions import PipelineValidationError
 
 
 class Severity(StrEnum):

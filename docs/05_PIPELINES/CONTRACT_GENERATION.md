@@ -1,9 +1,9 @@
 # Contract Generation
 
-Contract generation is one of PipelineModel's defining capabilities.
+Contract generation is one of Pipelantic's defining capabilities.
 
 Rather than requiring developers to manually author multiple contract files,
-PipelineModel derives portable contract artifacts directly from strongly typed
+Pipelantic derives portable contract artifacts directly from strongly typed
 Python definitions.
 
 The Python code is the primary authoring surface. Generated contracts are
@@ -25,7 +25,7 @@ Contract generation should:
 
 Developers write Python.
 
-PipelineModel generates contracts.
+Pipelantic generates contracts.
 
 ```text
 Python Models
@@ -48,7 +48,7 @@ Generated contracts should never require manual synchronization.
 
 ## Generated Contract Types
 
-PipelineModel may generate:
+Pipelantic may generate:
 
 ### ODCS
 
@@ -133,7 +133,7 @@ Identity must remain stable across repeated generation.
 
 ## Incremental Generation
 
-PipelineModel may regenerate only changed artifacts.
+Pipelantic may regenerate only changed artifacts.
 
 Examples:
 
@@ -240,11 +240,11 @@ Avoid:
 
 ## Key Principle
 
-> Python definitions are authored by developers. PipelineModel generates
+> Python definitions are authored by developers. Pipelantic generates
 portable ODCS, DTCS, and DPCS artifacts that preserve those definitions without
 requiring duplicate maintenance.
 
 ## Next Step
 
 Continue with [Contract Loading](CONTRACT_LOADING.md) to learn how portable
-ODCS, DTCS, and DPCS artifacts return to PipelineModel's logical model.
+ODCS, DTCS, and DPCS artifacts return to Pipelantic's logical model.

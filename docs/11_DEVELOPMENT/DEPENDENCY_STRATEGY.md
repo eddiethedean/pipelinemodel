@@ -1,19 +1,19 @@
 # Dependency Strategy
 
-This document records the recommended third-party packages for PipelineModel,
+This document records the recommended third-party packages for Pipelantic,
 where they should be used, and which architectural boundaries they must not
 cross.
 
 The recommendations are based on project maturity, maintenance activity,
 typing and API quality, security posture, dependency weight, ecosystem
-adoption, and fit with PipelineModel's public design.
+adoption, and fit with Pipelantic's public design.
 
 Versions must be selected and locked when implementation begins. The ranges in
 this document describe compatibility intent, not final pins.
 
 ## Policy
 
-PipelineModel should prefer:
+Pipelantic should prefer:
 
 1. the Python standard library when it provides a sufficient stable API;
 2. a small hard-dependency set for behavior central to every installation;
@@ -45,7 +45,7 @@ The base installation should remain intentionally small.
 
 ### ContractModel
 
-PipelineModel should depend on ContractModel's public data-contract interfaces
+Pipelantic should depend on ContractModel's public data-contract interfaces
 rather than duplicating its Pydantic and ODCS operational behavior.
 
 This dependency must remain one-directional:
@@ -54,17 +54,17 @@ This dependency must remain one-directional:
 ContractModel
       ▲
       │
-PipelineModel
+Pipelantic
 ```
 
-ContractModel must never import PipelineModel.
+ContractModel must never import Pipelantic.
 
-If ContractModel's public integration surface is not stable when PipelineModel
+If ContractModel's public integration surface is not stable when Pipelantic
 implementation begins, isolate it behind a small internal adapter until it is.
 
 ### Pydantic
 
-Pydantic is justified as a hard dependency because PipelineModel's documented
+Pydantic is justified as a hard dependency because Pipelantic's documented
 authoring experience already treats Python types as the modeling language.
 Pydantic provides production-grade type-driven validation, serialization, and
 JSON Schema generation.
@@ -82,7 +82,7 @@ Do not use Pydantic models as mutable runtime state containers. Prefer frozen
 models or standard-library dataclasses for immutable internal graph and plan
 objects when that produces clearer semantics.
 
-PipelineModel should target Pydantic v2 only and define a tested minor-version
+Pipelantic should target Pydantic v2 only and define a tested minor-version
 window rather than relying on unbounded upgrades. Pydantic describes itself as
 production-stable and continues to publish active v2 releases.
 
@@ -98,11 +98,11 @@ AnyIO is a strong match for the reference runtime because it supplies:
 - context propagation;
 - pytest integration.
 
-The runtime should expose PipelineModel semantics, not AnyIO objects. AnyIO is
+The runtime should expose Pipelantic semantics, not AnyIO objects. AnyIO is
 an implementation dependency behind runtime protocols.
 
 AnyIO also keeps the runtime compatible with asyncio while avoiding hand-built
-task and cancellation management. PipelineModel does not need to promise Trio
+task and cancellation management. Pipelantic does not need to promise Trio
 support merely because AnyIO can provide it; backend support should be tested
 and declared explicitly.
 
@@ -149,9 +149,9 @@ and call `EntryPoint.load()` only after trust policy permits the import.
 ## Recommended Extras
 
 Extras belong in the main distribution when they are lightweight integrations
-maintained as part of PipelineModel but are not required by every user.
+maintained as part of Pipelantic but are not required by every user.
 
-### `pipelinemodel[yaml]`
+### `pipelantic[yaml]`
 
 Recommended package:
 
@@ -172,11 +172,11 @@ Requirements:
 - pin a tested minor range because the project has evolved its APIs;
 - keep JSON and TOML usable without this extra.
 
-If PipelineModel only needed one-way YAML decoding, PyYAML would be smaller.
+If Pipelantic only needed one-way YAML decoding, PyYAML would be smaller.
 The planned source-preserving diagnostics, migration, and formatting workflows
 make `ruamel.yaml` the better fit.
 
-### `pipelinemodel[jsonschema]`
+### `pipelantic[jsonschema]`
 
 Recommended packages:
 
@@ -187,20 +187,20 @@ Use these for standards-facing JSON Schema validation and explicit reference
 registries. `jsonschema` supports current and historical JSON Schema drafts,
 lazy enumeration of validation errors, and structured error paths.
 
-Do not enable network retrieval implicitly. PipelineModel must provide its own
+Do not enable network retrieval implicitly. Pipelantic must provide its own
 bounded resolver policy and pass approved resources into `referencing`.
 
 Pydantic remains the Python model validator; `jsonschema` validates portable
 schema artifacts. They solve different problems.
 
-### `pipelinemodel[cli]`
+### `pipelantic[cli]`
 
 Recommended packages:
 
 - `cyclopts`
 - `rich`
 
-Cyclopts fits PipelineModel's type-driven philosophy, supports typed function
+Cyclopts fits Pipelantic's type-driven philosophy, supports typed function
 and class parameters, shell completion, and generated CLI documentation. Rich
 provides readable diagnostic tables, trees, progress, and tracebacks.
 
@@ -214,7 +214,7 @@ Security requirements:
 - preserve plain-text and JSON output modes;
 - never make color or terminal detection part of result semantics.
 
-### `pipelinemodel[http]`
+### `pipelantic[http]`
 
 Recommended package:
 
@@ -224,7 +224,7 @@ Use HTTPX for explicitly enabled remote references, callbacks, webhooks, and
 remote providers because it offers synchronous and asynchronous clients with a
 consistent API.
 
-All use must pass through PipelineModel network policy:
+All use must pass through Pipelantic network policy:
 
 - destination allowlists;
 - DNS and redirect validation;
@@ -233,7 +233,7 @@ All use must pass through PipelineModel network policy:
 - proxy policy;
 - blocked link-local, loopback, metadata, and private destinations by default.
 
-### `pipelinemodel[docs]`
+### `pipelantic[docs]`
 
 Recommended packages:
 
@@ -252,7 +252,7 @@ no Python runtime dependency.
 Templates and labels must be escaped. Graphviz and documentation subprocesses
 must receive argument lists, never shell strings.
 
-### `pipelinemodel[observability]`
+### `pipelantic[observability]`
 
 Recommended packages:
 
@@ -264,12 +264,12 @@ metrics. Applications or deployment plugins install and configure
 `opentelemetry-sdk` and exporters.
 
 OpenTelemetry currently marks Python traces and metrics stable while its log
-signal remains less mature. PipelineModel should therefore keep standard
+signal remains less mature. Pipelantic should therefore keep standard
 Python logging canonical and bridge it to OpenTelemetry through a provider.
 
 `structlog` is a good optional provider for structured event processing, but it
 should not become the logging facade required by every plugin. Plugins log
-through PipelineModel's context or standard `logging`.
+through Pipelantic's context or standard `logging`.
 
 ## Separate Plugin Dependencies
 
@@ -280,12 +280,12 @@ plugin distributions.
 
 | Distribution concept | Dependencies |
 |---|---|
-| `pipelinemodel-polars` | `polars`, optional `pyarrow` |
-| `pipelinemodel-pandas` | `pandas`, optional `pyarrow` |
+| `pipelantic-polars` | `polars`, optional `pyarrow` |
+| `pipelantic-pandas` | `pandas`, optional `pyarrow` |
 | Shared Arrow interchange extra | `pyarrow` |
 
 Polars should remain the reference dataframe backend. Pandas should remain a
-fully supported compatibility backend. Neither is imported by PipelineModel
+fully supported compatibility backend. Neither is imported by Pipelantic
 core.
 
 PyArrow is valuable for cross-backend tabular interchange and Parquet, but its
@@ -304,13 +304,13 @@ SQLAlchemy Core is mature and provides composable SQL expressions, bind
 parameters, dialect compilation, connections, and transactions without
 requiring its ORM.
 
-PipelineModel should not expose SQLAlchemy classes from core protocols. A SQL
+Pipelantic should not expose SQLAlchemy classes from core protocols. A SQL
 plugin may accept or adapt them.
 
 Do not add SQLGlot merely because it is powerful. Adopt it only if
-PipelineModel needs to parse user SQL or perform cross-dialect AST analysis
+Pipelantic needs to parse user SQL or perform cross-dialect AST analysis
 that SQLAlchemy does not provide. Query optimization remains database-owned
-unless PipelineModel can prove semantic preservation.
+unless Pipelantic can prove semantic preservation.
 
 ### Storage plugins
 
@@ -329,7 +329,7 @@ separate dependencies:
 - `adlfs` for Azure;
 - provider SDKs only where their capabilities are required.
 
-PipelineModel security policy must still govern schemes, destinations,
+Pipelantic security policy must still govern schemes, destinations,
 credentials, and path access. Fsspec is an interface, not a security boundary.
 
 ### Retry execution
@@ -341,7 +341,7 @@ Recommended package:
 Tenacity supplies synchronous and asynchronous retry controllers, bounded stop
 conditions, waits, predicates, and callbacks.
 
-Do not expose Tenacity policies as PipelineModel's public retry model. Translate
+Do not expose Tenacity policies as Pipelantic's public retry model. Translate
 portable `RetryPolicy` values into Tenacity internally. Never use Tenacity's
 unbounded default retry behavior.
 
@@ -372,7 +372,7 @@ distributions only.
 Pluggy is a high-quality plugin and hook system proven by pytest. It supports
 hook specifications, multiple implementations, ordering, wrappers, and tracing.
 
-PipelineModel should not make it a hard dependency initially because:
+Pipelantic should not make it a hard dependency initially because:
 
 - execution plugins are capability-bearing objects rather than primarily
   multi-subscriber hooks;
@@ -389,7 +389,7 @@ whose ordering and wrapper behavior would otherwise be reimplemented.
 NetworkX offers a mature collection of DAG algorithms, including ancestors,
 descendants, topological generations, closure, reduction, and longest paths.
 
-Do not make it a runtime dependency for the first milestones. PipelineModel
+Do not make it a runtime dependency for the first milestones. Pipelantic
 needs a strongly typed, deterministic, source-aware graph whose diagnostics and
 identity rules it owns. The standard library plus small owned algorithms should
 cover the initial DAG requirements.
@@ -408,7 +408,7 @@ The public serialization schemas must remain independent of the encoder.
 ### Platformdirs
 
 `platformdirs` is well suited to user cache and configuration locations. Add it
-to the CLI extra if PipelineModel begins storing user-level state. Do not add it
+to the CLI extra if Pipelantic begins storing user-level state. Do not add it
 before that need exists.
 
 ## Development Dependencies
@@ -516,7 +516,7 @@ The review should record:
 - license compatibility;
 - wheel availability for supported platforms;
 - import-time and installation-size impact;
-- deprecations affecting PipelineModel;
+- deprecations affecting Pipelantic;
 - whether the dependency still earns its tier.
 
 The goal is not zero dependencies. The goal is a small set of excellent

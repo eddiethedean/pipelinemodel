@@ -22,7 +22,7 @@ A transformation should:
 ## Basic Example
 
 ```python
-from pipelinemodel import Input, Output, Parameter, Transformation
+from pipelantic import Input, Output, Parameter, Transformation
 
 class NormalizeCustomers(Transformation):
     customers: Input[RawCustomer]
@@ -50,7 +50,7 @@ Outputs describe the datasets produced by the transformation.
 result: Output[Customer]
 ```
 
-PipelineModel validates that downstream consumers are compatible with the
+Pipelantic validates that downstream consumers are compatible with the
 declared output contract.
 
 ## Parameters
@@ -83,7 +83,7 @@ The transformation contract remains unchanged while execution varies.
 
 ## Synchronous and Asynchronous Execution
 
-PipelineModel supports both:
+Pipelantic supports both:
 
 ```python
 @NormalizeCustomers.implementation("polars")
@@ -115,7 +115,7 @@ DTCS is the portable representation.
 
 ## Validation
 
-PipelineModel validates:
+Pipelantic validates:
 
 - Input contract compatibility
 - Output contract compatibility
@@ -129,7 +129,7 @@ Validation occurs before execution planning.
 
 Transformations become nodes in the pipeline graph.
 
-During planning, PipelineModel resolves:
+During planning, Pipelantic resolves:
 
 - Dependencies
 - Runtime bindings

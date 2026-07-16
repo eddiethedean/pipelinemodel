@@ -1,10 +1,10 @@
 # Security Model
 
-PipelineModel coordinates contracts, Python code, plugins, credentials, data
+Pipelantic coordinates contracts, Python code, plugins, credentials, data
 artifacts, and external execution systems. Security is therefore a
 cross-cutting architectural constraint, not a feature delegated to one plugin.
 
-This chapter defines the proposed PipelineModel 1.0 threat model, trust
+This chapter defines the proposed Pipelantic 1.0 threat model, trust
 boundaries, required controls, and production-readiness gates.
 
 ## Principles
@@ -25,7 +25,7 @@ boundaries, required controls, and production-readiness gates.
 
 ## Threat Model
 
-PipelineModel may process input from repository contributors, registries, CI
+Pipelantic may process input from repository contributors, registries, CI
 artifacts, third-party plugins, environment configuration, remote
 orchestrators, data sources, and notification destinations.
 
@@ -91,7 +91,7 @@ The analysis boundary must not require runtime privileges.
 Portable artifacts should use data-only formats such as JSON, TOML, safely
 configured YAML, or justified schema-based binary formats.
 
-PipelineModel must not deserialize untrusted:
+Pipelantic must not deserialize untrusted:
 
 - `pickle`
 - `dill`
@@ -181,8 +181,8 @@ Production profiles should support:
 [plugins.security]
 discovery = "allowlist"
 allowed = [
-  "pipelinemodel-polars",
-  "pipelinemodel-airflow",
+  "pipelantic-polars",
+  "pipelantic-airflow",
 ]
 require_pinned_versions = true
 ```
@@ -239,7 +239,7 @@ Transformations, validators, callbacks, middleware, lifespan handlers, and
 provider functions are trusted executable Python unless run behind an external
 isolation boundary.
 
-PipelineModel cannot safely sandbox arbitrary Python in-process.
+Pipelantic cannot safely sandbox arbitrary Python in-process.
 
 Production execution should use:
 
@@ -438,7 +438,7 @@ Core and plugin releases should use:
 
 ## Multi-Tenancy
 
-PipelineModel must not claim in-process tenant isolation.
+Pipelantic must not claim in-process tenant isolation.
 
 Strong isolation requires separate identities, artifact namespaces, cache
 namespaces, secret scopes, quotas, and execution environments. Context
@@ -526,7 +526,7 @@ The repository should publish:
 
 ## Security Release Gate
 
-PipelineModel is not production-ready until:
+Pipelantic is not production-ready until:
 
 - the threat model is reviewed
 - mandatory controls have implementation owners and tests
@@ -546,12 +546,12 @@ Verification should draw from the OWASP Top Ten for risk awareness and OWASP
 ASVS for testable controls, with specialized guidance for unsafe
 deserialization and server-side request forgery.
 
-These sources inform PipelineModel's controls; PipelineModel is not itself a
+These sources inform Pipelantic's controls; Pipelantic is not itself a
 web application framework.
 
 ## Key Principle
 
-> PipelineModel may coordinate privileged execution, but analysis stays
+> Pipelantic may coordinate privileged execution, but analysis stays
 > unprivileged, authority stays explicit, exposure stays minimal, and no
 > optimization or fallback may weaken a declared security boundary.
 

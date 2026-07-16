@@ -1,15 +1,15 @@
 # Type Annotations
 
-Type annotations are the foundation of PipelineModel.
+Type annotations are the foundation of Pipelantic.
 
-Inspired by FastAPI, PipelineModel treats Python type annotations as the primary
+Inspired by FastAPI, Pipelantic treats Python type annotations as the primary
 source of truth for pipeline interfaces. Rather than maintaining separate YAML,
 configuration files, and documentation, developers describe their pipelines
 using ordinary Python typing constructs.
 
 ## Philosophy
 
-A PipelineModel definition should be understandable from its type annotations
+A Pipelantic definition should be understandable from its type annotations
 alone.
 
 ```python
@@ -19,7 +19,7 @@ class NormalizeCustomers(Transformation):
     result: Output[Customer]
 ```
 
-From these annotations, PipelineModel can derive:
+From these annotations, Pipelantic can derive:
 
 - DTCS transformation contracts
 - Pipeline validation rules
@@ -30,7 +30,7 @@ From these annotations, PipelineModel can derive:
 
 ## Supported Annotation Types
 
-PipelineModel uses standard Python typing whenever possible.
+Pipelantic uses standard Python typing whenever possible.
 
 ### Data Contracts
 
@@ -74,7 +74,7 @@ mode: Parameter[Mode]
 
 ### Annotated Metadata
 
-PipelineModel encourages `typing.Annotated` with Pydantic `Field` metadata.
+Pipelantic encourages `typing.Annotated` with Pydantic `Field` metadata.
 
 ```python
 from typing import Annotated
@@ -89,7 +89,7 @@ This metadata may be reused for validation, documentation, and generated DTCS.
 
 ## Type Introspection
 
-PipelineModel inspects annotations to construct its internal model.
+Pipelantic inspects annotations to construct its internal model.
 
 Conceptually:
 
@@ -139,7 +139,7 @@ Execution plugins determine the physical representation.
 
 ## Relationship to Pydantic
 
-PipelineModel builds on ContractModel and Pydantic rather than replacing them.
+Pipelantic builds on ContractModel and Pydantic rather than replacing them.
 
 Pydantic provides:
 
@@ -148,7 +148,7 @@ Pydantic provides:
 - Constraints
 - Metadata
 
-PipelineModel consumes those definitions through `DataContractModel`.
+Pipelantic consumes those definitions through `DataContractModel`.
 
 ## Best Practices
 
@@ -169,7 +169,7 @@ Avoid:
 
 ## Key Principle
 
-> Type annotations are the single source of truth for PipelineModel interfaces.
+> Type annotations are the single source of truth for Pipelantic interfaces.
 > Everything else should be derived from them whenever practical.
 
 ## Next Step

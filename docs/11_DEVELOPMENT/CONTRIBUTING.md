@@ -1,6 +1,6 @@
 # Contributing
 
-PipelineModel welcomes contributions to documentation, typed authoring APIs,
+Pipelantic welcomes contributions to documentation, typed authoring APIs,
 validation, planning, plugins, tests, and examples.
 
 The project is currently design-first. Contributions should preserve the
@@ -10,7 +10,7 @@ boundaries established in the manifesto and foundations documentation.
 
 Read:
 
-- [Manifesto](../PIPELINEMODEL_MANIFESTO.md)
+- [Manifesto](../PIPELANTIC_MANIFESTO.md)
 - [Design Principles](../02_FOUNDATIONS/DESIGN_PRINCIPLES.md)
 - [Architecture](../02_FOUNDATIONS/ARCHITECTURE.md)
 - [Design Decisions](DESIGN_DECISIONS.md)
@@ -24,7 +24,7 @@ Ask:
 3. Is it data-contract operational behavior that belongs in ContractModel?
 4. Is it contract meaning that belongs in ODCS, DTCS, or DPCS?
 
-PipelineModel owns the logical model. Plugins own execution. Standards own
+Pipelantic owns the logical model. Plugins own execution. Standards own
 semantics.
 
 ## Development Setup
@@ -34,7 +34,7 @@ workflow is:
 
 ```bash
 git clone <repository>
-cd pipelinemodel
+cd pipelantic
 uv sync --all-extras --dev
 uv run pre-commit install
 uv run pytest
@@ -84,7 +84,7 @@ Documentation should:
 - Distinguish proposed APIs from implemented APIs
 - Link to normative standards instead of duplicating them
 - Include executable examples where possible
-- Avoid claiming that PipelineModel executes work owned by plugins
+- Avoid claiming that Pipelantic executes work owned by plugins
 
 ## Plugin Contributions
 

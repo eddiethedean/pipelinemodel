@@ -1,9 +1,9 @@
 # Contract Loading
 
-Contract loading allows PipelineModel to construct in-memory models from
+Contract loading allows Pipelantic to construct in-memory models from
 portable contract artifacts.
 
-While PipelineModel recommends a **code-first** workflow using strongly typed
+While Pipelantic recommends a **code-first** workflow using strongly typed
 Python classes, it also supports **contract-first** workflows by loading ODCS,
 DTCS, and DPCS artifacts into the same typed logical pipeline model.
 
@@ -42,14 +42,14 @@ The source format should not affect pipeline behavior.
 
 ## Supported Contract Types
 
-PipelineModel can load:
+Pipelantic can load:
 
 - ODCS Data Contracts
 - DTCS Transformation Contracts
 - DPCS Pipeline Contracts
 
 Each contract is loaded into its domain model, then connected through the same
-logical pipeline representation used by the code-first APIs. PipelineModel does
+logical pipeline representation used by the code-first APIs. Pipelantic does
 not flatten data, transformation, and pipeline contracts into one universal
 domain object.
 
@@ -59,7 +59,7 @@ Conceptually:
 
 ```python
 from contractmodel import DataContractModel
-from pipelinemodel import Pipeline, Transformation
+from pipelantic import Pipeline, Transformation
 
 customer = DataContractModel.from_odcs("customer.odcs.yaml")
 
@@ -78,7 +78,7 @@ URLs.
 ## Typed Logical Model
 
 Loaded contracts retain their domain-specific representations while
-PipelineModel builds common references, ports, and graph relationships around
+Pipelantic builds common references, ports, and graph relationships around
 them.
 
 The logical model preserves:
@@ -131,7 +131,7 @@ Invalid contracts should fail before planning begins.
 
 ## Serialization Independence
 
-PipelineModel separates semantics from serialization.
+Pipelantic separates semantics from serialization.
 
 Equivalent contracts expressed as:
 
@@ -232,7 +232,7 @@ Avoid:
 ## Key Principle
 
 > Contract loading converts portable ODCS, DTCS, and DPCS artifacts into a
-canonical PipelineModel object model that is independent of serialization,
+canonical Pipelantic object model that is independent of serialization,
 storage location, and authoring workflow.
 
 ## Next Step

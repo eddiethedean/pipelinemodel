@@ -114,7 +114,7 @@ Examples:
 - SQL functions and data types
 - Spark stateful operations
 
-PipelineModel must not silently approximate mandatory behavior.
+Pipelantic must not silently approximate mandatory behavior.
 
 ### 6. Form Execution Regions
 

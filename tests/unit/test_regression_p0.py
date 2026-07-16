@@ -6,7 +6,7 @@ from types import MappingProxyType
 
 import pytest
 
-from pipelinemodel import (
+from pipelantic import (
     Input,
     Output,
     Parameter,
@@ -15,8 +15,8 @@ from pipelinemodel import (
     Source,
     Transformation,
 )
-from pipelinemodel.model import LogicalGraph, Node, NodeKind
-from pipelinemodel.refs import OutputRef
+from pipelantic.model import LogicalGraph, Node, NodeKind
+from pipelantic.refs import OutputRef
 from tests.conftest import Customer, RawCustomer
 
 
@@ -136,7 +136,7 @@ def test_cyclic_subpipeline_nesting_is_diagnostic() -> None:
         raw: Source[RawCustomer] = Source(binding="raw")
         out: Sink[RawCustomer] = Sink(input=raw.result, binding="out")
 
-    from pipelinemodel.pipeline import _building_graphs
+    from pipelantic.pipeline import _building_graphs
 
     Pipe._cached_graph = None
     Pipe._graph_build_error = None

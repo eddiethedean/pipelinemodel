@@ -2,11 +2,11 @@
 
 ## Our Mission
 
-PipelineModel exists to make data engineering as approachable,
+Pipelantic exists to make data engineering as approachable,
 expressive, and reliable as modern Python web development.
 
 Just as FastAPI transformed API development by placing Python type
-annotations at the center of the developer experience, PipelineModel
+annotations at the center of the developer experience, Pipelantic
 applies that philosophy to ETL and data pipelines.
 
 Our goal is simple:
@@ -31,12 +31,12 @@ YAML files, orchestration systems, and documentation. This duplication
 increases maintenance costs and allows implementations to drift away
 from their intended design.
 
-PipelineModel aims to eliminate that duplication by making Python's type
+Pipelantic aims to eliminate that duplication by making Python's type
 system the primary source of truth.
 
 ## Our Vision
 
-PipelineModel is a modeling framework---not an execution engine.
+Pipelantic is a modeling framework---not an execution engine.
 
 Developers define:
 
@@ -44,7 +44,7 @@ Developers define:
 -   Transformation Contracts
 -   Pipeline Contracts
 
-PipelineModel then:
+Pipelantic then:
 
 -   validates the model
 -   generates portable contracts
@@ -81,7 +81,7 @@ not after expensive jobs have started.
 
 ### Open Standards
 
-PipelineModel embraces open standards wherever possible.
+Pipelantic embraces open standards wherever possible.
 
 -   ODCS for data contracts
 -   DTCS for transformation contracts
@@ -100,7 +100,7 @@ Pipeline authors should enjoy:
 
 ## What Success Looks Like
 
-A successful PipelineModel project allows a developer to understand an
+A successful Pipelantic project allows a developer to understand an
 entire data pipeline by reading a small number of well-typed Python
 classes.
 
@@ -115,7 +115,7 @@ Those classes become the foundation for:
 
 without rewriting the same information in multiple places.
 
-Success also means PipelineModel remains small enough to explain:
+Success also means Pipelantic remains small enough to explain:
 
 ```text
 Types define interfaces.
@@ -135,7 +135,7 @@ basic authoring experience feel sophisticated.
 We envision an ecosystem where contracts, transformations, and pipelines
 are portable across organizations and execution environments.
 
-PipelineModel should become the reference authoring experience for
+Pipelantic should become the reference authoring experience for
 contract-driven data engineering, enabling developers to focus on
 business logic while relying on open standards and interchangeable
 execution engines.
@@ -152,7 +152,7 @@ That vision includes:
 
 ## Relationship to the Manifesto
 
-The PipelineModel Manifesto defines the project's guiding philosophy.
+The Pipelantic Manifesto defines the project's guiding philosophy.
 
 This Vision document explains the destination.
 

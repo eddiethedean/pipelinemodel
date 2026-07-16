@@ -2,7 +2,7 @@
 
 Loading is the inverse of generation.
 
-Where generation produces portable artifacts from Python models, loading reconstructs typed models and metadata from existing contract artifacts so they can participate in PipelineModel.
+Where generation produces portable artifacts from Python models, loading reconstructs typed models and metadata from existing contract artifacts so they can participate in Pipelantic.
 
 ## Goals
 
@@ -19,7 +19,7 @@ Loading should:
 | Component | Responsibility |
 |-----------|----------------|
 | ContractModel | Load and validate ODCS data contracts |
-| PipelineModel | Register loaded contracts and connect them to transformations and pipelines |
+| Pipelantic | Register loaded contracts and connect them to transformations and pipelines |
 | DTCS/DPCS | Define portable transformation and pipeline artifacts |
 | Plugins | Load optional runtime-specific metadata |
 
@@ -49,7 +49,7 @@ Projects may combine authored contracts with externally supplied contracts.
 
 ```text
 Python Models ─┐
-               ├──► PipelineModel
+               ├──► Pipelantic
 ODCS Artifacts ┘
 ```
 
@@ -71,7 +71,7 @@ Normalize
 Register
    │
    ▼
-PipelineModel
+Pipelantic
 ```
 
 Invalid artifacts should fail during loading rather than later during execution.
@@ -100,7 +100,7 @@ class NormalizeCustomers(Transformation):
     result: Output[Customer]
 ```
 
-PipelineModel should not distinguish between authored and loaded contracts once registration is complete.
+Pipelantic should not distinguish between authored and loaded contracts once registration is complete.
 
 ## Validation During Loading
 
@@ -131,7 +131,7 @@ A bundle may contain:
 - DTCS transformation contracts
 - DPCS pipeline contracts
 
-PipelineModel can then resolve references automatically.
+Pipelantic can then resolve references automatically.
 
 ## Unknown Extensions
 
@@ -164,7 +164,7 @@ Avoid:
 
 ## Key Principle
 
-> Loading reconstructs portable contracts into typed Python models. After loading, authored and imported contracts should behave the same inside PipelineModel.
+> Loading reconstructs portable contracts into typed Python models. After loading, authored and imported contracts should behave the same inside Pipelantic.
 
 ## Next Step
 

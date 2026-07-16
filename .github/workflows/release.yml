@@ -31,7 +31,7 @@ jobs:
         run: |
           TAG="${GITHUB_REF_NAME#v}"
           VERSION="$(uv version --short)"
-          MODULE_VERSION="$(sed -n 's/^__version__ = "\(.*\)"/\1/p' src/pipelinemodel/_version.py)"
+          MODULE_VERSION="$(sed -n 's/^__version__ = "\(.*\)"/\1/p' src/pipelantic/_version.py)"
           if [ "$TAG" != "$VERSION" ] || [ "$TAG" != "$MODULE_VERSION" ]; then
             echo "Version mismatch: tag='$TAG' pyproject='$VERSION' module='$MODULE_VERSION'"
             exit 1
@@ -52,7 +52,7 @@ jobs:
           fi
           WHEEL="${wheels[0]}"
           uv run --isolated --no-project --with "$WHEEL" \
-            python -c "import pipelinemodel; assert pipelinemodel.__version__ == '$TAG'"
+            python -c "import pipelantic; assert pipelantic.__version__ == '$TAG'"
 
       - name: Publish to PyPI
         env:

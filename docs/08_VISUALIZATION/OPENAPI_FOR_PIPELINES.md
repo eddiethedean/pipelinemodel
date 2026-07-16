@@ -1,10 +1,10 @@
 # OpenAPI for Pipelines
 
-PipelineModel can generate an **OpenAPI-inspired interface description for data
+Pipelantic can generate an **OpenAPI-inspired interface description for data
 pipelines**.
 
 Just as OpenAPI provides a machine-readable description of HTTP APIs, this
-proposed PipelineModel artifact describes *what a pipeline accepts, what it
+proposed Pipelantic artifact describes *what a pipeline accepts, what it
 produces, and how it behaves* without exposing implementation details.
 
 It is not OpenAPI and is not a fourth contract standard. ODCS, DTCS, and DPCS
@@ -62,7 +62,7 @@ OpenAPI answers questions such as:
 - What parameters are accepted?
 - What schemas are exchanged?
 
-PipelineModel answers analogous questions:
+Pipelantic answers analogous questions:
 
 - What sources exist?
 - What parameters are accepted?
@@ -99,7 +99,7 @@ contracts:
     - customer-curation
 ```
 
-The actual schema is defined by PipelineModel and evolves independently.
+The actual schema is defined by Pipelantic and evolves independently.
 
 ## Public Interface
 
@@ -163,7 +163,7 @@ Generation should consume the validated Pipeline Plan.
 
 Every generated specification should declare:
 
-- PipelineModel version
+- Pipelantic version
 - Specification version
 - Pipeline version
 - Referenced contract versions
@@ -212,7 +212,7 @@ Avoid:
 
 ## Comparison
 
-| HTTP APIs | PipelineModel |
+| HTTP APIs | Pipelantic |
 |-----------|---------------|
 | OpenAPI | Pipeline interface description |
 | Endpoint | Pipeline |
@@ -239,7 +239,7 @@ Future versions may support:
 > machine-readable
 > description of a pipeline's public interface. Like OpenAPI, it documents the
 > contract—not the implementation—and is generated directly from
-> PipelineModel's canonical models.
+> Pipelantic's canonical models.
 
 ## Next Step
 

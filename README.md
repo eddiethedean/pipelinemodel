@@ -1,4 +1,8 @@
-# PipelineModel
+![Pipelantic banner](docs/theme/assets/pipelantic-banner.png)
+
+# Pipelantic
+
+[![Documentation Status](https://readthedocs.org/projects/pipelantic/badge/?version=latest)](https://pipelantic.readthedocs.io/en/latest/?badge=latest)
 
 Typed, contract-driven data pipeline modeling for Python.
 
@@ -9,12 +13,13 @@ Typed, contract-driven data pipeline modeling for Python.
 
 **0.1.0 — Typed Modeling Kernel**
 
-PipelineModel currently provides the authoring model, logical graph construction,
+Pipelantic currently provides the authoring model, logical graph construction,
 topology and compatibility diagnostics, graph inspection, and Mermaid output.
 Planning, execution plugins, and contract serialization arrive in later
 milestones.
 
-See [docs/](docs/README.md) for the full design,
+See the [hosted documentation](https://pipelantic.readthedocs.io/) for the
+full design,
 [CHANGELOG.md](CHANGELOG.md) for release notes, and
 [Roadmap](docs/11_DEVELOPMENT/ROADMAP.md) for sequencing.
 
@@ -34,7 +39,7 @@ the `dev` dependency group (pytest, ruff) by default.
 
 ## Release
 
-Tag a version that matches `src/pipelinemodel/_version.py`, then push the tag:
+Tag a version that matches `src/pipelantic/_version.py`, then push the tag:
 
 ```bash
 git tag v0.1.0
@@ -48,7 +53,7 @@ repository secret.
 
 ```python
 from contractmodel import ContractModel as DataContractModel
-from pipelinemodel import Input, Output, Pipeline, Sink, Source, Transformation
+from pipelantic import Input, Output, Pipeline, Sink, Source, Transformation
 
 
 class RawCustomer(DataContractModel):
@@ -83,6 +88,7 @@ print(CustomerPipeline.to_mermaid())
 
 ## Documentation
 
+- [Documentation site](https://pipelantic.readthedocs.io/)
 - [Getting Started](docs/01_GETTING_STARTED/README.md)
 - [Core Concepts](docs/02_FOUNDATIONS/CORE_CONCEPTS.md)
 - [Architecture](docs/02_FOUNDATIONS/ARCHITECTURE.md)

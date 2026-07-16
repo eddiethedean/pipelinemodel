@@ -1,4 +1,4 @@
-# PipelineModel Manifesto
+# Pipelantic Manifesto
 
 ## Data Engineering Deserves a Typed Interface
 
@@ -6,10 +6,10 @@ Modern data systems are assembled from capable tools, yet their meaning is
 often scattered across dataframe code, SQL, scheduler configuration, schema
 files, runtime settings, and hand-maintained documentation.
 
-PipelineModel exists to give that system one portable, typed model without
+Pipelantic exists to give that system one portable, typed model without
 replacing the tools that perform the work.
 
-> PipelineModel models the promises, transformations, and topology of a data
+> Pipelantic models the promises, transformations, and topology of a data
 > pipeline. External engines execute the resulting plan.
 
 ## Types Should Carry Meaning
@@ -24,14 +24,14 @@ They should declare:
 - The ports a pipeline can connect
 - The contracts a boundary must preserve
 
-From those declarations, PipelineModel should derive validation,
+From those declarations, Pipelantic should derive validation,
 documentation, contracts, lineage, and planning metadata.
 
 Information should be stated once and reused everywhere.
 
 ## Three Contracts Are Enough
 
-PipelineModel recognizes three top-level contract families:
+Pipelantic recognizes three top-level contract families:
 
 ```text
 Data Contract
@@ -91,13 +91,13 @@ A pipeline should run locally, compile to Airflow, execute SQL in a database,
 or submit work to Spark by changing bindings and capabilities—not by rewriting
 its logical graph.
 
-Portability does not mean pretending every runtime is identical. PipelineModel
+Portability does not mean pretending every runtime is identical. Pipelantic
 must detect when a backend cannot preserve requested semantics and fail during
 planning with an actionable diagnostic.
 
 ## Validation Should Precede Cost
 
-PipelineModel should reject invalid models before expensive work begins.
+Pipelantic should reject invalid models before expensive work begins.
 
 Validation includes:
 
@@ -116,7 +116,7 @@ should not survive into execution.
 
 Users may write `def` or `async def`.
 
-PipelineModel should normalize invocation, concurrency, cancellation, timeouts,
+Pipelantic should normalize invocation, concurrency, cancellation, timeouts,
 and cleanup through one async-first internal model. Users should not need to
 wire event loops or worker pools to participate safely.
 
@@ -147,7 +147,7 @@ Generated output should be deterministic, reviewable, and verifiable in CI.
 
 ## The Core Should Stay Small
 
-PipelineModel owns:
+Pipelantic owns:
 
 - Typed authoring
 - Introspection
@@ -173,7 +173,7 @@ ODCS, DTCS, and DPCS own contract semantics.
 
 ## The Project Constitution
 
-A feature belongs in PipelineModel when it strengthens portable modeling,
+A feature belongs in Pipelantic when it strengthens portable modeling,
 validation, planning, diagnostics, or plugin coordination.
 
 A feature belongs in a plugin when it concerns how a particular technology
@@ -186,7 +186,7 @@ contract standard.
 
 ## Success
 
-PipelineModel succeeds when a developer can understand a pipeline by reading
+Pipelantic succeeds when a developer can understand a pipeline by reading
 its types, validate it before execution, generate portable contracts and
 documentation from it, and run it through an appropriate backend without
 allowing that backend to become the source of truth.

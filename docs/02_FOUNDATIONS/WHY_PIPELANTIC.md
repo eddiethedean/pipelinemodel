@@ -1,4 +1,4 @@
-# Why PipelineModel?
+# Why Pipelantic?
 
 ## The State of Data Engineering
 
@@ -23,19 +23,19 @@ Every duplicate representation introduces opportunities for drift.
 
 Most tools focus on **execution**.
 
-PipelineModel focuses on **modeling**.
+Pipelantic focuses on **modeling**.
 
 It provides a single, typed description of a pipeline that can be
 validated, documented, visualized, and executed through different
 runtimes.
 
-Rather than replacing existing tools, PipelineModel sits above them.
+Rather than replacing existing tools, Pipelantic sits above them.
 
 ``` text
 Business Intent
        │
        ▼
-PipelineModel
+Pipelantic
        │
        ├── Validation
        ├── Documentation
@@ -60,7 +60,7 @@ can power:
 -   code generation
 -   developer productivity
 
-PipelineModel applies those same ideas to ETL.
+Pipelantic applies those same ideas to ETL.
 
 A transformation should be understandable from its type signature alone.
 
@@ -68,14 +68,14 @@ A transformation should be understandable from its type signature alone.
 
 Contracts establish clear expectations between producers and consumers.
 
-PipelineModel embraces three complementary standards:
+Pipelantic embraces three complementary standards:
 
 -   **ODCS** for data contracts
 -   **DTCS** for transformation contracts
 -   **DPCS** for pipeline contracts
 
 Developers should author Python classes---not hand-maintain contract
-files. PipelineModel generates portable contracts whenever possible.
+files. Pipelantic generates portable contracts whenever possible.
 
 ## Why Separate Modeling from Execution?
 
@@ -87,12 +87,12 @@ another over time.
 Pipeline definitions should not need to change simply because the
 runtime changes.
 
-PipelineModel allows the same logical pipeline to target multiple
+Pipelantic allows the same logical pipeline to target multiple
 execution environments through bindings and profiles.
 
 ## Why Another Framework?
 
-PipelineModel is intentionally **not**:
+Pipelantic is intentionally **not**:
 
 -   a dataframe library
 -   a scheduler
@@ -104,7 +104,7 @@ systems to work together through a common, typed representation.
 
 ## Who Benefits?
 
-PipelineModel is designed for:
+Pipelantic is designed for:
 
 -   data engineers
 -   analytics engineers

@@ -1,6 +1,6 @@
 # PySpark Execution
 
-The PySpark Execution subsystem defines how PipelineModel executes validated
+The PySpark Execution subsystem defines how Pipelantic executes validated
 Pipeline Plans on Apache Spark.
 
 PySpark execution converts Spark-capable regions of a Pipeline Plan into Spark
@@ -181,7 +181,7 @@ AggregateMetrics
 
 may remain one lazy Spark logical plan.
 
-The physical Spark plan may combine or reorder operations, but PipelineModel
+The physical Spark plan may combine or reorder operations, but Pipelantic
 must preserve logical step identities for:
 
 - Lineage
@@ -786,7 +786,7 @@ Backend-specific submission details should not leak into pipeline definitions.
 
 One Spark action may trigger multiple stages and tasks.
 
-PipelineModel should distinguish:
+Pipelantic should distinguish:
 
 - Logical pipeline step
 - Spark logical plan node
@@ -977,7 +977,7 @@ Requirements include:
 
 The plugin should publish compatibility metadata for:
 
-- PipelineModel
+- Pipelantic
 - Plugin SDK
 - PySpark
 - Spark
@@ -1118,6 +1118,6 @@ Avoid:
 
 ## Next Step
 
-Continue with **SPARK_OPTIMIZATION.md** to define PipelineModel's Spark planning
+Continue with **SPARK_OPTIMIZATION.md** to define Pipelantic's Spark planning
 rules for region fusion, partitioning, caching, adaptive execution, pushdown,
 and materialization boundaries.

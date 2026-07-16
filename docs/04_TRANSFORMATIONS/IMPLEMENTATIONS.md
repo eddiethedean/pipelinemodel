@@ -5,7 +5,7 @@ An implementation provides the executable behavior for a `Transformation`.
 Transformations describe **what** a data operation does. Implementations describe
 **how** it is executed for a particular runtime.
 
-This separation is one of PipelineModel's core architectural principles.
+This separation is one of Pipelantic's core architectural principles.
 
 ## Interface vs. Implementation
 
@@ -55,7 +55,7 @@ def normalize(...):
     ...
 ```
 
-PipelineModel chooses the implementation through the active execution profile.
+Pipelantic chooses the implementation through the active execution profile.
 
 ## Execution Profiles
 
@@ -85,14 +85,14 @@ async def normalize(...):
     ...
 ```
 
-PipelineModel normalizes invocation internally so authors do not manage event
+Pipelantic normalizes invocation internally so authors do not manage event
 loops or thread pools directly.
 
 ## Signature Validation
 
 Implementations must satisfy their transformation contract.
 
-PipelineModel validates:
+Pipelantic validates:
 
 - Required inputs
 - Required parameters
@@ -123,7 +123,7 @@ return {
 }
 ```
 
-PipelineModel validates the returned outputs before they continue downstream.
+Pipelantic validates the returned outputs before they continue downstream.
 
 ## Runtime Independence
 
@@ -161,7 +161,7 @@ changing the original transformation contract.
 
 ## Discovery
 
-PipelineModel discovers implementations during planning.
+Pipelantic discovers implementations during planning.
 
 Selection considers:
 
@@ -194,5 +194,5 @@ that interface for a specific execution backend.
 
 ## Next Step
 
-Continue with **CALLBACKS.md** to learn how PipelineModel responds to invalid
+Continue with **CALLBACKS.md** to learn how Pipelantic responds to invalid
 data, execution failures, retries, and other lifecycle events.

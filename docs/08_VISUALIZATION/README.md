@@ -1,6 +1,6 @@
 # Visualization
 
-Visualization transforms PipelineModel artifacts into diagrams, interactive views,
+Visualization transforms Pipelantic artifacts into diagrams, interactive views,
 and documentation that help developers understand pipelines without reading
 implementation code.
 
@@ -49,7 +49,7 @@ Visualization
 
 ## Visualization Types
 
-PipelineModel is designed to support:
+Pipelantic is designed to support:
 
 - Pipeline DAGs
 - Source-to-sink flow diagrams

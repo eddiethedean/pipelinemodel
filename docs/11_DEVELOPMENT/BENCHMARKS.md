@@ -1,6 +1,6 @@
 # Benchmarks
 
-PipelineModel benchmarks measure modeling, validation, planning, and
+Pipelantic benchmarks measure modeling, validation, planning, and
 coordination overhead. They do not claim ownership of Pandas, Polars, SQL, or
 Spark engine performance.
 
@@ -147,7 +147,7 @@ Hard numeric budgets should be adopted only after a working baseline exists.
 Every published result should distinguish:
 
 ```text
-PipelineModel overhead
+Pipelantic overhead
 Backend execution time
 I/O time
 Environment setup time

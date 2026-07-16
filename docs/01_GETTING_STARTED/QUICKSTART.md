@@ -1,13 +1,13 @@
 # Quickstart
 
-Welcome to your first PipelineModel project.
+Welcome to your first Pipelantic project.
 
 In this guide you'll build a complete, typed pipeline in just a few
 minutes. You'll define a data contract, create a transformation
 contract, wire everything into a pipeline, validate it, and generate
 portable contracts.
 
-> **Goal:** Learn the PipelineModel mental model, not every feature.
+> **Goal:** Learn the Pipelantic mental model, not every feature.
 >
 > **Status:** This is an accepted design example for the intended 1.0 API.
 
@@ -28,7 +28,7 @@ data contract.
 ## Step 2 --- Define a Transformation
 
 ``` python
-from pipelinemodel import Transformation, Input, Output
+from pipelantic import Transformation, Input, Output
 
 class NormalizeCustomers(Transformation):
     customers: Input[Customer]
@@ -36,12 +36,12 @@ class NormalizeCustomers(Transformation):
 ```
 
 The type annotations describe the transformation interface.
-PipelineModel can derive a DTCS contract from this definition.
+Pipelantic can derive a DTCS contract from this definition.
 
 ## Step 3 --- Build a Pipeline
 
 ``` python
-from pipelinemodel import Pipeline, Sink, Source
+from pipelantic import Pipeline, Sink, Source
 
 class CustomerPipeline(Pipeline):
     raw: Source[Customer] = Source(binding="customer_source")
@@ -77,7 +77,7 @@ are caught early.
 CustomerPipeline.write_contracts("contracts/")
 ```
 
-PipelineModel generates:
+Pipelantic generates:
 
 ``` text
 contracts/
@@ -118,7 +118,7 @@ await CustomerPipeline.arun(
 )
 ```
 
-PipelineModel handles synchronous and asynchronous implementations
+Pipelantic handles synchronous and asynchronous implementations
 transparently while delegating actual execution to plugins.
 
 ## What You've Learned

@@ -1,9 +1,9 @@
 # Error Handling
 
-Error handling in PipelineModel is designed to make failures predictable,
+Error handling in Pipelantic is designed to make failures predictable,
 typed, and portable across execution backends.
 
-PipelineModel distinguishes between **modeling errors**, **planning errors**,
+Pipelantic distinguishes between **modeling errors**, **planning errors**,
 and **runtime errors**. The core framework coordinates how errors are reported,
 while execution plugins provide backend-specific details.
 
@@ -105,7 +105,7 @@ Retry decisions should be declarative.
 Conceptually:
 
 ```python
-from pipelinemodel import RetryAction
+from pipelantic import RetryAction
 
 return RetryAction.retry(max_attempts=3)
 ```
@@ -125,7 +125,7 @@ Errors should provide:
 
 ## Logging
 
-PipelineModel should emit structured logs.
+Pipelantic should emit structured logs.
 
 Sensitive values should be redacted according to contract metadata and profile
 settings.
@@ -150,10 +150,10 @@ Avoid:
 ## Key Principle
 
 > Errors are part of the execution model, not the transformation contract.
-> PipelineModel standardizes how failures are represented while plugins
+> Pipelantic standardizes how failures are represented while plugins
 > determine how backend-specific failures are handled.
 
 ## Next Step
 
-Continue with [Async](ASYNC.md) to learn how PipelineModel preserves equivalent
+Continue with [Async](ASYNC.md) to learn how Pipelantic preserves equivalent
 failure semantics for synchronous and asynchronous implementations.

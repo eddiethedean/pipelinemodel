@@ -18,4 +18,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ContractModel integration boundary via `DataContractModel` alias
 - uv + ruff toolchain, shared GitHub Actions checks, and tag-triggered PyPI release
 
-[0.1.0]: https://github.com/eddiethedean/pipelinemodel/releases/tag/v0.1.0
+[0.1.0]: https://github.com/eddiethedean/pipelantic/releases/tag/v0.1.0

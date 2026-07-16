@@ -1,10 +1,10 @@
 # Plugins
 
-Plugins are the extension mechanism that allows PipelineModel to execute
+Plugins are the extension mechanism that allows Pipelantic to execute
 portable pipeline plans on different technologies without changing pipeline
 definitions.
 
-The core PipelineModel library is intentionally small. It models, validates,
+The core Pipelantic library is intentionally small. It models, validates,
 plans, generates contracts, and loads contracts. Plugins provide concrete
 runtime behavior.
 
@@ -21,12 +21,12 @@ Plugins should:
 
 ## Philosophy
 
-PipelineModel defines **what** a pipeline means.
+Pipelantic defines **what** a pipeline means.
 
 Plugins define **how** that meaning is realized.
 
 ```text
-PipelineModel Core
+Pipelantic Core
         │
         ▼
 Plugin Interface
@@ -43,7 +43,7 @@ Plugin Interface
 
 ## Plugin Categories
 
-PipelineModel may support several plugin types.
+Pipelantic may support several plugin types.
 
 ### Execution Plugins
 
@@ -173,7 +173,7 @@ Plugins should publish:
 
 - Plugin name
 - Version
-- Supported PipelineModel version
+- Supported Pipelantic version
 - Supported ODCS version
 - Supported DTCS version
 - Supported DPCS version
@@ -193,14 +193,14 @@ Planning should reject incompatible plugins.
 
 Avoid:
 
-- Embedding plugin logic into PipelineModel core.
+- Embedding plugin logic into Pipelantic core.
 - Changing pipeline semantics.
 - Relying on global mutable state.
 - Silently ignoring unsupported capabilities.
 
 ## Key Principle
 
-> PipelineModel provides the portable modeling framework. Plugins provide the
+> Pipelantic provides the portable modeling framework. Plugins provide the
 runtime-specific behavior needed to execute, integrate, and extend that model
 without altering its meaning.
 

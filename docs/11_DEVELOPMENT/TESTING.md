@@ -1,6 +1,6 @@
 # Testing
 
-PipelineModel testing must prove that typed models, portable contracts,
+Pipelantic testing must prove that typed models, portable contracts,
 planning, and backend execution preserve the same semantics.
 
 ## Test Layers

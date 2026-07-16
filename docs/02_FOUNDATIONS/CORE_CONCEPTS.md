@@ -1,6 +1,6 @@
 # Core Concepts
 
-PipelineModel is easiest to understand as a sequence of distinct models rather
+Pipelantic is easiest to understand as a sequence of distinct models rather
 than as one large framework object.
 
 ## The Complete Lifecycle
@@ -39,7 +39,7 @@ class Customer(DataContractModel):
 ```
 
 ContractModel owns operational behavior such as runtime validation and ODCS
-interoperability. PipelineModel uses the class as a typed dataset boundary.
+interoperability. Pipelantic uses the class as a typed dataset boundary.
 
 ## Transformation
 
@@ -196,7 +196,7 @@ while still retaining mappings back to all three logical identities.
 
 ## Plugin
 
-A plugin extends PipelineModel with backend behavior:
+A plugin extends Pipelantic with backend behavior:
 
 - Dataframe execution
 - SQL or Spark execution
@@ -285,8 +285,8 @@ silently rewrite them.
 | Data-contract operationalization | ContractModel |
 | Transformation semantics | DTCS |
 | Pipeline semantics | DPCS |
-| Typed authoring and logical graph | PipelineModel |
-| Validation and planning | PipelineModel |
+| Typed authoring and logical graph | Pipelantic |
+| Validation and planning | Pipelantic |
 | Runtime adaptation | Plugins |
 | Actual computation and scheduling | External engines |
 

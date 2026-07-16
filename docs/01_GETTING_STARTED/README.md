@@ -1,21 +1,21 @@
 # Getting Started
 
-Welcome to PipelineModel!
+Welcome to Pipelantic!
 
-> **Project status:** PipelineModel is currently design-first and
+> **Project status:** Pipelantic is currently design-first and
 > pre-implementation. The examples in this section define the intended
 > developer experience. See
 > [Documentation Status](../02_FOUNDATIONS/DOCUMENTATION_STATUS.md).
 
 This section is designed to get you productive as quickly as possible.
 Rather than starting with implementation details, you'll learn the core
-ideas that make PipelineModel different from traditional ETL frameworks.
+ideas that make Pipelantic different from traditional ETL frameworks.
 
 ## What You'll Learn
 
 By the end of this guide you will be able to:
 
--   Install PipelineModel
+-   Install Pipelantic
 -   Define typed data contracts
 -   Define typed transformations
 -   Wire transformations into pipelines
@@ -44,9 +44,9 @@ Read the Getting Started section in this order:
 4. [Project Structure](PROJECT_STRUCTURE.md)
 5. [FAQ](FAQ.md)
 
-## The PipelineModel Mental Model
+## The Pipelantic Mental Model
 
-PipelineModel separates **modeling** from **execution**.
+Pipelantic separates **modeling** from **execution**.
 
 You describe *what* the pipeline is:
 
@@ -54,7 +54,7 @@ You describe *what* the pipeline is:
 -   Transformation Contracts
 -   Pipeline Contracts
 
-PipelineModel validates and plans the pipeline.
+Pipelantic validates and plans the pipeline.
 
 Execution is then delegated to the libraries and orchestrators you
 choose.
@@ -80,7 +80,7 @@ Execution Plugins
 
 ``` python
 from contractmodel import DataContractModel
-from pipelinemodel import Pipeline, Transformation, Input, Output
+from pipelantic import Pipeline, Transformation, Input, Output
 
 class Customer(DataContractModel):
     id: int
@@ -99,7 +99,7 @@ annotations are the source of truth.
 
 ## Philosophy
 
-PipelineModel is built around a few core ideas:
+Pipelantic is built around a few core ideas:
 
 -   Types describe interfaces.
 -   Contracts are generated from code.

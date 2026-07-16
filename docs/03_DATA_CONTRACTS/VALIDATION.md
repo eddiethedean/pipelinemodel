@@ -1,8 +1,8 @@
 # Validation
 
-Validation is a core part of the PipelineModel data-contract lifecycle.
+Validation is a core part of the Pipelantic data-contract lifecycle.
 
-PipelineModel coordinates **when** validation happens, ContractModel defines **what valid data means**, and execution plugins determine **how validation is performed efficiently** for a chosen runtime.
+Pipelantic coordinates **when** validation happens, ContractModel defines **what valid data means**, and execution plugins determine **how validation is performed efficiently** for a chosen runtime.
 
 The architectural boundary is:
 
@@ -14,7 +14,7 @@ ContractModel
 Defines contract semantics
       │
       ▼
-PipelineModel
+Pipelantic
 Coordinates validation boundaries
       │
       ▼
@@ -50,9 +50,9 @@ ContractModel owns:
 - Data-contract diagnostics
 - Validation reports
 
-### PipelineModel
+### Pipelantic
 
-PipelineModel owns:
+Pipelantic owns:
 
 - Validation timing
 - Validation policy
@@ -78,7 +78,7 @@ Execution plugins own:
 
 ## Validation Boundaries
 
-PipelineModel may validate data at four primary boundaries.
+Pipelantic may validate data at four primary boundaries.
 
 ### 1. Source output validation
 
@@ -106,7 +106,7 @@ class NormalizeCustomers(Transformation):
     result: Output[Customer]
 ```
 
-PipelineModel verifies that the provided input is governed by a compatible contract.
+Pipelantic verifies that the provided input is governed by a compatible contract.
 
 Runtime validation may also confirm that the actual data satisfies `RawCustomer`.
 
@@ -130,7 +130,7 @@ The recommended default is to fail the node.
 
 ### 4. Sink input validation
 
-Before a sink writes or publishes data, PipelineModel may validate the input against the sink contract.
+Before a sink writes or publishes data, Pipelantic may validate the input against the sink contract.
 
 This is the final publication boundary and should usually receive the strongest validation policy.
 
@@ -286,9 +286,9 @@ PluginValidationCapabilities(
 )
 ```
 
-PipelineModel uses this information during planning.
+Pipelantic uses this information during planning.
 
-If a required constraint is unsupported, PipelineModel may:
+If a required constraint is unsupported, Pipelantic may:
 
 - Fall back to ContractModel
 - Materialize data
@@ -299,7 +299,7 @@ Silent omission is not allowed.
 
 ## Validation Modes
 
-PipelineModel should support several validation modes.
+Pipelantic should support several validation modes.
 
 ### Full
 
@@ -372,7 +372,7 @@ Possible actions include:
 Example:
 
 ```python
-from pipelinemodel import (
+from pipelantic import (
     InvalidDataAction,
     InvalidDataContext,
     on_invalid_data,
@@ -389,7 +389,7 @@ def handle_invalid_customers(
     )
 ```
 
-PipelineModel coordinates the action.
+Pipelantic coordinates the action.
 
 Plugins carry out the actual split, write, or quarantine.
 
@@ -484,7 +484,7 @@ Value does not satisfy the declared email constraint.
 
 Diagnostics must avoid exposing sensitive values.
 
-ContractModel and PipelineModel should support:
+ContractModel and Pipelantic should support:
 
 - Redacted values
 - Omitted values
@@ -497,7 +497,7 @@ Personally identifiable information, secrets, and regulated data should not be l
 
 ## Error Translation
 
-Pydantic errors should be translated into PipelineModel validation diagnostics.
+Pydantic errors should be translated into Pipelantic validation diagnostics.
 
 ```text
 Pydantic ValidationError
@@ -506,7 +506,7 @@ Pydantic ValidationError
 ContractModel Validation Report
         │
         ▼
-PipelineModel InvalidDataContext
+Pipelantic InvalidDataContext
         │
         ▼
 Callback and InvalidDataAction
@@ -530,7 +530,7 @@ async def handle_invalid(context):
     ...
 ```
 
-PipelineModel normalizes both through its internal async invocation layer.
+Pipelantic normalizes both through its internal async invocation layer.
 
 Validation plugins may also expose sync or async implementations.
 
@@ -572,7 +572,7 @@ Actual output data validation
 
 ContractModel owns compatibility analysis.
 
-PipelineModel invokes it during graph validation.
+Pipelantic invokes it during graph validation.
 
 ## Validation Pushdown
 
@@ -593,7 +593,7 @@ The logical contract remains the source of truth.
 
 ## Fallback Validation
 
-When pushdown is incomplete, PipelineModel may fall back to ContractModel validation.
+When pushdown is incomplete, Pipelantic may fall back to ContractModel validation.
 
 ```text
 Plugin-native checks
@@ -618,7 +618,7 @@ Streaming validation introduces additional concerns:
 - Partial failures
 - Checkpoint behavior
 
-PipelineModel should treat streaming validation as a plugin capability.
+Pipelantic should treat streaming validation as a plugin capability.
 
 A contract may remain the same while enforcement strategy differs.
 
@@ -755,8 +755,8 @@ Plugins should compile or enforce ContractModel semantics, not invent independen
 
 ## Key Principle
 
-> ContractModel defines validity. PipelineModel decides where and when validity is checked. Execution plugins perform the check using the most appropriate runtime strategy.
+> ContractModel defines validity. Pipelantic decides where and when validity is checked. Execution plugins perform the check using the most appropriate runtime strategy.
 
 ## Next Step
 
-Continue with **VERSIONING.md** to learn how data contracts evolve, how compatibility is evaluated, and how PipelineModel validates contract versions across pipeline boundaries.
+Continue with **VERSIONING.md** to learn how data contracts evolve, how compatibility is evaluated, and how Pipelantic validates contract versions across pipeline boundaries.

@@ -1,6 +1,6 @@
 # Pandas Pipeline
 
-This example builds a complete PipelineModel pipeline that reads customer data
+This example builds a complete Pipelantic pipeline that reads customer data
 from CSV, executes transformations with Pandas, validates the output against
 typed data contracts, and writes the curated result to Parquet.
 
@@ -108,7 +108,7 @@ class Customer(DataContractModel):
 ## Step 2 — Define the Transformation Contract
 
 ```python
-from pipelinemodel import Input, Output, Parameter, Transformation
+from pipelantic import Input, Output, Parameter, Transformation
 
 
 class NormalizeCustomers(Transformation):
@@ -159,7 +159,7 @@ The implementation uses vectorized Pandas operations and avoids row-wise
 ## Step 4 — Define the Pipeline
 
 ```python
-from pipelinemodel import Pipeline, Sink, Source
+from pipelantic import Pipeline, Sink, Source
 
 
 class CustomerPandasPipeline(Pipeline):
@@ -182,7 +182,7 @@ class CustomerPandasPipeline(Pipeline):
 ## Step 5 — Define the Local Profile
 
 ```python
-from pipelinemodel import Profile
+from pipelantic import Profile
 
 
 local = Profile(
@@ -234,7 +234,7 @@ result = await CustomerPandasPipeline.arun(
 )
 ```
 
-PipelineModel handles sync invocation internally.
+Pipelantic handles sync invocation internally.
 
 ## Expected Output
 
@@ -339,7 +339,7 @@ Potential failures include:
 - Missing Parquet dependencies
 - Sink write failures
 
-Plugins should translate backend exceptions into structured PipelineModel
+Plugins should translate backend exceptions into structured Pipelantic
 diagnostics.
 
 ## Testing
@@ -462,11 +462,11 @@ Avoid:
 ## Key Principle
 
 > Pandas is a supported execution backend, not a modeling dependency.
-> PipelineModel preserves one portable transformation contract while allowing
+> Pipelantic preserves one portable transformation contract while allowing
 > Pandas to serve compatibility-focused, in-memory, and ecosystem-integrated
 > workloads.
 
 ## Next Step
 
 Continue with **POLARS_PIPELINE.md** to implement the same logical workflow using
-PipelineModel's recommended high-performance dataframe backend.
+Pipelantic's recommended high-performance dataframe backend.

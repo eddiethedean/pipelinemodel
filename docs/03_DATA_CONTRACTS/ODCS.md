@@ -2,9 +2,9 @@
 
 ## Overview
 
-PipelineModel adopts the **Open Data Contract Standard (ODCS)** as its canonical portable representation for data contracts.
+Pipelantic adopts the **Open Data Contract Standard (ODCS)** as its canonical portable representation for data contracts.
 
-PipelineModel does **not** redefine the ODCS specification.
+Pipelantic does **not** redefine the ODCS specification.
 
 Instead, it provides a Python-first authoring experience built on **ContractModel**, which generates and consumes ODCS documents.
 
@@ -12,7 +12,7 @@ The authoritative ODCS specification is maintained by the Open Data Contract Sta
 
 ---
 
-## Why PipelineModel Uses ODCS
+## Why Pipelantic Uses ODCS
 
 Data contracts should be portable.
 
@@ -26,13 +26,13 @@ ODCS provides a common, implementation-independent representation that can be:
 - consumed by governance tools
 - referenced by pipelines
 
-PipelineModel therefore treats ODCS as the canonical artifact for published data contracts.
+Pipelantic therefore treats ODCS as the canonical artifact for published data contracts.
 
 ---
 
 ## Architectural Relationship
 
-PipelineModel intentionally separates responsibilities.
+Pipelantic intentionally separates responsibilities.
 
 ```text
 Python Authoring
@@ -47,7 +47,7 @@ ContractModel
 ODCS Document
         │
         ▼
-PipelineModel
+Pipelantic
 ```
 
 Each layer has a different purpose.
@@ -57,13 +57,13 @@ Each layer has a different purpose.
 | Pydantic | Python data modeling |
 | ContractModel | Operationalizes data contracts |
 | ODCS | Portable contract representation |
-| PipelineModel | Uses contracts to model pipelines |
+| Pipelantic | Uses contracts to model pipelines |
 
 ---
 
 ## Code-First Workflow
 
-PipelineModel recommends a code-first workflow.
+Pipelantic recommends a code-first workflow.
 
 ```python
 from contractmodel import DataContractModel
@@ -96,7 +96,7 @@ Customer = DataContractModel.from_odcs(
 )
 ```
 
-The resulting class behaves like any authored `DataContractModel` and can be referenced throughout PipelineModel.
+The resulting class behaves like any authored `DataContractModel` and can be referenced throughout Pipelantic.
 
 ---
 
@@ -104,7 +104,7 @@ The resulting class behaves like any authored `DataContractModel` and can be ref
 
 Many organizations already maintain published ODCS contracts.
 
-PipelineModel supports combining both approaches.
+Pipelantic supports combining both approaches.
 
 ```text
 Existing ODCS
@@ -113,7 +113,7 @@ Existing ODCS
 ContractModel
         │
         ▼
-PipelineModel
+Pipelantic
 
 Python Authored Models
         │
@@ -130,7 +130,7 @@ Both become equivalent pipeline types.
 
 ## Referencing ODCS from Pipelines
 
-PipelineModel never references YAML directly.
+Pipelantic never references YAML directly.
 
 Instead, transformations and pipelines reference Python contract classes.
 
@@ -146,7 +146,7 @@ Those classes carry the metadata needed to identify the corresponding ODCS artif
 
 ## Contract Generation
 
-PipelineModel can discover every referenced contract.
+Pipelantic can discover every referenced contract.
 
 ```python
 CustomerPipeline.write_contracts(
@@ -173,7 +173,7 @@ Generated ODCS documents should be deterministic so they can be reviewed in vers
 
 ## Contract Identity
 
-PipelineModel relies on ContractModel to expose stable contract identity.
+Pipelantic relies on ContractModel to expose stable contract identity.
 
 Conceptually, every contract provides:
 
@@ -184,13 +184,13 @@ Conceptually, every contract provides:
 - schema
 - compatibility information
 
-PipelineModel uses this information for validation, documentation, lineage, and bundle generation.
+Pipelantic uses this information for validation, documentation, lineage, and bundle generation.
 
 ---
 
 ## Validation
 
-PipelineModel coordinates validation.
+Pipelantic coordinates validation.
 
 ContractModel validates data against ODCS-backed contracts.
 
@@ -207,7 +207,7 @@ When native validation is unavailable, plugins may fall back to ContractModel va
 
 ## Supported ODCS Features
 
-PipelineModel intends to support every feature that can be represented faithfully through ContractModel.
+Pipelantic intends to support every feature that can be represented faithfully through ContractModel.
 
 Examples include:
 
@@ -228,15 +228,15 @@ Support ultimately depends on ContractModel's public API.
 
 ODCS may evolve over time.
 
-PipelineModel should preserve unknown or extension metadata whenever practical rather than discarding it.
+Pipelantic should preserve unknown or extension metadata whenever practical rather than discarding it.
 
-This allows organizations to use organization-specific ODCS extensions without breaking PipelineModel.
+This allows organizations to use organization-specific ODCS extensions without breaking Pipelantic.
 
 ---
 
 ## Version Compatibility
 
-PipelineModel should clearly document:
+Pipelantic should clearly document:
 
 - supported ODCS versions
 - deprecated versions
@@ -245,19 +245,19 @@ PipelineModel should clearly document:
 
 Compatibility decisions belong to ContractModel's ODCS implementation.
 
-PipelineModel consumes those decisions.
+Pipelantic consumes those decisions.
 
 ---
 
 ## Design Principles
 
-PipelineModel follows these principles when integrating with ODCS:
+Pipelantic follows these principles when integrating with ODCS:
 
 - Python classes are the preferred authoring experience.
 - ODCS is the preferred portable artifact.
 - ContractModel owns ODCS semantics.
-- PipelineModel never duplicates the ODCS specification.
-- PipelineModel references contract classes rather than YAML.
+- Pipelantic never duplicates the ODCS specification.
+- Pipelantic references contract classes rather than YAML.
 - Generated artifacts should be deterministic.
 - Unknown ODCS extensions should be preserved whenever practical.
 
@@ -281,7 +281,7 @@ DTCS
 DPCS
 ```
 
-PipelineModel unifies all three through typed Python models.
+Pipelantic unifies all three through typed Python models.
 
 ---
 
@@ -289,4 +289,4 @@ PipelineModel unifies all three through typed Python models.
 
 For the normative definition of ODCS, refer to the official Open Data Contract Standard specification maintained by the upstream project.
 
-This document describes **how PipelineModel integrates with ODCS**, not the ODCS specification itself.
+This document describes **how Pipelantic integrates with ODCS**, not the ODCS specification itself.

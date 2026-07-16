@@ -1,6 +1,6 @@
 # Async Pipelines
 
-This example demonstrates how PipelineModel coordinates asynchronous and
+This example demonstrates how Pipelantic coordinates asynchronous and
 synchronous work within one validated pipeline.
 
 Async execution is especially useful for I/O-bound operations such as:
@@ -14,7 +14,7 @@ Async execution is especially useful for I/O-bound operations such as:
 - Notifications
 - Concurrent independent branches
 
-PipelineModel allows pipeline authors to combine `async def` and ordinary
+Pipelantic allows pipeline authors to combine `async def` and ordinary
 `def` implementations without manually managing event loops, thread pools, or
 callback scheduling.
 
@@ -115,7 +115,7 @@ Polars, and the destination database.
 ```python
 # src/async_pipelines/transformations.py
 
-from pipelinemodel import Input, Output, Transformation
+from pipelantic import Input, Output, Transformation
 
 from .contracts import (
     CustomerAccount,
@@ -182,14 +182,14 @@ def build_customer_profiles(
 
 The transformation remains synchronous and CPU-bound.
 
-PipelineModel coordinates it safely inside the async pipeline.
+Pipelantic coordinates it safely inside the async pipeline.
 
 ## Step 4 — Define Async Source Implementations
 
 Conceptually, the source plugins expose async reads.
 
 ```python
-from pipelinemodel.sources import SourceReadContext
+from pipelantic.sources import SourceReadContext
 
 
 async def read_customer_api(
@@ -226,7 +226,7 @@ Source behavior belongs in plugins and bindings rather than the pipeline class.
 ```python
 # src/async_pipelines/callbacks.py
 
-from pipelinemodel.callbacks import (
+from pipelantic.callbacks import (
     PipelineFailureContext,
     PipelineSuccessContext,
     RetryContext,
@@ -265,14 +265,14 @@ async def report_failure(
     )
 ```
 
-PipelineModel invokes each callback according to its declaration style.
+Pipelantic invokes each callback according to its declaration style.
 
 ## Step 6 — Define the Pipeline
 
 ```python
 # src/async_pipelines/pipeline.py
 
-from pipelinemodel import Pipeline, Sink, Source
+from pipelantic import Pipeline, Sink, Source
 
 from .callbacks import (
     log_retry,
@@ -323,7 +323,7 @@ asynchronous.
 ```python
 # src/async_pipelines/profiles.py
 
-from pipelinemodel import Profile
+from pipelantic import Profile
 
 
 production = Profile(
@@ -455,7 +455,7 @@ customer_profiles:
 
 The two source reads are independent.
 
-PipelineModel may execute them concurrently:
+Pipelantic may execute them concurrently:
 
 ```text
 ┌───────────────────┐
@@ -508,7 +508,7 @@ result = CustomerProfilePipeline.run(
 )
 ```
 
-PipelineModel may manage the event loop internally when safe.
+Pipelantic may manage the event loop internally when safe.
 
 It should reject nested-loop misuse rather than attempting unsafe behavior.
 
@@ -528,7 +528,7 @@ The framework should distinguish:
 
 The Polars transformation is synchronous.
 
-PipelineModel may invoke it:
+Pipelantic may invoke it:
 
 - Directly, when it is short and non-blocking for the execution context.
 - Through a worker thread.
@@ -585,7 +585,7 @@ async def enrich_customers(
     ...
 ```
 
-PipelineModel awaits it directly.
+Pipelantic awaits it directly.
 
 Async transformations are most appropriate for I/O-bound enrichment rather than
 dataframe computation.
@@ -612,7 +612,7 @@ async with provider.acquire(...) as resource:
     ...
 ```
 
-PipelineModel should guarantee release on:
+Pipelantic should guarantee release on:
 
 - Success
 - Failure
@@ -674,7 +674,7 @@ The profile may define:
 "maximum_concurrency": 8
 ```
 
-PipelineModel should apply limits to prevent:
+Pipelantic should apply limits to prevent:
 
 - API overload
 - Database exhaustion
@@ -698,7 +698,7 @@ The scheduler should respect all active constraints.
 
 ## Backpressure
 
-When producers are faster than consumers, PipelineModel should avoid unbounded
+When producers are faster than consumers, Pipelantic should avoid unbounded
 buffering.
 
 Possible strategies include:
@@ -749,7 +749,7 @@ The plan should document cancellation limitations.
 
 ## Structured Concurrency
 
-PipelineModel should prefer structured concurrency principles:
+Pipelantic should prefer structured concurrency principles:
 
 - Child tasks belong to a pipeline or step scope.
 - Failures are collected predictably.
@@ -1248,7 +1248,7 @@ Async execution should enforce:
 - Use `arun()` in async applications.
 - Keep I/O in async plugins and resources.
 - Keep CPU-heavy work out of the event-loop thread.
-- Let PipelineModel coordinate sync and async implementations.
+- Let Pipelantic coordinate sync and async implementations.
 - Use bounded concurrency.
 - Configure timeouts and retries explicitly.
 - Preserve resource cleanup on every exit path.
@@ -1274,7 +1274,7 @@ Avoid:
 
 ## Key Principle
 
-> Async pipelines let PipelineModel overlap independent I/O while safely
+> Async pipelines let Pipelantic overlap independent I/O while safely
 > coordinating synchronous transformations, typed resources, callbacks,
 > retries, timeouts, cancellation, validation, and lineage through one
 > execution model.

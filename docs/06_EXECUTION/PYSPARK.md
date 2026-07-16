@@ -1,6 +1,6 @@
 # PySpark
 
-The PySpark execution backend enables PipelineModel to execute eligible
+The PySpark execution backend enables Pipelantic to execute eligible
 transformations on Apache Spark using the same validated Pipeline Plans used by
 every other execution backend.
 
@@ -179,7 +179,7 @@ Avoid:
 
 ## Key Principle
 
-> PySpark is a distributed execution backend for PipelineModel. It executes the
+> PySpark is a distributed execution backend for Pipelantic. It executes the
 same validated Pipeline Plans using Apache Spark while preserving portable
 contracts, validation, lineage, diagnostics, and execution semantics.
 

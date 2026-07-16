@@ -1,8 +1,8 @@
 # Data Contracts
 
-Data contracts are the foundation of every PipelineModel pipeline.
+Data contracts are the foundation of every Pipelantic pipeline.
 
-They describe the structure, constraints, and meaning of the data that flows through sources, transformations, and sinks. In PipelineModel, data contracts are authored as **ContractModel-compatible Pydantic classes** and represented portably through the **Open Data Contract Standard (ODCS)**.
+They describe the structure, constraints, and meaning of the data that flows through sources, transformations, and sinks. In Pipelantic, data contracts are authored as **ContractModel-compatible Pydantic classes** and represented portably through the **Open Data Contract Standard (ODCS)**.
 
 ## What This Section Covers
 
@@ -46,11 +46,11 @@ customer = Customer(
 )
 ```
 
-At the same time, ContractModel can operationalize the class as a data contract and expose the metadata PipelineModel needs.
+At the same time, ContractModel can operationalize the class as a data contract and expose the metadata Pipelantic needs.
 
 ## Relationship to ContractModel
 
-PipelineModel does not replace ContractModel.
+Pipelantic does not replace ContractModel.
 
 ContractModel remains responsible for:
 
@@ -62,7 +62,7 @@ ContractModel remains responsible for:
 - Data-contract compatibility
 - Data-contract-specific code generation
 
-PipelineModel consumes those contract classes and uses them to:
+Pipelantic consumes those contract classes and uses them to:
 
 - Type transformation inputs and outputs
 - Validate pipeline wiring
@@ -77,7 +77,7 @@ The division is intentional:
 ContractModel
     Defines and operationalizes data contracts
 
-PipelineModel
+Pipelantic
     Connects those contracts through transformations and pipelines
 ```
 
@@ -85,7 +85,7 @@ PipelineModel
 
 ODCS is the portable standard representation of a data contract.
 
-PipelineModel should not invent a competing data-contract format. Instead, ContractModel-compatible classes should generate ODCS-compliant documents whenever possible.
+Pipelantic should not invent a competing data-contract format. Instead, ContractModel-compatible classes should generate ODCS-compliant documents whenever possible.
 
 ```text
 Python DataContractModel
@@ -106,7 +106,7 @@ The ODCS document is the preferred portable artifact.
 Transformation annotations reference data-contract classes directly:
 
 ```python
-from pipelinemodel import Input, Output, Transformation
+from pipelantic import Input, Output, Transformation
 
 
 class NormalizeCustomers(Transformation):
@@ -114,7 +114,7 @@ class NormalizeCustomers(Transformation):
     result: Output[Customer]
 ```
 
-PipelineModel can use those annotations to determine:
+Pipelantic can use those annotations to determine:
 
 - Which contract governs each input
 - Which contract governs each output
@@ -127,7 +127,7 @@ PipelineModel can use those annotations to determine:
 Sources and sinks also reference data-contract classes:
 
 ```python
-from pipelinemodel import Pipeline, Sink, Source
+from pipelantic import Pipeline, Sink, Source
 
 
 class CustomerPipeline(Pipeline):
@@ -153,7 +153,7 @@ The transformation connects those two typed boundaries.
 
 ## Code-First and Contract-First Workflows
 
-PipelineModel should support both workflows.
+Pipelantic should support both workflows.
 
 ### Code-first
 
@@ -190,7 +190,7 @@ Data may be validated at several points:
 3. After a transformation produces data
 4. Before a sink writes or publishes data
 
-PipelineModel coordinates when validation occurs.
+Pipelantic coordinates when validation occurs.
 
 ContractModel performs the actual data-contract validation.
 
@@ -256,11 +256,11 @@ Read this section in the following order:
 - Data contracts are authored as ContractModel-compatible Pydantic classes.
 - ContractModel owns data-contract semantics and operational behavior.
 - ODCS is the canonical portable representation.
-- PipelineModel references contract classes directly through type annotations.
+- Pipelantic references contract classes directly through type annotations.
 - Data-contract information should never be duplicated unnecessarily.
 - Validation should happen at clear pipeline boundaries.
 - Generated contracts should be deterministic and version-controllable.
 
 ## Next Step
 
-Continue with **DATACONTRACTMODEL.md** to learn how to define PipelineModel-ready data contracts using ContractModel-compatible Pydantic classes.
+Continue with **DATACONTRACTMODEL.md** to learn how to define Pipelantic-ready data contracts using ContractModel-compatible Pydantic classes.

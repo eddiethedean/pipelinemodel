@@ -1,6 +1,6 @@
 # Callbacks
 
-This example demonstrates how PipelineModel wires callback functions into a
+This example demonstrates how Pipelantic wires callback functions into a
 typed pipeline for invalid data, source failures, transformation failures, sink
 failures, retries, and final pipeline outcomes.
 
@@ -8,7 +8,7 @@ Callbacks are part of the execution policy around a pipeline. They observe or
 respond to events without redefining the pipeline's core data contracts,
 transformation semantics, or graph topology.
 
-PipelineModel supports both synchronous callbacks declared with `def` and
+Pipelantic supports both synchronous callbacks declared with `def` and
 asynchronous callbacks declared with `async def`. The framework invokes each
 callback correctly without requiring users to manage event loops, threads, or
 worker pools manually.
@@ -130,7 +130,7 @@ class RejectedCustomer(DataContractModel):
 ```python
 # src/callbacks_example/transformations.py
 
-from pipelinemodel import Input, Output, Transformation
+from pipelantic import Input, Output, Transformation
 
 from .contracts import Customer, RawCustomer
 
@@ -212,7 +212,7 @@ A synchronous invalid-data callback:
 ```python
 # src/callbacks_example/callbacks.py
 
-from pipelinemodel.callbacks import InvalidDataContext
+from pipelantic.callbacks import InvalidDataContext
 
 
 def record_invalid_customer(
@@ -234,7 +234,7 @@ explicitly supports returning an action.
 Some callbacks may return a typed action.
 
 ```python
-from pipelinemodel.callbacks import (
+from pipelantic.callbacks import (
     InvalidDataAction,
     InvalidDataContext,
 )
@@ -257,7 +257,7 @@ Typed actions are safer than returning strings such as `"continue"` or
 ## Step 6 — Define an Async Notification Callback
 
 ```python
-from pipelinemodel.callbacks import WriteFailureContext
+from pipelantic.callbacks import WriteFailureContext
 
 
 async def notify_write_failure(
@@ -273,14 +273,14 @@ async def notify_write_failure(
     )
 ```
 
-PipelineModel detects `async def` automatically and awaits it.
+Pipelantic detects `async def` automatically and awaits it.
 
 The user does not manage an event loop.
 
 ## Step 7 — Define a Retry Callback
 
 ```python
-from pipelinemodel.callbacks import RetryContext
+from pipelantic.callbacks import RetryContext
 
 
 def log_retry(
@@ -301,7 +301,7 @@ It should not mutate the attempt counter or sleep manually.
 ## Step 8 — Define a Transformation Failure Callback
 
 ```python
-from pipelinemodel.callbacks import (
+from pipelantic.callbacks import (
     FailureAction,
     TransformationFailureContext,
 )
@@ -337,7 +337,7 @@ A callback cannot force an unsafe retry.
 ## Step 9 — Define a Read Failure Callback
 
 ```python
-from pipelinemodel.callbacks import (
+from pipelantic.callbacks import (
     FailureAction,
     ReadFailureContext,
 )
@@ -357,7 +357,7 @@ The execution layer validates the returned action against the active policy.
 ## Step 10 — Define Pipeline Outcome Callbacks
 
 ```python
-from pipelinemodel.callbacks import (
+from pipelantic.callbacks import (
     PipelineFailureContext,
     PipelineSuccessContext,
 )
@@ -392,7 +392,7 @@ async def report_pipeline_failure(
 ```python
 # src/callbacks_example/pipeline.py
 
-from pipelinemodel import Pipeline, Sink, Source
+from pipelantic import Pipeline, Sink, Source
 
 from .callbacks import (
     handle_invalid_customers,
@@ -452,7 +452,7 @@ The important design goals are:
 ```python
 # src/callbacks_example/profiles.py
 
-from pipelinemodel import Profile
+from pipelantic import Profile
 
 
 local = Profile(
@@ -498,7 +498,7 @@ They should not construct infrastructure clients directly.
 
 ## Callback Resource Injection
 
-PipelineModel may inject typed resources:
+Pipelantic may inject typed resources:
 
 ```python
 async def notify_write_failure(
@@ -662,7 +662,7 @@ Pipeline outcome callbacks run only after the pipeline reaches a terminal state.
 
 ## Before and After Callbacks
 
-PipelineModel may support lifecycle callbacks such as:
+Pipelantic may support lifecycle callbacks such as:
 
 - `before_pipeline`
 - `after_pipeline`
@@ -965,7 +965,7 @@ The callback failure policy is "warn", so pipeline failure handling continued.
 
 ## Observability
 
-PipelineModel should emit callback events such as:
+Pipelantic should emit callback events such as:
 
 - Callback scheduled
 - Callback started
@@ -1114,7 +1114,7 @@ events with datasets.
 - Type every callback context.
 - Use typed actions for decisions.
 - Keep callback registration explicit.
-- Let PipelineModel invoke sync and async callbacks.
+- Let Pipelantic invoke sync and async callbacks.
 - Inject infrastructure through Resource Providers.
 - Keep invalid data in typed outputs.
 - Use stable event IDs for idempotency.
@@ -1141,7 +1141,7 @@ Avoid:
 
 ## Key Principle
 
-> Callbacks extend PipelineModel's execution lifecycle with typed, observable,
+> Callbacks extend Pipelantic's execution lifecycle with typed, observable,
 > sync-or-async behavior while leaving pipeline data flow, contracts, and
 > transformation semantics unchanged.
 

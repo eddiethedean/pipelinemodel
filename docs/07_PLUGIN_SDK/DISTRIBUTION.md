@@ -1,11 +1,11 @@
 # Distribution
 
-Distribution describes how PipelineModel plugins are packaged, published,
+Distribution describes how Pipelantic plugins are packaged, published,
 discovered, installed, and maintained across the ecosystem.
 
 A healthy plugin ecosystem depends on stable distribution practices. Plugins
 should be independently releasable while remaining compatible with the
-PipelineModel Plugin SDK and supported standards.
+Pipelantic Plugin SDK and supported standards.
 
 ## Goals
 
@@ -20,12 +20,12 @@ Plugin distribution should:
 
 ## Philosophy
 
-The PipelineModel core should remain small.
+The Pipelantic core should remain small.
 
 Functionality grows through independently distributed plugins.
 
 ```text
-PipelineModel Core
+Pipelantic Core
         │
         ▼
  Python Package Index
@@ -42,11 +42,11 @@ Plugins should be distributed as standard Python packages.
 
 Recommended naming convention:
 
-- pipelinemodel-airflow
-- pipelinemodel-polars
-- pipelinemodel-pandas
-- pipelinemodel-postgres
-- pipelinemodel-s3
+- pipelantic-airflow
+- pipelantic-polars
+- pipelantic-pandas
+- pipelantic-postgres
+- pipelantic-s3
 
 Third-party plugins should follow a consistent naming convention where practical.
 
@@ -55,7 +55,7 @@ Third-party plugins should follow a consistent naming convention where practical
 Typical installation:
 
 ```bash
-pip install pipelinemodel-airflow
+pip install pipelantic-airflow
 ```
 
 Multiple plugins may be installed simultaneously.
@@ -69,7 +69,7 @@ Installed plugins should be discoverable automatically through the Plugin SDK.
 Conceptually:
 
 ```python
-from pipelinemodel import PluginRegistry
+from pipelantic import PluginRegistry
 
 plugins = PluginRegistry.discover()
 ```
@@ -82,7 +82,7 @@ Every plugin should publish:
 
 - Plugin name
 - Plugin version
-- Supported PipelineModel version(s)
+- Supported Pipelantic version(s)
 - Supported SDK version
 - Supported ODCS version(s)
 - Supported DTCS version(s)
@@ -143,11 +143,11 @@ Avoid:
 - Publishing plugins without compatibility metadata.
 - Introducing breaking changes in minor releases.
 - Hiding runtime dependencies.
-- Depending on internal PipelineModel APIs.
+- Depending on internal Pipelantic APIs.
 
 ## Key Principle
 
-> PipelineModel grows through a distributed ecosystem of independently versioned
+> Pipelantic grows through a distributed ecosystem of independently versioned
 > plugins. Stable packaging, discovery, and compatibility metadata allow users
 > to compose the execution environment that best fits their pipelines.
 

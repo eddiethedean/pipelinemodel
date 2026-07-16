@@ -1,6 +1,6 @@
 # PySpark to SQL
 
-This example builds a complete PipelineModel pipeline that reads distributed
+This example builds a complete Pipelantic pipeline that reads distributed
 data with PySpark, performs transformation and validation on Spark, and
 publishes the resulting records to a relational SQL database.
 
@@ -19,7 +19,7 @@ Contract Validation
 SQL Publication
 ```
 
-PipelineModel keeps data contracts, transformation semantics, pipeline topology,
+Pipelantic keeps data contracts, transformation semantics, pipeline topology,
 lineage, and validation portable. The execution profile selects the PySpark
 backend, Spark Provider, SQL sink plugin, and publication strategy.
 
@@ -141,7 +141,7 @@ The contracts remain independent of Spark and SQL.
 ```python
 from typing import Literal
 
-from pipelinemodel import Input, Output, Parameter, Transformation
+from pipelantic import Input, Output, Parameter, Transformation
 
 
 class BuildCustomerOrderSummary(Transformation):
@@ -161,7 +161,7 @@ The transformation contract defines the logical operation only.
 
 ```python
 from pyspark.sql import functions as F
-from pipelinemodel.pyspark import SparkDataFrame
+from pipelantic.pyspark import SparkDataFrame
 
 
 @BuildCustomerOrderSummary.implementation("pyspark")
@@ -213,7 +213,7 @@ action.
 ## Step 4 — Define the Pipeline
 
 ```python
-from pipelinemodel import Pipeline, Sink, Source
+from pipelantic import Pipeline, Sink, Source
 
 
 class CustomerOrderWarehousePipeline(Pipeline):
@@ -242,7 +242,7 @@ The pipeline contains no Spark paths, database URLs, or JDBC options.
 ## Step 5 — Define the Local Profile
 
 ```python
-from pipelinemodel import Profile
+from pipelantic import Profile
 
 
 local = Profile(
@@ -824,7 +824,7 @@ source, Spark environment, SQL database, or publication strategy.
 ## Key Principle
 
 > PySpark-to-SQL execution uses Spark for distributed transformation and SQL as
-> a validated publication boundary. PipelineModel makes materialization,
+> a validated publication boundary. Pipelantic makes materialization,
 > validation, transaction, retry, and lineage semantics explicit while
 > preserving one portable pipeline definition.
 

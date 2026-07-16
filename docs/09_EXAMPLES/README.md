@@ -1,14 +1,14 @@
 # Examples
 
 The Examples section demonstrates how to build real-world pipelines using
-PipelineModel.
+Pipelantic.
 
 While the rest of the documentation focuses on architecture, specifications,
 and APIs, this section shows complete working examples that combine data
 contracts, transformation contracts, pipeline contracts, planning, execution,
 and visualization into practical solutions.
 
-Each example follows PipelineModel best practices and is intended to be runnable,
+Each example follows Pipelantic best practices and is intended to be runnable,
 understandable, and extensible.
 
 ## Goals
@@ -45,7 +45,7 @@ Execution
 Documentation
 ```
 
-Every example should demonstrate the complete PipelineModel lifecycle.
+Every example should demonstrate the complete Pipelantic lifecycle.
 
 ## Organization
 
@@ -111,7 +111,7 @@ Examples should demonstrate:
 - DTCS
 - DPCS
 
-alongside PipelineModel APIs.
+alongside Pipelantic APIs.
 
 ## Visualization
 
@@ -176,11 +176,11 @@ Avoid:
 ## Key Principle
 
 > Examples are executable documentation. They should demonstrate not only how
-to use PipelineModel, but also why its contract-first, planner-driven
+to use Pipelantic, but also why its contract-first, planner-driven
 architecture enables portable, maintainable, and technology-independent data
 pipelines.
 
 ## Next Step
 
 Continue with [CSV to CSV](CSV_TO_CSV.md) to build the smallest complete
-PipelineModel example currently included in this documentation set.
+Pipelantic example currently included in this documentation set.

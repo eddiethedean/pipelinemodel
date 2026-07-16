@@ -12,7 +12,7 @@ Outputs answer a single question:
 
 > What data does this transformation produce?
 
-By declaring outputs with type annotations, PipelineModel can infer:
+By declaring outputs with type annotations, Pipelantic can infer:
 
 - Downstream contract compatibility
 - Pipeline graph edges
@@ -24,7 +24,7 @@ By declaring outputs with type annotations, PipelineModel can infer:
 ## Basic Example
 
 ```python
-from pipelinemodel import Input, Output, Transformation
+from pipelantic import Input, Output, Transformation
 
 class NormalizeCustomers(Transformation):
     customers: Input[RawCustomer]
@@ -106,7 +106,7 @@ published = PublishCustomers.step(
 )
 ```
 
-PipelineModel validates that each downstream input is compatible with the
+Pipelantic validates that each downstream input is compatible with the
 declared output contract.
 
 The downstream step consumes the previous step's result. It does not implicitly
@@ -133,14 +133,14 @@ It deliberately does not specify whether the result is held in memory,
 represented lazily, expressed as SQL, cached, checkpointed, or persisted.
 
 Planning resolves that physical representation for the selected backend. This
-lets PipelineModel pass intermediate results directly between compatible steps
+lets Pipelantic pass intermediate results directly between compatible steps
 and avoid unnecessary table writes and reads.
 
 ## Validation
 
 Transformation outputs are one of the most important validation boundaries.
 
-PipelineModel validates:
+Pipelantic validates:
 
 - Output contract compatibility
 - Required outputs

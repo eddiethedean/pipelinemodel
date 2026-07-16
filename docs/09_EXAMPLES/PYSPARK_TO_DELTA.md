@@ -1,6 +1,6 @@
 # PySpark to Delta
 
-This example builds a complete PipelineModel pipeline that reads distributed
+This example builds a complete Pipelantic pipeline that reads distributed
 customer and order data with PySpark, performs typed transformations on Spark,
 and publishes the curated result to a Delta Lake table.
 
@@ -19,7 +19,7 @@ Contract Validation
 Delta Merge
 ```
 
-PipelineModel preserves one portable set of ODCS, DTCS, and DPCS semantics while
+Pipelantic preserves one portable set of ODCS, DTCS, and DPCS semantics while
 the execution profile selects PySpark, a Spark Provider, and the Delta storage
 plugin.
 
@@ -101,7 +101,7 @@ class CustomerOrderSummary(DataContractModel):
 ```python
 from typing import Literal
 
-from pipelinemodel import Input, Output, Parameter, Transformation
+from pipelantic import Input, Output, Parameter, Transformation
 
 
 class BuildCustomerOrderSummary(Transformation):
@@ -119,7 +119,7 @@ class BuildCustomerOrderSummary(Transformation):
 
 ```python
 from pyspark.sql import functions as F
-from pipelinemodel.pyspark import SparkDataFrame
+from pipelantic.pyspark import SparkDataFrame
 
 
 @BuildCustomerOrderSummary.implementation("pyspark")
@@ -173,7 +173,7 @@ action.
 ## Pipeline Definition
 
 ```python
-from pipelinemodel import Pipeline, Sink, Source
+from pipelantic import Pipeline, Sink, Source
 
 
 class CustomerOrderDeltaPipeline(Pipeline):
@@ -202,7 +202,7 @@ The pipeline contains no Delta paths, catalogs, Spark sessions, or merge syntax.
 ## Local Profile
 
 ```python
-from pipelinemodel import Profile
+from pipelantic import Profile
 
 
 local = Profile(
@@ -331,7 +331,7 @@ The binding should define:
 
 A merge must not receive multiple ambiguous source rows for one target key.
 
-PipelineModel should require a deterministic policy:
+Pipelantic should require a deterministic policy:
 
 - Reject duplicates
 - Deduplicate by timestamp
@@ -422,12 +422,12 @@ Delta schema compatibility
 Merge transaction
 ```
 
-Delta's physical schema checks supplement, but do not replace, PipelineModel
+Delta's physical schema checks supplement, but do not replace, Pipelantic
 contract validation.
 
 ## Schema Evolution
 
-PipelineModel should distinguish:
+Pipelantic should distinguish:
 
 - Compatible contract evolution
 - Physical schema evolution
@@ -835,7 +835,7 @@ Avoid:
 ## Key Principle
 
 > PySpark-to-Delta execution combines distributed Spark transformation with
-> Delta Lake's transactional table model while PipelineModel preserves portable
+> Delta Lake's transactional table model while Pipelantic preserves portable
 > contracts, validation, lineage, compatibility, incremental semantics, and
 > reproducible execution.
 

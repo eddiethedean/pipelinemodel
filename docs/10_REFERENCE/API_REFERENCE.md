@@ -1,6 +1,6 @@
 # API Reference
 
-This chapter defines the intended shape of PipelineModel's public Python API.
+This chapter defines the intended shape of Pipelantic's public Python API.
 It is a design reference until the implementation reaches API stability.
 
 ## Stable Import Surface
@@ -8,7 +8,7 @@ It is a design reference until the implementation reaches API stability.
 Common authoring APIs should be available from the package root:
 
 ```python
-from pipelinemodel import (
+from pipelantic import (
     Pipeline,
     Transformation,
     Input,
@@ -27,7 +27,7 @@ Data-contract models come from ContractModel:
 from contractmodel import DataContractModel
 ```
 
-Plugin-author interfaces should live under `pipelinemodel.sdk`, not the root.
+Plugin-author interfaces should live under `pipelantic.sdk`, not the root.
 
 ## `Transformation`
 
@@ -217,7 +217,7 @@ ContractModel remains responsible for ODCS data-contract loading.
 Advanced interfaces should live under explicit modules:
 
 ```python
-from pipelinemodel.sdk import (
+from pipelantic.sdk import (
     DataframePlugin,
     OrchestratorPlugin,
     StoragePlugin,
@@ -237,7 +237,7 @@ implementation should not be imported by applications.
 
 ## Typing
 
-PipelineModel should ship type information and prioritize:
+Pipelantic should ship type information and prioritize:
 
 - Generic port types
 - Typed step outputs

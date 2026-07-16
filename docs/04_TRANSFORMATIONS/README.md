@@ -1,10 +1,10 @@
 # Transformations
 
-Transformations are the heart of PipelineModel.
+Transformations are the heart of Pipelantic.
 
 A transformation defines **how data logically changes** as it moves through a pipeline. Like FastAPI endpoints, transformations are declared using Python classes and type annotations. The declaration describes the interface; execution implementations remain separate.
 
-PipelineModel models transformations using **Transformation Contracts**, represented portably by the **Data Transformation Contract Standard (DTCS)**.
+Pipelantic models transformations using **Transformation Contracts**, represented portably by the **Data Transformation Contract Standard (DTCS)**.
 
 ## What This Section Covers
 
@@ -24,7 +24,7 @@ This section explains how to:
 A transformation begins as a typed class:
 
 ```python
-from pipelinemodel import Input, Output, Parameter, Transformation
+from pipelantic import Input, Output, Parameter, Transformation
 
 
 class NormalizeCustomers(Transformation):
@@ -90,11 +90,11 @@ class CustomerPipeline(Pipeline):
     )
 ```
 
-PipelineModel validates that upstream outputs satisfy downstream inputs before execution planning begins.
+Pipelantic validates that upstream outputs satisfy downstream inputs before execution planning begins.
 
 ## Sync and Async
 
-PipelineModel supports both synchronous and asynchronous implementations.
+Pipelantic supports both synchronous and asynchronous implementations.
 
 ```python
 @NormalizeCustomers.implementation("polars")
@@ -124,7 +124,7 @@ Callbacks may be synchronous or asynchronous.
 
 ## Validation
 
-PipelineModel validates:
+Pipelantic validates:
 
 - Input compatibility
 - Output compatibility
@@ -132,7 +132,7 @@ PipelineModel validates:
 - Implementation signatures
 - Plugin capabilities
 
-DTCS defines transformation semantics; PipelineModel coordinates validation.
+DTCS defines transformation semantics; Pipelantic coordinates validation.
 
 ## Generated Artifacts
 

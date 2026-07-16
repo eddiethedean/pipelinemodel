@@ -4,7 +4,7 @@
 
 An input represents a logical dataset flowing into a transformation. The type
 parameter `T` must be a `DataContractModel` (or another supported contract
-type), allowing PipelineModel to validate compatibility before execution.
+type), allowing Pipelantic to validate compatibility before execution.
 
 ## Purpose
 
@@ -12,7 +12,7 @@ Inputs answer a single question:
 
 > What data does this transformation require?
 
-By declaring inputs with type annotations, PipelineModel can infer:
+By declaring inputs with type annotations, Pipelantic can infer:
 
 - Required upstream contracts
 - Pipeline graph edges
@@ -24,7 +24,7 @@ By declaring inputs with type annotations, PipelineModel can infer:
 ## Basic Example
 
 ```python
-from pipelinemodel import Input, Output, Transformation
+from pipelantic import Input, Output, Transformation
 
 class NormalizeCustomers(Transformation):
     customers: Input[RawCustomer]
@@ -113,12 +113,12 @@ normalized = NormalizeCustomers.step(
 )
 ```
 
-PipelineModel validates that `raw.result` is compatible with the declared
+Pipelantic validates that `raw.result` is compatible with the declared
 `Input[RawCustomer]`.
 
 ## Validation
 
-Before execution, PipelineModel validates:
+Before execution, Pipelantic validates:
 
 - Input contract compatibility
 - Required inputs

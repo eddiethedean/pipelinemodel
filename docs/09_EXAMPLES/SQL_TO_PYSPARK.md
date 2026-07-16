@@ -1,6 +1,6 @@
 # SQL to PySpark
 
-This example builds a complete PipelineModel pipeline that reads typed datasets
+This example builds a complete Pipelantic pipeline that reads typed datasets
 from SQL, executes transformations with PySpark, and publishes the resulting
 distributed dataset through a Spark-compatible sink.
 
@@ -19,7 +19,7 @@ PySpark Transformation Region
 Spark-Compatible Sink
 ```
 
-PipelineModel keeps the source contracts, transformation contracts, pipeline
+Pipelantic keeps the source contracts, transformation contracts, pipeline
 topology, validation, and lineage portable. The execution profile selects the
 SQL source plugin, PySpark transformation backend, Spark Provider, and sink
 implementation.
@@ -200,7 +200,7 @@ The contracts remain independent of SQL and Spark.
 
 from typing import Literal
 
-from pipelinemodel import Input, Output, Parameter, Transformation
+from pipelantic import Input, Output, Parameter, Transformation
 
 from .contracts import Customer, CustomerOrderSummary, Order
 
@@ -226,7 +226,7 @@ PySpark, Polars, or another backend.
 
 from pyspark.sql import functions as F
 
-from pipelinemodel.pyspark import SparkDataFrame
+from pipelantic.pyspark import SparkDataFrame
 
 from .contracts import Customer, CustomerOrderSummary, Order
 from .transformations import BuildCustomerOrderSummary
@@ -296,7 +296,7 @@ The implementation should preserve:
 ```python
 # src/sql_to_pyspark/pipeline.py
 
-from pipelinemodel import Pipeline, Sink, Source
+from pipelantic import Pipeline, Sink, Source
 
 from .contracts import Customer, CustomerOrderSummary, Order
 from .transformations import BuildCustomerOrderSummary
@@ -330,7 +330,7 @@ The pipeline remains declarative and backend-independent.
 ```python
 # src/sql_to_pyspark/profiles.py
 
-from pipelinemodel import Profile
+from pipelantic import Profile
 
 
 local_spark = Profile(
@@ -533,7 +533,7 @@ Sink action:
 
 The JDBC read is a materialization boundary between SQL and Spark.
 
-PipelineModel should make the boundary explicit.
+Pipelantic should make the boundary explicit.
 
 ```text
 SQL Relation
@@ -660,7 +660,7 @@ result = await CustomerOrderSparkPipeline.arun(
 )
 ```
 
-PipelineModel coordinates the Spark session and execution lifecycle.
+Pipelantic coordinates the Spark session and execution lifecycle.
 
 ## Expected Output
 
@@ -1278,7 +1278,7 @@ The pipeline author does not rewrite the logical workflow.
 ## Key Principle
 
 > SQL-to-PySpark execution uses SQL systems as typed data sources and Spark as
-> the distributed transformation engine. PipelineModel makes the backend
+> the distributed transformation engine. Pipelantic makes the backend
 > transition explicit while preserving portable contracts, validation,
 > planning, lineage, diagnostics, and observable results.
 

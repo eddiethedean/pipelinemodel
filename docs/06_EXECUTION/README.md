@@ -1,12 +1,12 @@
 # Execution
 
-Execution is the final stage of the PipelineModel lifecycle.
+Execution is the final stage of the Pipelantic lifecycle.
 
 After a pipeline has been modeled, validated, and planned, an execution plugin
 realizes the resulting **Pipeline Plan** using a specific runtime such as local
 Python, Polars, Airflow, Dagster, Prefect, or another supported backend.
 
-PipelineModel intentionally separates execution from modeling. The core library
+Pipelantic intentionally separates execution from modeling. The core library
 coordinates execution from a resolved `PipelinePlan`, while plugins and
 external systems perform backend-specific work.
 
@@ -52,7 +52,7 @@ pipeline definitions directly.
 
 ## Core Philosophy
 
-PipelineModel owns:
+Pipelantic owns:
 
 - Modeling
 - Validation
@@ -70,7 +70,7 @@ Plugins and external runtimes own:
 - Resource allocation
 - Runtime integration
 
-PipelineModel still owns the common execution state model, diagnostics,
+Pipelantic still owns the common execution state model, diagnostics,
 logical-identity propagation, callback policy, and result normalization.
 
 This separation allows the same pipeline to execute on multiple runtimes while
@@ -78,7 +78,7 @@ preserving identical observable semantics.
 
 ## Supported Execution Models
 
-PipelineModel is designed to support:
+Pipelantic is designed to support:
 
 - Local execution
 - Batch execution

@@ -1,6 +1,6 @@
 # Security Policy
 
-PipelineModel is currently design-first and pre-implementation. Security
+Pipelantic is currently design-first and pre-implementation. Security
 reports concerning the documentation, proposed APIs, repository automation, or
 future implementation are welcome.
 
@@ -50,4 +50,4 @@ The project intends to use coordinated disclosure:
 5. Release the fix before public technical details.
 
 Response targets and a formal private reporting mechanism must be established
-before PipelineModel is declared production-ready.
+before Pipelantic is declared production-ready.

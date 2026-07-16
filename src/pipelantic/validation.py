@@ -4,14 +4,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from pipelinemodel.contracts import is_data_contract_type
-from pipelinemodel.diagnostics import Diagnostic, Severity, ValidationReport
-from pipelinemodel.identity import contract_id
-from pipelinemodel.model import LogicalGraph
-from pipelinemodel.transformation import Step, Transformation
+from pipelantic.contracts import is_data_contract_type
+from pipelantic.diagnostics import Diagnostic, Severity, ValidationReport
+from pipelantic.identity import contract_id
+from pipelantic.model import LogicalGraph
+from pipelantic.transformation import Step, Transformation
 
 if TYPE_CHECKING:
-    from pipelinemodel.pipeline import Pipeline
+    from pipelantic.pipeline import Pipeline
 
 
 def validate_pipeline(pipeline_cls: type[Pipeline]) -> ValidationReport:
@@ -212,7 +212,7 @@ def _validate_graph(
                             help="Bind a Source, Step output, or OutputRef.",
                         )
                     )
-        from pipelinemodel.pipeline import Sink, SubpipelineInstance
+        from pipelantic.pipeline import Sink, SubpipelineInstance
 
         if isinstance(member, Sink) and (name, "input") not in edge_keys:
             diagnostics.append(

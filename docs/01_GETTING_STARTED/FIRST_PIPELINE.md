@@ -1,6 +1,6 @@
 # Your First Pipeline
 
-This tutorial walks through building a complete PipelineModel project
+This tutorial walks through building a complete Pipelantic project
 from start to finish. Rather than focusing on execution details, you'll
 learn how to model a pipeline using typed Python classes.
 
@@ -32,13 +32,13 @@ class Customer(DataContractModel):
     full_name: str
 ```
 
-These classes are the source of truth for your data. PipelineModel can
+These classes are the source of truth for your data. Pipelantic can
 generate ODCS-compatible contracts directly from them.
 
 ## Step 2 --- Define the Transformation
 
 ``` python
-from pipelinemodel import Transformation, Input, Output
+from pipelantic import Transformation, Input, Output
 
 class NormalizeCustomers(Transformation):
     customers: Input[RawCustomer]
@@ -68,7 +68,7 @@ without changing the transformation contract.
 ## Step 4 --- Build the Pipeline
 
 ``` python
-from pipelinemodel import Pipeline, Sink, Source
+from pipelantic import Pipeline, Sink, Source
 
 class CustomerPipeline(Pipeline):
     raw: Source[RawCustomer] = Source(binding="customer_source")
@@ -145,7 +145,7 @@ or
 await CustomerPipeline.arun(profile="production")
 ```
 
-PipelineModel delegates execution to your configured plugins while
+Pipelantic delegates execution to your configured plugins while
 keeping the pipeline definition unchanged.
 
 ## What You Built
@@ -169,4 +169,4 @@ You created:
 ## Next Step
 
 Continue with [Project Structure](PROJECT_STRUCTURE.md) to learn how to organize a
-PipelineModel project for long-term maintainability.
+Pipelantic project for long-term maintainability.

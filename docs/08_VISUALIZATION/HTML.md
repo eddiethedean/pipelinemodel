@@ -1,13 +1,13 @@
 # HTML
 
-PipelineModel can generate **HTML documentation** from a validated Pipeline Plan.
+Pipelantic can generate **HTML documentation** from a validated Pipeline Plan.
 
 HTML output combines pipeline structure, contracts, lineage, diagnostics, and
 visualizations into a navigable document that can be viewed locally, published
 to a documentation site, attached to a release, or embedded in a broader data
 platform.
 
-Like every PipelineModel visualization, HTML documentation is derived from the
+Like every Pipelantic visualization, HTML documentation is derived from the
 canonical Pipeline Plan rather than maintained separately.
 
 ## Purpose
@@ -148,7 +148,7 @@ Mermaid and Graphviz exports.
 
 ## Static and Interactive Modes
 
-PipelineModel may support two HTML output modes.
+Pipelantic may support two HTML output modes.
 
 ### Static
 
@@ -197,7 +197,7 @@ plan.write_html(
 
 ## Documentation Site Output
 
-For larger projects, PipelineModel may generate a directory:
+For larger projects, Pipelantic may generate a directory:
 
 ```text
 site/
@@ -241,7 +241,7 @@ project.write_documentation(
 ```
 
 The exact API may evolve, but all HTML output should derive from validated
-PipelineModel artifacts.
+Pipelantic artifacts.
 
 ## Profile-Aware Documentation
 
@@ -333,7 +333,7 @@ Self-contained output should not silently include remote scripts.
 
 ## Styling and Themes
 
-PipelineModel may provide standard themes such as:
+Pipelantic may provide standard themes such as:
 
 - Light
 - Dark
@@ -430,7 +430,7 @@ Avoid:
 
 ## Key Principle
 
-> HTML documentation is a navigable projection of PipelineModel's canonical
+> HTML documentation is a navigable projection of Pipelantic's canonical
 > contracts and Pipeline Plan. It makes pipeline semantics accessible to humans
 > without creating another definition that can drift from the source of truth.
 

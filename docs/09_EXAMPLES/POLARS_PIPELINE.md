@@ -1,10 +1,10 @@
 # Polars Pipeline
 
-This example builds a complete PipelineModel pipeline that reads customer data
+This example builds a complete Pipelantic pipeline that reads customer data
 from CSV, executes transformations with Polars, validates the output against
 typed data contracts, and writes the curated result to Parquet.
 
-The example demonstrates Polars as PipelineModel's recommended reference
+The example demonstrates Polars as Pipelantic's recommended reference
 dataframe backend while keeping the logical pipeline independent of Polars
 itself.
 
@@ -119,7 +119,7 @@ They do not depend on Polars, CSV, Parquet, or local execution.
 ```python
 # src/polars_pipeline/transformations.py
 
-from pipelinemodel import Input, Output, Parameter, Transformation
+from pipelantic import Input, Output, Parameter, Transformation
 
 from .contracts import Customer, RawCustomer
 
@@ -178,7 +178,7 @@ materialization.
 
 ## LazyFrame vs. DataFrame
 
-PipelineModel should prefer `pl.LazyFrame` inside Polars execution regions.
+Pipelantic should prefer `pl.LazyFrame` inside Polars execution regions.
 
 Benefits include:
 
@@ -195,7 +195,7 @@ A `pl.DataFrame` implementation may still be supported for compatibility.
 ```python
 # src/polars_pipeline/pipeline.py
 
-from pipelinemodel import Pipeline, Sink, Source
+from pipelantic import Pipeline, Sink, Source
 
 from .contracts import Customer, RawCustomer
 from .transformations import NormalizeCustomers
@@ -225,7 +225,7 @@ The pipeline contains no Polars-specific types or paths.
 ```python
 # src/polars_pipeline/profiles.py
 
-from pipelinemodel import Profile
+from pipelantic import Profile
 
 
 local = Profile(
@@ -360,7 +360,7 @@ result = await CustomerPolarsPipeline.arun(
 
 The Polars implementation itself may remain synchronous.
 
-PipelineModel handles invocation inside the async execution system.
+Pipelantic handles invocation inside the async execution system.
 
 ## Expected Output
 
@@ -381,7 +381,7 @@ Polars may optimize the lazy plan through:
 - Streaming execution where supported
 - Join optimization
 
-PipelineModel should preserve these opportunities by avoiding premature
+Pipelantic should preserve these opportunities by avoiding premature
 collection.
 
 ## Materialization
@@ -635,7 +635,7 @@ Potential failures include:
 - Sink write failures
 - Permission failures
 
-Plugins should translate backend exceptions into structured PipelineModel
+Plugins should translate backend exceptions into structured Pipelantic
 diagnostics.
 
 ## Retry and Idempotency
@@ -910,7 +910,7 @@ Avoid:
 
 ## Key Principle
 
-> Polars is PipelineModel's recommended reference dataframe backend, not a
+> Polars is Pipelantic's recommended reference dataframe backend, not a
 > modeling dependency. It provides high-performance, lazy, expression-based
 > execution while preserving portable contracts, validation, lineage, and
 > pipeline semantics.

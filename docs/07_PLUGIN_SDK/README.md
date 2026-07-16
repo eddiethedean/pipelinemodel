@@ -1,10 +1,10 @@
 # Plugin SDK
 
-The Plugin SDK enables developers to extend PipelineModel with new execution
+The Plugin SDK enables developers to extend Pipelantic with new execution
 engines, dataframe backends, storage providers, resource providers,
 orchestration platforms, registries, and future extension points.
 
-PipelineModel is intentionally designed around a small, stable core and a rich
+Pipelantic is intentionally designed around a small, stable core and a rich
 plugin ecosystem. The SDK defines the public interfaces, lifecycle, and
 conformance requirements for building those plugins.
 
@@ -16,7 +16,7 @@ This section explains how to:
 - Register plugins
 - Declare capabilities
 - Implement execution interfaces
-- Extend PipelineModel safely
+- Extend Pipelantic safely
 - Test plugins
 - Version plugins
 - Publish plugins
@@ -24,12 +24,12 @@ This section explains how to:
 
 ## Philosophy
 
-PipelineModel defines the portable modeling layer.
+Pipelantic defines the portable modeling layer.
 
 Plugins provide implementation-specific behavior.
 
 ```text
-        PipelineModel Core
+        Pipelantic Core
                 │
                 ▼
             Plugin SDK
@@ -57,7 +57,7 @@ The Plugin SDK should:
 
 - Keep the core framework small.
 - Provide stable extension interfaces.
-- Preserve PipelineModel semantics.
+- Preserve Pipelantic semantics.
 - Support independent plugin releases.
 - Encourage interoperability.
 - Enable community-developed plugins.
@@ -102,7 +102,7 @@ Pipeline Plan without changing its semantics.
 
 Plugins should declare compatibility with:
 
-- PipelineModel
+- Pipelantic
 - ODCS
 - DTCS
 - DPCS
@@ -141,4 +141,4 @@ Plugin authors should read the
 ## Next Step
 
 Continue with the [Plugin SDK Overview](OVERVIEW.md) to learn the foundational
-design of the PipelineModel Plugin SDK.
+design of the Pipelantic Plugin SDK.

@@ -4,7 +4,7 @@ Dataframe plugins implement the physical execution of transformations using a
 specific dataframe library while preserving the logical semantics defined by
 DTCS and the Pipeline Plan.
 
-PipelineModel does **not** depend on a dataframe library. Instead, dataframe
+Pipelantic does **not** depend on a dataframe library. Instead, dataframe
 plugins translate portable transformation contracts into efficient operations
 for a chosen backend.
 
@@ -50,7 +50,7 @@ Keeping dataframe engines outside the core provides:
 
 ## Supported Backends
 
-PipelineModel is designed to support plugins for:
+Pipelantic is designed to support plugins for:
 
 - Polars (recommended default)
 - Pandas
@@ -101,7 +101,7 @@ Polars is the recommended backend because it offers:
 - Strong Arrow interoperability
 - Modern expression API
 
-It aligns well with PipelineModel's asynchronous, execution-agnostic design.
+It aligns well with Pipelantic's asynchronous, execution-agnostic design.
 
 ## Pandas
 

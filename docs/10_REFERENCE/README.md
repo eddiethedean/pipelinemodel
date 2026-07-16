@@ -1,6 +1,6 @@
 # Reference
 
-This section collects concise reference material for PipelineModel's proposed
+This section collects concise reference material for Pipelantic's proposed
 1.0 user-facing interfaces.
 
 - [Command-Line Interface](CLI.md)

@@ -55,7 +55,7 @@ NormalizeCustomers.step(
 )
 ```
 
-PipelineModel validates compatibility before planning.
+Pipelantic validates compatibility before planning.
 
 ## Parameters
 
@@ -145,7 +145,7 @@ published = PublishCustomers.step(customers=validated.valid)
 quarantined = QuarantineCustomers.step(customers=validated.rejected)
 ```
 
-PipelineModel tracks each reference independently for dependency analysis,
+Pipelantic tracks each reference independently for dependency analysis,
 contract validation, lineage, reuse, and invalidation.
 
 ## Identity

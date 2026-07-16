@@ -1,6 +1,6 @@
 # Development
 
-This section defines how PipelineModel is designed, tested, contributed to, and
+This section defines how Pipelantic is designed, tested, contributed to, and
 released.
 
 - [Roadmap](ROADMAP.md)
@@ -17,7 +17,7 @@ released.
 Start with the roadmap for sequencing and the decision records for architectural
 boundaries.
 
-The SparkForge adoption assessment records the legacy capabilities PipelineModel
+The SparkForge adoption assessment records the legacy capabilities Pipelantic
 must preserve in domain-neutral form before SparkForge can use it as its
 underlying engine.
 

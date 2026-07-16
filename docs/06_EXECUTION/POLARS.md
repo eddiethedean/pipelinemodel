@@ -1,8 +1,8 @@
 # Polars
 
-The Polars plugin is the **reference dataframe implementation** for PipelineModel.
+The Polars plugin is the **reference dataframe implementation** for Pipelantic.
 
-PipelineModel is designed to remain dataframe-agnostic, but Polars aligns
+Pipelantic is designed to remain dataframe-agnostic, but Polars aligns
 especially well with its architecture through high performance, lazy execution,
 parallelism, and Apache Arrow interoperability. For new projects, Polars is the
 recommended execution backend.
@@ -12,7 +12,7 @@ recommended execution backend.
 The Polars plugin should:
 
 - Execute DTCS transformation implementations using Polars.
-- Preserve PipelineModel semantics.
+- Preserve Pipelantic semantics.
 - Serve as the reference dataframe implementation.
 - Support synchronous and asynchronous execution.
 - Maximize performance without changing observable behavior.
@@ -52,7 +52,7 @@ These characteristics make it an ideal default execution backend.
 
 ## Recommended Usage
 
-PipelineModel recommends Polars for:
+Pipelantic recommends Polars for:
 
 - New pipelines
 - Large datasets
@@ -78,7 +78,7 @@ The Polars plugin should support:
 - Typed transformation execution
 - Lazy execution where appropriate
 - Contract validation
-- Async integration through PipelineModel
+- Async integration through Pipelantic
 - Structured diagnostics
 - Callback integration
 
@@ -100,7 +100,7 @@ The active execution profile determines which implementation is used.
 
 ## Interoperability
 
-Although Polars is the recommended backend, PipelineModel does not require it.
+Although Polars is the recommended backend, Pipelantic does not require it.
 
 The same pipeline should execute correctly with any conforming dataframe plugin,
 provided the selected plugin satisfies the required capabilities.
@@ -124,7 +124,7 @@ Avoid:
 
 ## Key Principle
 
-> Polars is the reference execution backend for PipelineModel. It provides a
+> Polars is the reference execution backend for Pipelantic. It provides a
 high-performance implementation while remaining completely interchangeable with
 other dataframe plugins from the perspective of pipeline authors.
 

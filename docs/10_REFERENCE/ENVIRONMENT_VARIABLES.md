@@ -3,7 +3,7 @@
 Environment variables provide deployment-time overrides and references to
 secrets. They should complement, not replace, explicit project configuration.
 
-> Variable names in this chapter are proposed for PipelineModel 1.0.
+> Variable names in this chapter are proposed for Pipelantic 1.0.
 
 ## Precedence
 
@@ -19,23 +19,23 @@ From lowest to highest priority:
 
 | Variable | Purpose |
 |---|---|
-| `PIPELINEMODEL_PROJECT` | Project root or configuration path |
-| `PIPELINEMODEL_PROFILE` | Default execution profile |
-| `PIPELINEMODEL_CONFIG` | Explicit `pipelinemodel.toml` path |
-| `PIPELINEMODEL_LOG_LEVEL` | Runtime log level |
-| `PIPELINEMODEL_LOG_FORMAT` | Console, JSON, or provider-defined format |
-| `PIPELINEMODEL_LOG_PROVIDER` | Selected logging or observability provider |
-| `PIPELINEMODEL_OUTPUT_FORMAT` | Default CLI output format |
-| `PIPELINEMODEL_NO_COLOR` | Disable ANSI color when truthy |
-| `PIPELINEMODEL_PLUGIN_DISCOVERY` | Enable or disable entry-point discovery |
-| `PIPELINEMODEL_CACHE_DIR` | Cache directory |
+| `PIPELANTIC_PROJECT` | Project root or configuration path |
+| `PIPELANTIC_PROFILE` | Default execution profile |
+| `PIPELANTIC_CONFIG` | Explicit `pipelantic.toml` path |
+| `PIPELANTIC_LOG_LEVEL` | Runtime log level |
+| `PIPELANTIC_LOG_FORMAT` | Console, JSON, or provider-defined format |
+| `PIPELANTIC_LOG_PROVIDER` | Selected logging or observability provider |
+| `PIPELANTIC_OUTPUT_FORMAT` | Default CLI output format |
+| `PIPELANTIC_NO_COLOR` | Disable ANSI color when truthy |
+| `PIPELANTIC_PLUGIN_DISCOVERY` | Enable or disable entry-point discovery |
+| `PIPELANTIC_CACHE_DIR` | Cache directory |
 
 ## Example
 
 ```bash
-export PIPELINEMODEL_PROFILE=production
-export PIPELINEMODEL_LOG_LEVEL=INFO
-pipelinemodel plan src/pipelines/customer.py:CustomerPipeline
+export PIPELANTIC_PROFILE=production
+export PIPELANTIC_LOG_LEVEL=INFO
+pipelantic plan src/pipelines/customer.py:CustomerPipeline
 ```
 
 ## Profile Overrides
@@ -43,7 +43,7 @@ pipelinemodel plan src/pipelines/customer.py:CustomerPipeline
 Structured profile overrides should use a documented prefix:
 
 ```text
-PIPELINEMODEL_PROFILE__PRODUCTION__LIMITS__MAX_CONCURRENT_NODES=32
+PIPELANTIC_PROFILE__PRODUCTION__LIMITS__MAX_CONCURRENT_NODES=32
 ```
 
 Double underscores delimit nested keys. Environment-based structured overrides
@@ -55,9 +55,9 @@ files.
 Plugins should namespace their variables:
 
 ```text
-PIPELINEMODEL_POLARS_STREAMING
-PIPELINEMODEL_AIRFLOW_DAG_ID_PREFIX
-PIPELINEMODEL_SPARK_MASTER
+PIPELANTIC_POLARS_STREAMING
+PIPELANTIC_AIRFLOW_DAG_ID_PREFIX
+PIPELANTIC_SPARK_MASTER
 ```
 
 Plugin documentation must define parsing, defaults, and security behavior.
@@ -72,7 +72,7 @@ provider = "sqlalchemy"
 url_env = "ANALYTICS_DATABASE_URL"
 ```
 
-PipelineModel should read the value only when the resource is acquired.
+Pipelantic should read the value only when the resource is acquired.
 
 Never:
 
@@ -102,7 +102,7 @@ choosing a default.
 ## `.env` Files
 
 Automatic `.env` loading should not be required by the core. Applications may
-load `.env` files before constructing PipelineModel configuration, or an
+load `.env` files before constructing Pipelantic configuration, or an
 optional integration may provide this behavior.
 
 Production systems should prefer their platform's secret and environment
@@ -114,7 +114,7 @@ Tests should isolate environment changes:
 
 ```python
 def test_production_profile(monkeypatch):
-    monkeypatch.setenv("PIPELINEMODEL_PROFILE", "production")
+    monkeypatch.setenv("PIPELANTIC_PROFILE", "production")
     ...
 ```
 

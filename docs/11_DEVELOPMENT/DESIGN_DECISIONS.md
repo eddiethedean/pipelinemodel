@@ -1,6 +1,6 @@
 # Design Decisions
 
-This document records product and API decisions that shape the PipelineModel
+This document records product and API decisions that shape the Pipelantic
 developer experience. Detailed architectural records belong in
 [Architecture Decisions](ARCHITECTURE_DECISIONS.md).
 
@@ -17,7 +17,7 @@ Each decision should be marked:
 
 **Status:** Accepted
 
-PipelineModel uses Python annotations to declare transformation inputs, outputs,
+Pipelantic uses Python annotations to declare transformation inputs, outputs,
 parameters, sources, and sinks.
 
 ```python
@@ -46,7 +46,7 @@ implementation concepts, not additional top-level contracts.
 
 **Status:** Accepted
 
-ContractModel remains focused on operationalizing data contracts. PipelineModel
+ContractModel remains focused on operationalizing data contracts. Pipelantic
 consumes ContractModel-compatible models but does not broaden ContractModel into
 a universal contract framework.
 
@@ -64,7 +64,7 @@ Importing a pipeline must not execute it.
 **Status:** Accepted
 
 Pandas, Polars, SQL, PySpark, Airflow, and future systems are selected through
-plugins and profiles. PipelineModel does not require one runtime.
+plugins and profiles. Pipelantic does not require one runtime.
 
 Polars may serve as the reference dataframe implementation while Pandas remains
 fully supported.
@@ -74,7 +74,7 @@ fully supported.
 **Status:** Accepted
 
 The runtime is async-first. Users and plugins may supply `def` or `async def`
-callables. PipelineModel normalizes invocation, concurrency, cancellation, and
+callables. Pipelantic normalizes invocation, concurrency, cancellation, and
 cleanup.
 
 Both `run()` and `arun()` are provided, but `run()` must not unsafely nest event
@@ -104,7 +104,7 @@ skip, quarantine, or continue. The selected backend carries out the action.
 
 **Status:** Accepted
 
-PipelineModel's Python API is the primary code-first authoring experience.
+Pipelantic's Python API is the primary code-first authoring experience.
 DPCS is the canonical portable pipeline contract. Environment bindings remain
 outside portable topology.
 
@@ -197,7 +197,7 @@ normative semantics. Chapter detail alone does not imply implementation status.
 
 **Status:** Accepted
 
-PipelineModel provides separate runtime lifespan, execution middleware,
+Pipelantic provides separate runtime lifespan, execution middleware,
 resource injection, lifecycle callbacks, and outbound event declarations.
 
 - Lifespan owns paired setup and cleanup.
@@ -206,7 +206,7 @@ resource injection, lifecycle callbacks, and outbound event declarations.
 - Callbacks respond to specific lifecycle outcomes.
 - Outbound events describe external notifications.
 
-PipelineModel adopts this separation from FastAPI's architecture without
+Pipelantic adopts this separation from FastAPI's architecture without
 adopting HTTP request semantics.
 
 ## DD-021: Resource Injection Is Not Pipeline Dependency Wiring

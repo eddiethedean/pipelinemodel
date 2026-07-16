@@ -7,7 +7,7 @@ Profiles supply environment-specific configuration without changing the logical
 meaning of a pipeline. They bridge the gap between portable pipeline contracts
 and concrete runtime infrastructure.
 
-PipelineModel separates **what a pipeline does** from **how and where it
+Pipelantic separates **what a pipeline does** from **how and where it
 executes**.
 
 ## Goals
@@ -70,7 +70,7 @@ Profiles also must not:
 ## Example
 
 ```python
-from pipelinemodel import Profile
+from pipelantic import Profile
 
 production = Profile(
     name="production",
@@ -257,4 +257,4 @@ without changing their semantics.
 ## Next Step
 
 Continue with [Contract Generation](CONTRACT_GENERATION.md) to learn how
-PipelineModel generates portable ODCS, DTCS, and DPCS artifacts.
+Pipelantic generates portable ODCS, DTCS, and DPCS artifacts.
