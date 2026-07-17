@@ -77,10 +77,10 @@ HTML lineage exporters (`etlantic.viz`), `etlantic-keyring`,
 
 **Still accepted design until later milestones:** managed Spark providers
 (Databricks/EMR/Connect), Dagster/Prefect compilers, and remaining Plugin SDK
-surfaces. Portable transformations are sequenced across 0.11-0.15:
-PySpark-inspired symbolic authoring and IR, Polars compilation, PySpark and
-relational expansion, Pandas/conformance, then safe SQL lowering and advanced
-expressions.
+surfaces. Portable transformations are sequenced across 0.11-0.15: full
+DTCS 3.0 facade→`dtcs.transform-plan/2` authoring in 0.11, then Polars
+planning/compilation, PySpark and relational compiler claims, Pandas and
+conformance, then SQL lowering and profile graduation.
 
 ## Normative Authority
 

@@ -893,62 +893,81 @@ coordination engine while remaining the medallion-focused facade.
 See [SparkForge Feature Adoption](SPARKFORGE_ADOPTION.md) for the detailed
 feature assessment and adapter sequence.
 
-## 0.11 — Portable Transformation Kernel
+## 0.11 — Portable Authoring and Transformation Plan
 
 **Status: planned — not released in 0.10.**
 
 **DTCS readiness gate: satisfied upstream.** DTCS 3.0 and `dtcs` 0.13 publish
-`dtcs.transform-plan/2` (with `dtcs.transform-plan/1` readable), the portable
-type and value-state model, structured expressions including bounded lambdas,
-Semantic Actions/Functions, 2.0 and 3.0 profiles, serialization, validation,
-and conformance support. ETLantic must consume those public models without
-forking their semantics. The 0.11 kernel targets
-`dtcs:profile/portable-relational-kernel/1` (and may emit plan v2).
+`dtcs.transform-plan/2` (v1 readable), Portable Relational profiles, Rich
+Portable Analytics families, structured expressions including bounded lambdas,
+serialization, validation, and conformance support. ETLantic consumes those
+public models without forking their semantics. Profiles remain Candidate or
+Experimental until later phases graduate them with two independent compilers.
 
-### Deliver
+**Scope:** full portable **authoring** → validated `dtcs.transform-plan/2` IR.
+No compilers and no runtime execution in this milestone.
+
+### In scope
 
 - `@Transformation.portable` symbolic definition registration
-- PySpark-inspired DataFrame, Column, and `functions as F` authoring surface
-- immutable `FrameExpr`, `ColumnExpr`, and core relational/scalar nodes
-- `etlantic.transform/1` as ETLantic's concrete DTCS Transformation Plan
-  authoring profile over public `dtcs` package models
-- mappings from PySpark-inspired facade methods to registered `dtcs:` Semantic
-  Actions and Functions
-- portable type system, column resolution, type inference, and output-contract
-  validation
+- PySpark-inspired DataFrame, Column, Window, and `functions as F` facade
+- immutable `FrameExpr`, `ColumnExpr`, `GroupedData`, and bounded lambda
+  authoring helpers over public `dtcs` models
+- `etlantic.transform/1` authoring profile that emits **only**
+  `dtcs.transform-plan/2` for new definitions (v1 remains readable for
+  fixtures and migration)
+- facade → registered `dtcs:` Semantic Action / Function mappings for:
+  - `dtcs:profile/portable-relational-kernel/1` and `/2`
+  - `dtcs:profile/portable-relational/1` and `/2`
+  - Rich Portable Analytics: `portable-string-advanced/1`,
+    `portable-conversion/1`, `portable-statistics/1`,
+    `portable-complex-values/1` (including lambdas), `portable-reshape/1`,
+    `portable-relational-extended/1`, `portable-temporal-iana/1`,
+    `portable-nondeterministic/1`, `portable-window/2`
+  - readable aliases for 2.0 `portable-window/1` and
+    `portable-complex-types/1`
+- profile requirement emission, portable typing, column resolution, inference,
+  and output-contract validation
 - bounded canonical serialization and deterministic fingerprints
-- prohibited action, arbitrary-object, raw SQL, callable, and secret-capture
-  diagnostics
-- `PMXFORMxxx` diagnostic namespace and expression source paths
-- DTCS portable-definition representation and compatibility fixtures
-- complete support for `dtcs:profile/portable-relational-kernel/1`
+- `PMXFORMxxx` diagnostics with expression source paths
+- golden IR corpus and compatibility fixtures **per profile family**
+
+### Explicitly deferred
+
+- compiler discovery, capability descriptors, and selection policy
+- Pipeline Plan portable-implementation fields used for compiler choice
+- Polars, PySpark, Pandas, and SQL lowering or execution
+- two-compiler “Standard” graduation of Candidate/Experimental profiles
 
 ### Acceptance scenarios
 
-- project, filter, with-column, drop, rename, alias, distinct, limit, sorting,
-  comparison, boolean, arithmetic, cast, null, conditional, coalesce, and core
-  string expressions normalize deterministically;
-- a portable definition is validated without source data or backend access;
+- every claimed facade method round-trips to a stable canonical fingerprint;
+- joins, unions, grouping, aggregation, windows, complex values, advanced
+  strings, conversions, statistics, reshape, IANA temporal, and declared
+  nondeterministic constructs serialize under the correct profile
+  requirements;
+- a portable definition validates without source data or backend access;
 - every declared output maps to exactly one typed relational expression;
-- equivalent definitions produce identical canonical IR fingerprints;
-- hostile depth, node count, literal size, executable objects, and secret values
-  fail within configured budgets.
-- null, missing, and invalid remain distinct through authoring, planning, and
-  canonical serialization.
+- unknown or unsupported constructs, hostile depth/node/literal budgets,
+  executable objects, raw SQL, and secret capture fail closed;
+- null, missing, and invalid remain distinct through authoring and
+  canonical serialization;
+- ETLantic core imports no backend libraries.
 
 ### Exit gate
 
-Portable definitions generate validated, inspectable DTCS-aligned IR but do not
-yet execute through an engine plugin.
+Portable definitions generate validated, inspectable `dtcs.transform-plan/2`
+artifacts for the full published authoring surface, but do not execute through
+an engine plugin.
 
 ## 0.12 — Portable Planning and Polars Compiler
 
 **Status: planned — not released in 0.10.**
 
 **DTCS readiness gate: satisfied upstream.** DTCS 3.0 / `dtcs` 0.13 define
-exact profile, action, function, operator, type, mode, and limit claims for
-both Portable Relational and Rich Portable Analytics families. ETLantic still
-must integrate those claims into planning and explain output.
+exact profile, action, function, operator, type, mode, and limit claims.
+Authoring IR already exists from 0.11; this phase adds planning integration and
+the first compiler vertical slice.
 
 ### Deliver
 
@@ -958,14 +977,15 @@ must integrate those claims into planning and explain output.
 - Pipeline Plan schema fields for implementation kind, IR fingerprint,
   compiler identity, requirements, and capability decisions
 - `plan explain`, lineage, report, and diagnostic rendering
-- `etlantic-polars` compiler for the 0.11 kernel
+- `etlantic-polars` compiler claiming an initial profile set (start with
+  `portable-relational-kernel/*`; expand claims as fixtures land)
 - native `pl.Expr` lowering, eager execution, and `LazyFrame` preservation
 - output-role, validation, ownership, metrics, and materialization integration
 - cache/artifact identities including definition and compiler fingerprints
 
 ### Acceptance scenarios
 
-- a pipeline executes a portable definition on Polars without a
+- a pipeline executes a 0.11 portable definition on Polars without a
   Polars-specific transformation callable;
 - adjacent portable Polars steps remain lazy until a declared boundary;
 - unsupported functions fail during planning with an exact expression path;
@@ -975,30 +995,31 @@ must integrate those claims into planning and explain output.
 
 ### Exit gate
 
-The kernel has one complete execution path and planning treats portable
-compilation as a first-class, deterministic implementation kind.
+Planning treats portable compilation as a first-class, deterministic
+implementation kind, and Polars provides one complete execution path for its
+advertised claim set.
 
-## 0.13 — PySpark Compiler and Relational Expansion
+## 0.13 — PySpark Compiler and Relational Compiler Claims
 
 **Status: planned — not released in 0.10.**
 
-**DTCS readiness gate: semantics published upstream.** DTCS 2.0/3.0 define
-joins (including semi, anti, cross, null-safe, and collision policy), union
-modes, grouping, aggregation, sorting, deduplication, and limit determinism.
-The remaining gate is ETLantic and plugin passage of the canonical fixtures.
+**DTCS readiness gate: semantics and authoring published.** Joins, unions,
+grouping, aggregation, sorting, deduplication, and limit determinism are
+authored in 0.11 IR. This phase proves compiler fidelity for
+`portable-relational/1` (and `/2` where claimed) on Polars and PySpark.
 
 ### Deliver
 
 - `etlantic-pyspark` compiler using native Spark DataFrame and Column
   expressions
 - explicit prohibition of automatic Python and Pandas UDF fallback
-- join, union-by-name, grouping, aggregation, deduplication, and complete sort
-  semantics
-- relation-scoped column resolution and collision diagnostics
-- aggregate typing, null behavior, and empty-input rules
-- Polars implementations for the expanded relational operation set
+- complete compiler claims for join, union-by-name, grouping, aggregation,
+  deduplication, and sort semantics already present in 0.11 IR
+- relation-scoped column resolution and collision diagnostics at compile time
+- aggregate typing, null behavior, and empty-input rules under execution
+- Polars implementations for the same relational claim set
 - shared Polars/PySpark semantic fixtures and differential execution tests
-- complete support for `dtcs:profile/portable-relational/1`
+- complete compiler support for `dtcs:profile/portable-relational/1`
 
 ### Acceptance scenarios
 
@@ -1020,7 +1041,8 @@ Polars-specific nor merely a PySpark wrapper.
 
 **DTCS readiness gate: foundation published upstream.** `dtcs` 0.13 publishes
 validation and conformance support. ETLantic must expose a public compiler
-suite that consumes it without plugin dependence on ETLantic internals.
+suite that consumes 0.11 IR and DTCS fixtures without plugin dependence on
+ETLantic internals.
 
 ### Deliver
 
@@ -1048,25 +1070,24 @@ suite that consumes it without plugin dependence on ETLantic internals.
 Portable compiler conformance becomes a public SDK contract suitable for
 third-party engines.
 
-## 0.15 — Safe SQL Lowering and Advanced Expressions
+## 0.15 — Safe SQL Lowering and Profile Graduation
 
 **Status: planned — not released in 0.10.**
 
-**DTCS readiness gate: satisfied upstream for semantics.** DTCS 3.0 publishes
-experimental/candidate Rich Portable Analytics families (`portable-window/2`,
-`portable-complex-values/1`, string-advanced, conversion, statistics, reshape,
-temporal-IANA, nondeterministic, and peers) plus the 2.0 experimental window
-and complex-types profiles. ETLantic still must integrate compiler claims,
-SQL lowering rules, and shared conformance before advertising these families.
+**DTCS readiness gate: authoring complete upstream of compilers.** Rich
+Portable Analytics and related families are already expressible in 0.11 IR.
+This phase adds SQL lowering and graduates Candidate/Experimental families
+only when two independent compilers pass their conformance fixtures.
 
 ### Deliver
 
-- lowering from `etlantic.transform/1` to the existing typed ETLantic SQL IR
+- lowering from `etlantic.transform/1` / plan v2 to the existing typed
+  ETLantic SQL IR
 - dialect capability mapping, safe identifiers, and bound parameters
 - SQL region/CTE fusion with logical expression attribution
 - prohibition of trusted raw SQL fragments in portable definitions
-- window specification and native window-function lowering
-- carefully gated date/time and initial array, map, and struct families
+- compiler claims and native lowering for window, complex-value, advanced
+  string, conversion, statistics, reshape, temporal-IANA, and related families
 - full compiler compatibility matrix and native-to-portable migration guide
 - runnable portable examples across supported reference engines
 
@@ -1076,14 +1097,15 @@ SQL lowering rules, and shared conformance before advertising these families.
   reference semantic corpus;
 - no literal or parameter value is interpolated into generated SQL;
 - dialect gaps fail at planning without raw SQL or UDF approximation;
-- each advanced function ships only with normative semantics, two compiler
-  implementations, capability vocabulary, and shared fixtures;
+- each advanced family ships compiler claims only with normative semantics,
+  two compiler implementations, capability vocabulary, and shared fixtures;
 - existing native implementations remain compatible and selectable explicitly.
 
 ### Exit gate
 
 Portable transformations span dataframe, distributed, and relational engines
-with an auditable, secure compiler model.
+with an auditable, secure compiler model, and graduated profiles meet
+two-compiler criteria.
 
 See the
 [Portable Transformation Implementation Plan](PORTABLE_TRANSFORM_PLAN.md).

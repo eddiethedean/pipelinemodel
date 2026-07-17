@@ -22,8 +22,8 @@ This table describes the declared compatibility of ETLantic 0.10.0.
 | SQLModel bridge | `etlantic-sqlmodel==0.10.0` |
 | SparkForge adapter | `etlantic-sparkforge==0.10.0` |
 | Orchestration protocol | `etlantic.orchestration/1` |
-| DTCS Transformation Plan protocol | Published in DTCS 3.0 / `dtcs` 0.13 as `dtcs.transform-plan/2` (v1 readable); ETLantic authoring not shipped |
-| Portable authoring profile | Not shipped; proposed `etlantic.transform/1` |
+| DTCS Transformation Plan protocol | Published in DTCS 3.0 / `dtcs` 0.13 as `dtcs.transform-plan/2` (v1 readable); ETLantic authoring planned for 0.11 (full facade→IR) |
+| Portable authoring profile | Not shipped; proposed `etlantic.transform/1` for full DTCS 3.0 authoring in 0.11 |
 | Portable compiler protocol | Not shipped; proposed `etlantic.transform-compiler/1` for 0.12+ |
 | Package stability | Alpha |
 | Plugin SDK stability | Protocol stable within 0.8; third-party SDK still evolving |
@@ -33,23 +33,23 @@ This table describes the declared compatibility of ETLantic 0.10.0.
 DTCS publication does not mean the ETLantic facade or plugin compilers are
 already implemented. Compatibility is tracked independently:
 
-| DTCS profile | Spec status | ETLantic 0.10 status |
-|---|---|---|
-| `dtcs:profile/portable-relational-kernel/1` | Published (2.0) | planned for 0.11 |
-| `dtcs:profile/portable-relational/1` | Published (2.0) | planned across 0.11–0.13 |
-| `dtcs:profile/portable-window/1` | Experimental (2.0) | planned for 0.15+ |
-| `dtcs:profile/portable-complex-types/1` | Experimental (2.0) | planned for 0.15+ |
-| `dtcs:profile/portable-relational-kernel/2` | Candidate (3.0) | planned with 0.11+ plan v2 |
-| `dtcs:profile/portable-relational/2` | Candidate (3.0) | planned across 0.11–0.13 |
-| `dtcs:profile/portable-string-advanced/1` | Experimental (3.0) | planned for 0.15+ |
-| `dtcs:profile/portable-conversion/1` | Experimental (3.0) | planned for 0.15+ |
-| `dtcs:profile/portable-statistics/1` | Experimental (3.0) | planned for 0.15+ |
-| `dtcs:profile/portable-complex-values/1` | Experimental (3.0) | planned for 0.15+ |
-| `dtcs:profile/portable-reshape/1` | Experimental (3.0) | planned for 0.15+ |
-| `dtcs:profile/portable-relational-extended/1` | Experimental (3.0) | planned for 0.15+ |
-| `dtcs:profile/portable-temporal-iana/1` | Experimental (3.0) | planned for 0.15+ |
-| `dtcs:profile/portable-nondeterministic/1` | Experimental (3.0) | planned for 0.15+ |
-| `dtcs:profile/portable-window/2` | Candidate (3.0) | planned for 0.15+ |
+| DTCS profile | Spec status | ETLantic authoring (0.11) | ETLantic compilers |
+|---|---|---|---|
+| `dtcs:profile/portable-relational-kernel/1` | Published (2.0) | planned full facade→IR | 0.12+ (Polars initial claim) |
+| `dtcs:profile/portable-relational/1` | Published (2.0) | planned full facade→IR | 0.13 claim graduation |
+| `dtcs:profile/portable-window/1` | Experimental (2.0) | planned as `/2` alias | 0.15+ two-compiler graduation |
+| `dtcs:profile/portable-complex-types/1` | Experimental (2.0) | planned as complex-values alias | 0.15+ two-compiler graduation |
+| `dtcs:profile/portable-relational-kernel/2` | Candidate (3.0) | planned full facade→IR (plan v2) | 0.12+ as claimed |
+| `dtcs:profile/portable-relational/2` | Candidate (3.0) | planned full facade→IR | 0.13+ as claimed |
+| `dtcs:profile/portable-string-advanced/1` | Experimental (3.0) | planned full facade→IR | 0.15+ graduation |
+| `dtcs:profile/portable-conversion/1` | Experimental (3.0) | planned full facade→IR | 0.15+ graduation |
+| `dtcs:profile/portable-statistics/1` | Experimental (3.0) | planned full facade→IR | 0.15+ graduation |
+| `dtcs:profile/portable-complex-values/1` | Experimental (3.0) | planned full facade→IR | 0.15+ graduation |
+| `dtcs:profile/portable-reshape/1` | Experimental (3.0) | planned full facade→IR | 0.15+ graduation |
+| `dtcs:profile/portable-relational-extended/1` | Experimental (3.0) | planned full facade→IR | 0.15+ graduation |
+| `dtcs:profile/portable-temporal-iana/1` | Experimental (3.0) | planned full facade→IR | 0.15+ graduation |
+| `dtcs:profile/portable-nondeterministic/1` | Experimental (3.0) | planned full facade→IR | 0.15+ graduation |
+| `dtcs:profile/portable-window/2` | Candidate (3.0) | planned full facade→IR | 0.15+ graduation |
 
 See [Capabilities](../01_GETTING_STARTED/CAPABILITIES.md) and the
 [DTCS 3.0 publication record](../11_DEVELOPMENT/DTCS_3_0_SPEC_PROPOSAL.md).

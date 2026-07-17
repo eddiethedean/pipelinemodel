@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   readable), publication records, IR profile, roadmap readiness gates,
   compatibility matrix, and dependency floor (ETLantic portable authoring
   still planned for 0.11–0.15)
+- Refined roadmap 0.11 to full portable authoring scope: facade → validated
+  `dtcs.transform-plan/2` for Portable Relational and Rich Portable Analytics;
+  compilers and profile graduation remain 0.12–0.15
 
 ### Changed
 

@@ -242,11 +242,11 @@ Each ETLantic portable milestone begins with a DTCS readiness gate:
 
 | ETLantic | DTCS prerequisite | Current state |
 |---|---|---|
-| 0.11 | canonical kernel plan, types, expressions, serialization, validation | published in DTCS 2.0/3.0 / `dtcs` 0.13 (`transform-plan/1` and `/2`) |
-| 0.12 | exact compiler capability requirements | published; ETLantic explain integration remains |
-| 0.13 | joins, unions, grouping, aggregation, and ordering semantics | published in `portable-relational/1` (+ candidate `/2`) |
+| 0.11 | full Portable Relational + Rich Portable Analytics authoring over `dtcs.transform-plan/2` | semantics published in DTCS 2.0/3.0 / `dtcs` 0.13; ETLantic facade→IR remains |
+| 0.12 | exact compiler capability requirements + initial Polars claims | published; ETLantic explain/compiler integration remains |
+| 0.13 | relational compiler claims (joins, unions, grouping, aggregation, ordering) | published in `portable-relational/1` (+ candidate `/2`); authoring owned by 0.11 |
 | 0.14 | validation and conformance foundation | published; ETLantic plugin-facing fixture packaging remains |
-| 0.15 | windows, complex types, and advanced function semantics | 2.0 experimental profiles + 3.0 Rich Portable Analytics families published; ETLantic compilers remain |
+| 0.15 | SQL lowering + two-compiler graduation of advanced families | 2.0 experimental + 3.0 Rich Portable Analytics published; authoring owned by 0.11; compilers remain |
 
 ETLantic selects `dtcs>=0.13,<1` for the published DTCS 3.0 foundation
 (retaining 2.0 readability). Dependency bounds must never be treated as

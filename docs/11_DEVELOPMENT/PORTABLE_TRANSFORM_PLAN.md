@@ -50,11 +50,13 @@ src/etlantic/transform/
 ├── column.py
 ├── functions.py
 ├── window.py
+├── complex.py          # list/map/object constructors and accessors
+├── lambda_expr.py      # bounded lambda authoring helpers
 ├── dtcs_builder.py
 ├── validate.py
-├── capabilities.py
+├── capabilities.py     # requirement extraction for later planning (stubs ok in 0.11)
 ├── protocol.py
-└── discovery.py
+└── discovery.py        # compiler discovery — used from 0.12+
 ```
 
 Canonical nodes, portable types, semantics, serialization, and base validation
@@ -70,58 +72,78 @@ Normative DTCS foundations are recorded in:
 - [DTCS 2.0 Portable Relational Publication Record](DTCS_PORTABLE_SPEC_PROPOSAL.md)
 - [DTCS 3.0 Rich Portable Analytics Publication Record](DTCS_3_0_SPEC_PROPOSAL.md)
 
-## 0.11 preparation: decisions and fixtures
+## 0.11: full portable authoring
 
-DTCS readiness is satisfied by DTCS 3.0 / `dtcs` 0.13. This phase consumes the
-published `dtcs.transform-plan/2` models (v1 readable) and
-`dtcs:profile/portable-relational-kernel/1`; it does not mint parallel ETLantic
-semantics.
+DTCS readiness is satisfied by DTCS 3.0 / `dtcs` 0.13. This phase owns the
+complete facade → validated `dtcs.transform-plan/2` path for Portable Relational
+and Rich Portable Analytics. It does not mint parallel ETLantic semantics and
+does not execute through compilers.
 
-Deliver:
+### Decisions and fixtures
 
 - accept ADR-013 and the IR specification
-- freeze kernel operation names and portable type vocabulary
-- map every facade operation to a published `dtcs:` Semantic Action, Function,
-  Rule, or reviewed extension proposal
-- audit published DTCS null, missing, and invalid behavior against each backend
+- freeze facade→`dtcs:` mappings for every claimed profile family
+- emit **only** `dtcs.transform-plan/2` for new definitions (v1 readable)
+- audit published null, missing, and invalid behavior for authoring fidelity
 - define canonical JSON examples before Python classes
-- create semantic truth tables and edge-case fixtures
-- define diagnostic code allocation and source-path format
+- create semantic truth tables and golden IR per profile family
+- define `PMXFORM` diagnostic allocation and source-path format
 - benchmark acceptable definition and validation overhead
 
-Exit gate: maintainers can review example IR and expected results without any
-backend implementation.
+### Authoring deliverables
 
-## 0.11: symbolic authoring kernel
-
-Deliver:
-
-- `FrameExpr`, `ColumnExpr`, and `GroupedData`
-- `@Transformation.portable`
-- symbolic input and parameter binding
-- project, filter, with-column, drop, rename, alias, distinct, limit, sort
-- column references, literals, alias, comparison, boolean, arithmetic, strict
-  cast, null predicates, conditional, coalesce, concat, and basic strings
-- prohibited action and boolean-conversion errors
+- `FrameExpr`, `ColumnExpr`, `GroupedData`, Window helpers, complex-value
+  helpers, and bounded lambda helpers
+- `@Transformation.portable` with symbolic input and parameter binding
+- complete facade coverage for the profile table below
+- profile requirement emission on every serialized plan
+- prohibited action, boolean-conversion, raw SQL, callable, and secret-capture
+  errors
 - preservation of distinct DTCS null, missing, and invalid values
-- deterministic serialization and fingerprints
-- definition validation and output binding
+- deterministic serialization, fingerprints, definition validation, and output
+  binding
 
-Tests:
+### Profile → facade → IR → fixtures
 
-- unit tests for every node and operator
+| DTCS profile | Facade modules | Representative IR constructs | Fixture ownership |
+|---|---|---|---|
+| `portable-relational-kernel/1` | `dataframe`, `column`, `functions` | project, filter, with_fields, rename/drop, scalar ops | golden kernel plans |
+| `portable-relational-kernel/2` | same + plan v2 metadata | plan/2 document shape, registry pins | plan v2 round-trip |
+| `portable-relational/1` | `dataframe`, `functions` | join, union, group, aggregate, sort, distinct, limit | multi-input relational IR |
+| `portable-relational/2` | same | relational/2 candidate extensions | candidate relational IR |
+| `portable-string-advanced/1` | `functions` | regex, split, pad, translate, … | string-advanced IR |
+| `portable-conversion/1` | `functions` | strict cast / parse family | conversion IR |
+| `portable-statistics/1` | `functions` | stddev, variance, corr, … | statistics IR |
+| `portable-complex-values/1` | `complex`, `lambda_expr` | constructors, accessors, lambdas | complex + lambda IR |
+| `portable-reshape/1` | `dataframe` | explode / reshape actions | reshape IR |
+| `portable-relational-extended/1` | `dataframe` | extended relational actions | relational-extended IR |
+| `portable-temporal-iana/1` | `functions` | IANA timezone / calendar ops | temporal-iana IR |
+| `portable-nondeterministic/1` | `functions` | random, uuid, run-context | nondeterministic IR |
+| `portable-window/2` (+ `/1` alias) | `window`, `functions` | window specs and analytics | window IR |
+| `portable-complex-types/1` alias | `complex` | list/map/object subset of complex-values | alias compatibility |
+
+Candidate and Experimental profiles are authorable and fingerprintable in 0.11;
+they are not graduated to Standard until 0.12+ compilers pass two-engine
+conformance.
+
+### Tests
+
+- unit tests for every facade method claimed in the table
 - inheritance and multiple-output cases
 - unknown argument, missing output, ambiguous column, and type errors
-- recursion, depth, node-count, literal-size, and hostile-object limits
-- golden canonical JSON and fingerprint stability
+- recursion, depth, node-count, literal-size, lambda, and hostile-object limits
+- golden canonical JSON and fingerprint stability per profile family
 
-Exit gate: definitions generate validated IR, but do not execute.
+### Exit gate
+
+Definitions generate validated `dtcs.transform-plan/2` for the full published
+authoring surface, but do not execute.
 
 ## 0.12: planning integration
 
-Deliver:
+Deliver (compile/plan only; authoring already complete in 0.11):
 
-- `TransformCapabilities` and requirement extraction
+- `TransformCapabilities` and requirement extraction from 0.11 IR
 - compiler descriptors and discovery
 - implementation policy: `require`, `prefer`, `native`
 - `ImplementationDescriptor` extension for `portable_compiled`
@@ -147,7 +169,8 @@ requirements are unsupported.
 
 Deliver:
 
-- Polars compiler for `dtcs:profile/portable-relational-kernel/1`
+- Polars compiler claiming an initial set (start with
+  `dtcs:profile/portable-relational-kernel/*`; expand as fixtures land)
 - native `pl.Expr` lowering
 - eager and lazy input support
 - lazy preservation and declared collection boundaries
@@ -162,24 +185,27 @@ callable and retains `LazyFrame` through compatible regions.
 
 Deliver:
 
-- native Spark Column/DataFrame lowering for the kernel
+- native Spark Column/DataFrame lowering for advertised claims
 - Catalyst-visible expression verification
 - Spark session and region integration
 - explicit prohibition of UDF fallback
 - type, timezone, null, and ownership conformance
 
-Exit gate: Polars and PySpark pass the same semantic fixture corpus.
+Exit gate: Polars and PySpark pass the same semantic fixture corpus for shared
+claims.
 
-## 0.13: relational expansion
+## 0.13: relational compiler claims
 
-This phase targets complete conformance with
-`dtcs:profile/portable-relational/1`, including every advertised join and union
-mode rather than generic operation-name checks.
+This phase targets complete **compiler** conformance with
+`dtcs:profile/portable-relational/1` (authoring already covers the IR in 0.11),
+including every advertised join and union mode rather than generic
+operation-name checks.
 
 Deliver:
 
 - join, union-by-name, group-by, aggregation, deduplication, and full ordering
-- relation-scoped column resolution
+  under execution
+- relation-scoped column resolution at compile time
 - collision diagnostics
 - aggregate typing and empty-input behavior
 - Polars and PySpark implementations first
@@ -199,7 +225,7 @@ Deliver:
 Exit gate: Pandas passes every fixture associated with its advertised
 capabilities and does not claim unsupported lazy behavior.
 
-## 0.15: SQL lowering
+## 0.15: SQL lowering and profile graduation
 
 Deliver:
 
@@ -209,17 +235,20 @@ Deliver:
 - dialect capability mapping
 - no trusted fragments in portable definitions
 - cross-engine database integration fixtures
+- two-compiler graduation path for Rich Portable Analytics and related
+  Candidate/Experimental families already authored in 0.11
 
 Exit gate: supported portable definitions compile to safe SQL and match the
-reference result corpus.
+reference result corpus; graduated families meet two-compiler criteria.
 
-## 0.15+: windows and complex types
+## 0.15+: graduating advanced families
 
-Deliver windows, arrays, maps, structs, and advanced functions one semantic
-family at a time. Each addition requires specification text, two compilers,
-shared fixtures, capability identifiers, and explain rendering.
+Compiler claims for windows, arrays, maps, structs, and advanced functions ship
+one semantic family at a time. Each graduation requires two compilers, shared
+fixtures, capability identifiers, and explain rendering. Authoring for these
+families already exists in 0.11; this work is execution and conformance only.
 
-The starting standards are the experimental
+Starting standards remain the experimental
 `dtcs:profile/portable-window/1` /
 `dtcs:profile/portable-complex-types/1` families and the DTCS 3.0 Rich
 Portable Analytics profiles (`portable-window/2`, `portable-complex-values/1`,

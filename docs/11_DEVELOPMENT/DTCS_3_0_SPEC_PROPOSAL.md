@@ -25,7 +25,7 @@
 | Author/validate/serialize plans via public `dtcs` models | Available through the toolkit |
 | `@Transformation.portable` / `etlantic.transform` | Planned 0.11+ |
 | Backend compilers claiming 3.0 profiles | Planned 0.12–0.15 |
-| Prefer `dtcs.transform-plan/2` for new portable IR | Planned with 0.11 kernel |
+| Prefer `dtcs.transform-plan/2` for new portable IR | Planned with 0.11 full authoring |
 
 ## 1. Executive summary (original proposal)
 
