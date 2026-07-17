@@ -2,16 +2,19 @@
 
 - The project is alpha and does not promise 1.0 API stability.
 - Portable `@Transformation.portable` definitions and
-  `etlantic.transform/1` authoring is available in 0.11; compilers are planned for 0.12+ and are not available
-  in 0.11 for execution. Authoring emits `dtcs.transform-plan/2` through
-  `@Transformation.portable`; current plugins
-  still require native `@implementation(engine)` callables.
+  `etlantic.transform/1` authoring are available in 0.11; compilers are planned
+  for 0.12+ and are not available in 0.11 for execution. Authoring emits
+  `dtcs.transform-plan/2` through `@Transformation.portable`; current plugins
+  still require native `@implementation(engine)` callables. **0.12** targets
+  planning plus Polars **kernel** execution only; join/aggregate and richer
+  profiles remain native-or-later until 0.13–0.15.
 - The planned PySpark-inspired syntax will intentionally support a closed
   subset; actions, arbitrary Python tracing, raw SQL expressions, and silent
   UDF fallback are excluded.
 - Advanced DTCS 3.0 families (string/regex, statistics, reshape, etc.) are
-  published as independently claimable profiles. ETLantic must not advertise
-  matching facade methods until compilers claim those profiles.
+  published as independently claimable profiles. ETLantic **authors** those
+  facade methods in 0.11 for IR emission, but plugins must not **execute** them
+  via portable compilation until a compiler claims the matching profile.
   Raw `F.expr()` SQL text remains permanently non-portable.
 - Local execution is in-process; ETLantic is not a distributed scheduler.
 - Spark batch execution is available via `etlantic-pyspark` (0.7+). Managed

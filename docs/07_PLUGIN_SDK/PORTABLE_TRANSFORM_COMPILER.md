@@ -1,8 +1,10 @@
 # Portable Transformation Compiler Protocol
 
-!!! warning "Proposed 0.12+ plugin protocol—not available in ETLantic 0.10"
+!!! warning "Proposed for ETLantic 0.12 — not importable in 0.11"
     This page defines the intended `etlantic.transform-compiler/1` boundary for
     consuming DTCS Transformation Plans. It is not a currently importable SDK.
+    0.12 ships planning plus a Polars **kernel** compiler; relational and
+    multi-engine claims follow in 0.13+.
 
 A portable transformation compiler translates a validated
 `dtcs.transform-plan/2` (and readable v1) into backend-native expressions without changing its
@@ -93,6 +95,21 @@ The compiler reports support against the published profiles, never a vague
 A compiler may advertise a subset as individual capabilities. It may advertise
 a profile only when every requirement and DTCS conformance fixture in that
 profile passes.
+
+### Initial Polars claim matrix (0.12)
+
+`etlantic-polars` **must** claim and privately fixture:
+
+| Item | 0.12 requirement |
+|---|---|
+| Profile | `dtcs:profile/portable-relational-kernel/1` |
+| Plan shape | Accept `dtcs.transform-plan/2` (and readable v1); `/2` metadata compatibility without extra relational ops |
+| Actions / ops | Kernel surface covered by golden fixtures such as `tests/fixtures/portable/kernel_normalize.json` (project, filter, with_fields, rename/drop, scalar expressions) |
+| Outside claim set | Fail closed in `analyze()` / planning (`PMXFORM3xx`) |
+
+`etlantic-polars` **must not** claim in 0.12:
+`portable-relational/1`, Rich Portable Analytics families, windows, or
+complex-value profiles. Those compiler claims belong to 0.13–0.15.
 
 ## Support reports
 
@@ -223,13 +240,14 @@ process privileges.
 
 ## Conformance
 
-The public suite should expose:
+**0.12** uses private Polars kernel fixtures under `packages/etlantic-polars`
+and core tests. The **public** suite lands in **0.14**:
 
 ```python
 from etlantic.testing import portable_transform_conformance
 ```
 
-Required fixture families:
+Required fixture families (public suite):
 
 - capability accuracy
 - deterministic compilation
@@ -244,9 +262,9 @@ Required fixture families:
 - secret and parameter redaction
 - cross-engine result equivalence
 
-Fixtures are grouped by the four published DTCS profiles. A plugin claiming
-the kernel or relational profile runs the entire corresponding family. Window
-and complex-types fixtures remain experimental and require two independent
+Fixtures are grouped by the published DTCS profiles. A plugin claiming the
+kernel or relational profile runs the entire corresponding family. Window and
+complex-types fixtures remain experimental and require two independent
 conforming compilers before their DTCS profiles can graduate from experimental
 status.
 

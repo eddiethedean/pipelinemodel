@@ -156,21 +156,24 @@ A different profile might instead select:
 
 The transformation contract does not change.
 
-Beginning with the proposed 0.11 portable kernel, profiles also decide whether
-an eligible step is compiled from its portable definition or executed through
-a native implementation:
+Beginning with the 0.11 portable authoring surface (compiler selection in
+0.12+), profiles also decide whether an eligible step is compiled from its
+portable definition or executed through a native implementation. Default
+policy in 0.12 is `prefer`:
 
 ```python
 Profile(
     name="portable-polars",
     dataframe_engine="polars",
-    portable_transform_policy="require",
+    portable_transform_policy="prefer",  # or "require" / "native"
 )
 ```
 
 `require` forbids native fallback, `prefer` permits an explicit diagnosed
 fallback, and `native` prefers a registered backend implementation. The choice
-must be retained in `plan explain` and run reports.
+must be retained in `plan explain` and run reports. In 0.12 only Polars
+**kernel** claims are expected to compile; richer profiles need native
+implementations or later compilers.
 
 ## Orchestrator Selection
 

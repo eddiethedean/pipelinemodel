@@ -123,8 +123,8 @@ does not execute through compilers.
 | `portable-complex-types/1` alias | `complex` | list/map/object subset of complex-values | alias compatibility |
 
 Candidate and Experimental profiles are authorable and fingerprintable in 0.11;
-they are not graduated to Standard until 0.12+ compilers pass two-engine
-conformance.
+they are not graduated to Standard until **two independent compilers** pass
+shared conformance (0.13+ for relational; 0.15+ for advanced families).
 
 ### Tests
 
@@ -139,47 +139,65 @@ conformance.
 Definitions generate validated `dtcs.transform-plan/2` for the full published
 authoring surface, but do not execute.
 
-## 0.12: planning integration
+## 0.12: planning + Polars kernel compiler
 
-Deliver (compile/plan only; authoring already complete in 0.11):
+One release with two sequenced exit gates. Authoring is already complete in
+0.11.
+
+### Locked decisions
+
+| Decision | Choice |
+|---|---|
+| Default policy | `portable_transform_policy="prefer"`; `require` / `native` as explicit overrides; **no silent fallback** |
+| PipelinePlan IR | Embed bounded canonical `dtcs.transform-plan/2` JSON + fingerprint; external content-addressed refs deferred |
+| Descriptor shape | Explicit `kind: portable_compiled \| native` plus compiler identity, IR fingerprint, requirements, support summary |
+| Polars packaging | Separate `etlantic.transform_compilers` entry point (`create_transform_compiler`) |
+| Conformance | Private Polars kernel fixtures/tests in 0.12; public `portable_transform_conformance` in **0.14** |
+| Explain scope | Compiler selection, IR fingerprint, requirements, fallback reason in `plan explain` / plan JSON; broader lineage UX deferred |
+
+### 0.12a — Planning integration
+
+Deliver:
 
 - `TransformCapabilities` and requirement extraction from 0.11 IR
-- compiler descriptors and discovery
+- compiler descriptors and discovery (`transform/discovery.py`)
 - implementation policy: `require`, `prefer`, `native`
 - `ImplementationDescriptor` extension for `portable_compiled`
-- plan schema update with IR fingerprint, requirements, compiler identity, and
-  optional embedded IR or stable artifact reference
-- `plan explain` rendering
-- diagnostics for unsupported operations and semantic modes
+- plan schema update with embedded IR, IR fingerprint, requirements, compiler
+  identity, and support-decision summary
+- `plan explain` rendering for the fields above
+- diagnostics for unsupported operations and semantic modes (`PMXFORM3xx`)
 - cache and artifact identity inclusion of IR and compiler fingerprints
-
-Decisions required:
-
-- Embed full IR in `PipelinePlan` versus reference a content-addressed IR
-  artifact. Recommendation: embed bounded canonical IR for portability, with a
-  future external reference for oversized definitions.
-- Whether portable compilation outranks native implementations by default.
-  Recommendation: `prefer`, with an explicit profile policy and no silent
-  fallback.
 
 Exit gate: planning chooses a compiler deterministically and fails closed when
 requirements are unsupported.
 
-## 0.12: Polars vertical slice
+### 0.12b — Polars kernel vertical slice
 
 Deliver:
 
-- Polars compiler claiming an initial set (start with
-  `dtcs:profile/portable-relational-kernel/*`; expand as fixtures land)
-- native `pl.Expr` lowering
+- Polars compiler claiming **only**
+  `dtcs:profile/portable-relational-kernel/1` (plus plan-v2 `/2` metadata
+  compatibility; no extra relational ops)
+- must **not** claim `portable-relational/1`, Rich Portable Analytics, windows,
+  or complex-value families
+- native `pl.Expr` lowering for kernel actions covered by golden fixtures
+  (`tests/fixtures/portable/kernel_normalize.json` and related kernel tests)
 - eager and lazy input support
 - lazy preservation and declared collection boundaries
 - existing input/output validation integration
 - multiple valid, invalid, and side outputs
 - explain metadata and dataframe metrics
 
-Exit gate: a complete example runs without a Polars-specific transformation
-callable and retains `LazyFrame` through compatible regions.
+Exit gate: a kernel-shaped example runs without a Polars-specific
+transformation callable and retains `LazyFrame` through compatible regions;
+unsupported non-kernel requirements fail at plan time.
+
+### Explicitly deferred from 0.12
+
+- full `portable-relational/1` compiler claims on Polars → **0.13**
+- PySpark compiler and two-engine differential → **0.13**
+- public conformance SDK → **0.14**
 
 ## 0.13: PySpark compiler
 
@@ -257,29 +275,37 @@ arrays to DTCS lists and structs to DTCS objects.
 
 ## DTCS and Pipeline Plan integration
 
-ETLantic's `PipelinePlan` should reference or embed the canonical DTCS plan
-without changing its content. An illustrative ETLantic integration block is:
+ETLantic's `PipelinePlan` **embeds** the bounded canonical DTCS plan (plus
+fingerprint) without changing its content. Content-addressed external IR
+references are deferred past 0.12. An illustrative ETLantic integration block
+is:
 
 ```yaml
 implementation:
+  kind: portable_compiled
   portableDefinition:
     protocol: dtcs.transform-plan/2
     authoringProfile: etlantic.transform/1
     fingerprint: sha256:...
     plan: {}
+  compiler:
+    name: etlantic-polars
+    version: "..."
+    protocol: etlantic.transform-compiler/1
 ```
 
-Native implementations remain separate execution metadata. Loading a DTCS
-artifact reconstructs data-only IR and never imports Python definition code.
+Native implementations remain separate execution metadata (`kind: native`).
+Loading a DTCS artifact reconstructs data-only IR and never imports Python
+definition code.
 
 The `PipelinePlan` schema needs:
 
-- implementation kind
+- implementation kind (`portable_compiled` | `native`)
 - portable protocol and fingerprint
+- embedded bounded IR
 - compiler identity and version
 - requirements and support decisions
 - deterministic/nondeterministic classification
-- safe definition representation or content-addressed reference
 
 Plan schema changes require compatibility fixtures and migration guidance.
 
@@ -360,10 +386,14 @@ Before marking the feature available:
 
 ## Definition of done
 
-The first public release is done only when:
+Milestone **0.12** is done when planning selects compilers deterministically and
+Polars executes its advertised **kernel** claim set end-to-end.
+
+The broader portable protocol is stable only when:
 
 1. The normative protocol and Python API agree.
-2. Polars and PySpark independently pass kernel conformance.
+2. Polars and PySpark independently pass shared claims (kernel in 0.12/0.13;
+   relational in 0.13).
 3. Planning explains every compiler and fallback decision.
 4. Unsupported semantics fail before execution.
 5. Security and serialization gates pass.

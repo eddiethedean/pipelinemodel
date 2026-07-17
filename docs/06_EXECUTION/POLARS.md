@@ -26,19 +26,21 @@ pip install 'etlantic-polars[arrow]'  # optional
 ## Portable compiler (planned 0.12)
 
 The Polars compiler is the first planned executable lowering for
-`dtcs.transform-plan/2` (v1 readable). Its initial claim targets
-`dtcs:profile/portable-relational-kernel/1`; later relational claims require
-every associated DTCS fixture. It will:
+`dtcs.transform-plan/2` (v1 readable). In **0.12** it claims **only**
+`dtcs:profile/portable-relational-kernel/1` (plan-v2 `/2` metadata
+compatibility without extra relational ops). Join, union, group, aggregate,
+sort, distinct, and limit **execution** claims land in **0.13**. It will:
 
-- lower portable columns to native `pl.Expr` values
-- lower relational nodes to `DataFrame` and `LazyFrame` operations
+- lower portable kernel columns to native `pl.Expr` values
+- lower kernel relational nodes to `DataFrame` and `LazyFrame` operations
 - preserve `LazyFrame` across compatible portable steps
-- reject unsupported semantics during planning
+- reject unsupported (non-kernel) semantics during planning
 - retain logical expression and output mappings
 - collect only at plan-declared boundaries
 
 It must not fall back to Python row functions or collect data to emulate an
-unsupported operation.
+unsupported operation. Richer authored profiles still need a native
+`@implementation("polars")` (or a later compiler claim) until 0.13–0.15.
 
 ## Example
 

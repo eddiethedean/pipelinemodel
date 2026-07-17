@@ -2,7 +2,9 @@
 
 !!! success "Available in ETLantic 0.11"
     `@Transformation.portable` and `etlantic.transform` emit validated
-    `dtcs.transform-plan/2` IR. Backend compilers remain planned for 0.12+.
+    `dtcs.transform-plan/2` IR. Backend compilers remain planned for 0.12+
+    (0.12 = planning + Polars **kernel** execution; richer profiles need native
+    implementations or 0.13–0.15 compilers).
 
 A portable transformation expresses dataframe logic once and lets ETLantic
 plugins compile it for Polars, Pandas, SQL, PySpark, and future engines.
@@ -331,11 +333,12 @@ Profiles choose an implementation policy:
 | Policy | Meaning |
 |---|---|
 | `require` | Require portable compilation; native fallback is forbidden |
-| `prefer` | Prefer portable compilation; allow an explicit native fallback |
+| `prefer` | Prefer portable compilation; allow an explicit native fallback (default in 0.12) |
 | `native` | Prefer a registered native implementation |
 
 The selected path is recorded in the plan and run report. Fallback is never
-silent.
+silent. Until 0.12 ships, only native implementations execute; portable IR is
+inspectable via `to_transform_plan()` / `portable_fingerprint()`.
 
 ## Planning
 

@@ -35,11 +35,11 @@ already implemented. Compatibility is tracked independently:
 
 | DTCS profile | Spec status | ETLantic authoring (0.11) | ETLantic compilers |
 |---|---|---|---|
-| `dtcs:profile/portable-relational-kernel/1` | Published (2.0) | shipped (authoring) | 0.12+ (Polars initial claim) |
-| `dtcs:profile/portable-relational/1` | Published (2.0) | shipped (authoring) | 0.13 claim graduation |
+| `dtcs:profile/portable-relational-kernel/1` | Published (2.0) | shipped (authoring) | 0.12 Polars kernel claim only |
+| `dtcs:profile/portable-relational/1` | Published (2.0) | shipped (authoring) | 0.13 Polars + PySpark claims |
 | `dtcs:profile/portable-window/1` | Experimental (2.0) | shipped (alias authoring) | 0.15+ two-compiler graduation |
 | `dtcs:profile/portable-complex-types/1` | Experimental (2.0) | shipped (alias authoring) | 0.15+ two-compiler graduation |
-| `dtcs:profile/portable-relational-kernel/2` | Candidate (3.0) | shipped (authoring, plan v2) | 0.12+ as claimed |
+| `dtcs:profile/portable-relational-kernel/2` | Candidate (3.0) | shipped (authoring, plan v2) | 0.12 plan-v2 metadata compatibility (no extra relational ops) |
 | `dtcs:profile/portable-relational/2` | Candidate (3.0) | shipped (authoring) | 0.13+ as claimed |
 | `dtcs:profile/portable-string-advanced/1` | Experimental (3.0) | shipped (authoring) | 0.15+ graduation |
 | `dtcs:profile/portable-conversion/1` | Experimental (3.0) | shipped (authoring) | 0.15+ graduation |

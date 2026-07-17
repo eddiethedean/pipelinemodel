@@ -51,11 +51,12 @@ ETLantic planning and runtime.
 ## Future design
 
 Portable transform compiler conformance
-(`etlantic.testing.portable_transform_conformance`) is planned with the 0.11+
-portable kernel. Do not require it for 0.10 plugins.
+(`etlantic.testing.portable_transform_conformance`) is the **public** suite
+planned for **0.14**. Do not require it for 0.11 plugins. **0.12** uses
+private Polars kernel fixtures only.
 
-The future suite will consume the conformance foundation published by `dtcs`
-0.12 and select fixtures from the exact DTCS profiles a compiler advertises:
+The public suite will consume the conformance foundation published by `dtcs`
+0.13 and select fixtures from the exact DTCS profiles a compiler advertises:
 kernel, relational, experimental window, and experimental complex types.
 
 ## Next Step

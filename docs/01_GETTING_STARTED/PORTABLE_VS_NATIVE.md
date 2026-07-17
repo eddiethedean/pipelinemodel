@@ -33,7 +33,8 @@ def normalize_polars(rows):
 ```
 
 In 0.11 you typically register **both**: portable for the plan artifact,
-native for runtime. Compilers that execute portable plans arrive in 0.12–0.15.
+native for runtime. Compilers that execute portable plans arrive in 0.12–0.15
+(0.12 = Polars kernel only; joins/aggregates and other engines follow).
 
 ## Related
 

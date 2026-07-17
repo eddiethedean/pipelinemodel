@@ -960,48 +960,82 @@ Portable definitions generate validated, inspectable `dtcs.transform-plan/2`
 artifacts for the full published authoring surface, but do not execute through
 an engine plugin.
 
-## 0.12 — Portable Planning and Polars Compiler
+## 0.12 — Portable Planning and Polars Kernel Compiler
 
-**Status: planned — not released in 0.10.**
+**Status: planned — next after shipped 0.11.0.**
 
 **DTCS readiness gate: satisfied upstream.** DTCS 3.0 / `dtcs` 0.13 define
 exact profile, action, function, operator, type, mode, and limit claims.
 Authoring IR already exists from 0.11; this phase adds planning integration and
-the first compiler vertical slice.
+the first Polars **kernel** compiler vertical slice.
 
-### Deliver
+**Locked decisions:** default `portable_transform_policy="prefer"` (no silent
+fallback); embed bounded canonical `dtcs.transform-plan/2` + fingerprint in
+`PipelinePlan` (external IR refs later); explicit
+`kind: portable_compiled | native` descriptors; separate
+`etlantic.transform_compilers` entry point for Polars; private kernel fixtures
+in 0.12 (public conformance suite stays 0.14).
 
-- portable compiler discovery and operation-level capability descriptors
-- profile policy: `require`, `prefer`, or `native`
-- portable/native implementation selection with no silent fallback
-- Pipeline Plan schema fields for implementation kind, IR fingerprint,
-  compiler identity, requirements, and capability decisions
-- `plan explain`, lineage, report, and diagnostic rendering
-- `etlantic-polars` compiler claiming an initial profile set (start with
-  `portable-relational-kernel/*`; expand claims as fixtures land)
-- native `pl.Expr` lowering, eager execution, and `LazyFrame` preservation
-- output-role, validation, ownership, metrics, and materialization integration
-- cache/artifact identities including definition and compiler fingerprints
+Sequenced inside one release:
+
+### 0.12a — Planning integration
+
+- compiler discovery and operation-level `TransformCapabilities` / analyze
+  reports
+- `Profile.portable_transform_policy`: `require`, `prefer`, or `native`
+- portable/native selection with diagnosed fallback only when policy allows
+- plan schema fields: implementation kind, embedded IR, IR fingerprint,
+  compiler identity/version/protocol, profile requirements, support-decision
+  summary
+- `plan explain` (and plan JSON) render compiler selection, IR fingerprint,
+  requirements, and fallback reason
+- fail-closed unsupported ops/modes with expression-path diagnostics
+  (`PMXFORM3xx`)
+- cache/artifact identities include definition and compiler fingerprints
+
+### 0.12b — Polars kernel vertical slice
+
+- `etlantic-polars` compiler via `create_transform_compiler` claiming **only**
+  `dtcs:profile/portable-relational-kernel/1`, plus plan-v2 `/2` metadata
+  compatibility where kernel IR already uses plan/2
+- must **not** claim `portable-relational/1`, Rich Portable Analytics, windows,
+  or complex-value families
+- native `pl.Expr` lowering for kernel actions (project, filter, with_fields,
+  rename/drop, scalar ops covered by kernel golden fixtures)
+- eager and lazy input support; `LazyFrame` preservation until a declared
+  collection boundary
+- output-role, validation, ownership, metrics, and materialization hooks
+  already used by the native Polars dataframe plugin
+
+### Explicitly deferred
+
+- to **0.13:** full `portable-relational/1` (+ `/2`) compiler claims on Polars;
+  PySpark compiler; two-engine differential execution
+- to **0.14:** public `etlantic.testing.portable_transform_conformance`
+- broader lineage/report UX polish beyond the explain fields above
 
 ### Acceptance scenarios
 
-- a pipeline executes a 0.11 portable definition on Polars without a
-  Polars-specific transformation callable;
-- adjacent portable Polars steps remain lazy until a declared boundary;
-- unsupported functions fail during planning with an exact expression path;
-- plans and reports explain compiler selection and any allowed native fallback;
+- a kernel-shaped portable pipeline (project/filter/with_fields/rename/drop/
+  scalar ops) executes on Polars without a Polars-specific transformation
+  callable;
+- adjacent portable Polars kernel steps remain lazy until a declared boundary;
+- requirements outside the advertised kernel claim set fail during planning
+  with an exact expression path;
+- plans and explain output show `portable_compiled`, IR fingerprint, compiler
+  identity, and any allowed native fallback reason;
 - serialized plans contain no compiled closures, Polars objects, parameter
   values, source rows, or resolved secrets.
 
 ### Exit gate
 
 Planning treats portable compilation as a first-class, deterministic
-implementation kind, and Polars provides one complete execution path for its
-advertised claim set.
+implementation kind, and Polars executes end-to-end for its **advertised
+kernel claim set** only.
 
 ## 0.13 — PySpark Compiler and Relational Compiler Claims
 
-**Status: planned — not released in 0.10.**
+**Status: planned — after 0.12.**
 
 **DTCS readiness gate: semantics and authoring published.** Joins, unions,
 grouping, aggregation, sorting, deduplication, and limit determinism are
@@ -1037,7 +1071,7 @@ Polars-specific nor merely a PySpark wrapper.
 
 ## 0.14 — Pandas Compiler and Conformance SDK
 
-**Status: planned — not released in 0.10.**
+**Status: planned — after 0.13.**
 
 **DTCS readiness gate: foundation published upstream.** `dtcs` 0.13 publishes
 validation and conformance support. ETLantic must expose a public compiler
@@ -1072,7 +1106,7 @@ third-party engines.
 
 ## 0.15 — Safe SQL Lowering and Profile Graduation
 
-**Status: planned — not released in 0.10.**
+**Status: planned — after 0.14.**
 
 **DTCS readiness gate: authoring complete upstream of compilers.** Rich
 Portable Analytics and related families are already expressible in 0.11 IR.

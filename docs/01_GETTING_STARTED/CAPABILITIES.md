@@ -56,7 +56,7 @@ ETLantic 0.11.0 is an alpha release. This page is the shortest answer to
 | FastAPI control plane | Continues in 1.1 |
 | Full SparkForge engine retirement inside SparkForge | Progressive path (see migration guide) |
 | Stable 1.0 compatibility guarantees | Not yet |
-| Portable Polars compiler | Planned for 0.12 |
+| Portable Polars kernel compiler (planning + kernel execution) | Planned for 0.12 |
 | Portable PySpark compiler and relational compiler claims | Planned for 0.13 |
 | Portable Pandas compiler and conformance SDK | Planned for 0.14 |
 | Portable SQL lowering and profile graduation | Planned for 0.15+ |

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation
+
+- Refined roadmap 0.12: planning (0.12a) + Polars **kernel-only** compiler
+  (0.12b); locked prefer policy, embedded IR, and 0.13/0.14 deferrals
+
 ## [0.11.0] - 2026-07-17
 
 ### Added

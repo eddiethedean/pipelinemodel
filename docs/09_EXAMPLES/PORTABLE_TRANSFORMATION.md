@@ -2,12 +2,14 @@
 
 !!! success "**Status: Available in ETLantic 0.11** (authoring; compilers 0.12+)"
     This example shows `@Transformation.portable` authoring to
-    `dtcs.transform-plan/2`. Compiler execution remains planned for 0.12+.
+    `dtcs.transform-plan/2`. Compiler execution remains planned for 0.12+
+    (0.12 = Polars **kernel** only; relational multi-engine claims in 0.13).
 
 This example defines one transformation with `@Transformation.portable` and
 inspects the emitted `dtcs.transform-plan/2` (fingerprint). Execution still
 requires a native `@implementation(...)` until portable compilers ship in
-0.12–0.15.
+0.12–0.15. The definition below is **kernel-shaped** (filter/project/scalars)
+so it matches the intended 0.12 Polars claim set once compilers land.
 
 ```python
 from etlantic import (
@@ -88,15 +90,18 @@ Keep a native `@NormalizeCustomers.implementation("local")` (or another engine)
 registered when you need to **run** the pipeline. Portable authoring alone does
 not execute on Polars, Pandas, SQL, or Spark in 0.11.
 
-## Profile selection
+## Profile selection (planned 0.12+)
 
-The pipeline does not change across engines:
+The pipeline definition does not change across engines. Once compilers ship,
+default policy is `prefer` (portable when covered; diagnosed native fallback
+otherwise). `require` is appropriate for production evaluation of portable
+paths:
 
 ```python
 polars_profile = Profile(
     name="polars-local",
     dataframe_engine="polars",
-    portable_transform_policy="require",
+    portable_transform_policy="prefer",  # or "require" for fail-closed portable
 )
 
 spark_profile = Profile(
@@ -106,8 +111,11 @@ spark_profile = Profile(
 )
 ```
 
-Both profiles select a plugin compiler for the same `dtcs.transform-plan/2`
-(v1 readable) generated through the `etlantic.transform/1` authoring profile.
+In **0.12**, only the Polars kernel compiler is expected to execute this
+example's claim set. PySpark portable execution for the same IR is **0.13**.
+Both future profiles select a plugin compiler for the same
+`dtcs.transform-plan/2` (v1 readable) generated through the
+`etlantic.transform/1` authoring profile.
 
 ## Expected plan evidence
 
