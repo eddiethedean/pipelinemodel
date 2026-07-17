@@ -17,7 +17,10 @@ venv/
 .mypy_cache/
 .coverage
 htmlcov/
+# macOS
 .DS_Store
+**/.DS_Store
+
 examples/_file_storage_out/
 examples/_generated_*.py
 tmp_cli_contracts/
