@@ -5,9 +5,10 @@ Welcome to ETLantic!
 > **Project status:** 0.7.0 provides the typed modeling kernel, contract
 > interoperability (ODCS/DTCS/DPCS), multi-phase validation, profiles, an
 > immutable secret-free `PipelinePlan`, a local async runtime with run
-> reports, Polars/Pandas dataframe plugins, and the `etlantic-sql` SQL
-> plugin. Examples that require Spark or external orchestrators describe later
-> milestones. See
+> reports, Polars/Pandas dataframe plugins, the `etlantic-sql` SQL plugin, and
+> the `etlantic-pyspark` Spark plugin (batch). Structured Streaming is
+> experimental. Examples that require Airflow or other orchestrators describe
+> later milestones. See
 > [Documentation Status](../02_FOUNDATIONS/DOCUMENTATION_STATUS.md).
 
 This section is designed to get you productive as quickly as possible.
@@ -24,7 +25,7 @@ By the end of this guide you will be able to:
 -   Wire transformations into pipelines
 -   Validate your pipeline before execution
 -   Generate portable contract specifications
--   Run pipelines locally (and optionally with Polars/Pandas/SQL plugins)
+-   Run pipelines locally (and optionally with Polars/Pandas/SQL/PySpark plugins)
 -   Know which chapters are shipped vs future design
 
 ## Prerequisites
@@ -62,9 +63,9 @@ You describe *what* the pipeline is:
 
 ETLantic validates and plans the pipeline.
 
-ETLantic 0.6 can execute registered Python implementations with its local
-runtime and optional Polars/Pandas/SQL plugins. Later milestones add Spark and
-orchestration systems.
+ETLantic 0.7 can execute registered Python implementations with its local
+runtime and optional Polars/Pandas/SQL/PySpark plugins. Later milestones add
+orchestrator compilation (Airflow and peers).
 
 ``` text
 Python Classes
@@ -79,8 +80,8 @@ Pipeline Validation
 Execution Planning
       │
       ▼
-Local Python Runtime + Dataframe (0.5) + SQL (0.6) Plugins
-Future Spark / Orchestrators
+Local + Dataframe (0.5) + SQL (0.6) + PySpark (0.7)
+Future Orchestrators (0.8+)
 ```
 
 ## A Preview

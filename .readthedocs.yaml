@@ -4,12 +4,9 @@ build:
   os: ubuntu-24.04
   tools:
     python: "3.11"
-
-mkdocs:
-  configuration: mkdocs.yml
-
-python:
-  install:
-    - requirements: docs/requirements.txt
-    - method: pip
-      path: .
+  commands:
+    - pip install --upgrade pip setuptools wheel
+    - pip install -r docs/requirements.txt
+    - pip install .
+    # Suppress Material for MkDocs advisory about unreleased MkDocs 2.0.
+    - NO_MKDOCS_2_WARNING=1 mkdocs build --strict --site-dir $READTHEDOCS_OUTPUT/html

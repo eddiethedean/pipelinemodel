@@ -1,6 +1,6 @@
 # Local Python
 
-> **Status: Available in ETLantic 0.6.0.** Process-local execution of a
+> **Status: Available in ETLantic 0.7.0.** Process-local execution of a
 > `PipelinePlan` with registered Python and dataframe implementations.
 
 The local runtime executes validated **Pipeline Plans** in-process. It is the

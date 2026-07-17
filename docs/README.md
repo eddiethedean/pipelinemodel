@@ -29,8 +29,10 @@ as executable interface declarations—to data engineering.
 **0.7.0** ships validation, profiles, an immutable secret-free
 `PipelinePlan`, local Python execution, runtime secret resolution, run reports,
 memory/callable/JSON/CSV storage, a versioned dataframe protocol with Polars
-and Pandas plugins, and a versioned SQL protocol with the `etlantic-sql`
-PostgreSQL reference plugin.
+and Pandas plugins, a versioned SQL protocol with the `etlantic-sql`
+PostgreSQL reference plugin, and a versioned Spark protocol with the
+`etlantic-pyspark` reference plugin (local provider). Structured Streaming APIs
+are experimental. Airflow compilation is not shipped.
 
 Many chapters still describe the intended 1.0 product. Examples beyond the
 shipped surface are design examples, not a promise that every illustrated API
@@ -86,10 +88,11 @@ From these declarations, ETLantic can derive:
 - A deterministic, secret-free `PipelinePlan` (0.3.0)
 - A local Python runtime and structured run report (0.4.0)
 - Optional Polars and Pandas dataframe plugins (0.5.0)
-- Optional SQL execution via `etlantic-sql` (0.7.0)
+- Optional SQL execution via `etlantic-sql` (0.6.0)
+- Optional PySpark execution via `etlantic-pyspark` (0.7.0)
 
 Memory, callable, JSON, CSV, and no-write storage are included in core.
-Spark and external orchestration plugins arrive later.
+External orchestration plugins (Airflow and peers) arrive later.
 
 The transformation implementation remains separate:
 
@@ -107,8 +110,9 @@ def normalize_customers_sql(customers):
     ...
 ```
 
-Install `etlantic-polars` / `etlantic-pandas` / `etlantic-sql` for
-engines; later milestones may add PySpark, remote, or other implementations.
+Install `etlantic-polars` / `etlantic-pandas` / `etlantic-sql` /
+`etlantic-pyspark` for engines; later milestones may add remote Spark
+providers or orchestrator compilers.
 
 ## The Architecture in One View
 
@@ -236,7 +240,7 @@ These pages describe intended 1.0 workflows. They are **not** current API guides
 | [Transformations](04_TRANSFORMATIONS/README.md) | Define typed transformation interfaces |
 | [Pipelines](05_PIPELINES/README.md) | Compose transformations into portable graphs |
 | [Execution](06_EXECUTION/README.md) | Local runtime, secrets, dataframe and SQL engines |
-| [Future Design](06_EXECUTION/PLUGINS.md) | Spark, Airflow, and other unshipped plugins |
+| [Future Design](06_EXECUTION/PLUGINS.md) | Airflow and other unshipped orchestrators |
 | [Visualization](08_VISUALIZATION/README.md) | Mermaid today; Graphviz/HTML are future |
 | [Examples](09_EXAMPLES/README.md) | Runnable pointers + design studies |
 | [Reference](10_REFERENCE/README.md) | CLI, API, compatibility |

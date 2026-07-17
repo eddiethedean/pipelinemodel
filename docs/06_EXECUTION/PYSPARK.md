@@ -1,5 +1,9 @@
 # PySpark
 
+**Status: shipped in 0.7.0** via `etlantic-pyspark` (local Spark provider).
+Managed cluster providers (Databricks/EMR/Connect) remain future adapters.
+Structured Streaming APIs are **experimental**.
+
 The PySpark execution backend enables ETLantic to execute eligible
 transformations on Apache Spark using the same validated Pipeline Plans used by
 every other execution backend.

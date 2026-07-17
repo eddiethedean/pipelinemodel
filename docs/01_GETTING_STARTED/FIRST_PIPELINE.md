@@ -1,6 +1,6 @@
 # Your First Pipeline
 
-> **Status: Available in ETLantic 0.6.0.** This tutorial uses the local
+> **Status: Available in ETLantic 0.7.0.** This tutorial uses the local
 > Python runtime and in-memory storage. It does not require a dataframe or SQL
 > plugin.
 
@@ -144,7 +144,7 @@ async application.
 This tutorial stays on the local Python runtime with memory, callable, JSON,
 CSV, and no-write storage. Optional Polars and Pandas dataframe plugins are
 available in 0.5 via `etlantic-polars` / `etlantic-pandas`. SQL is available
-in 0.6 via `etlantic-sql`. Spark and external orchestrators remain future
+in 0.6 via `etlantic-sql`, and Spark batch in 0.7 via `etlantic-pyspark`. External orchestrators remain future
 plugin designs.
 
 Continue with [Project Structure](PROJECT_STRUCTURE.md) or run the complete

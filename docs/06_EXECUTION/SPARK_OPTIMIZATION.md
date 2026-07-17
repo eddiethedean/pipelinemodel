@@ -1,5 +1,8 @@
 # Spark Optimization
 
+**Status: shipped in 0.7.0** for the local reference path. Deep cluster/AQE
+tuning guides beyond the local provider remain aspirational.
+
 Spark optimization in ETLantic is the process of improving the physical
 execution of Spark-capable pipeline regions without changing the logical
 semantics of the pipeline.

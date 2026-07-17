@@ -116,12 +116,12 @@ your project:
 6. [Local Python](LOCAL_PYTHON.md)
 7. [Dataframe Plugins](DATAFRAME_PLUGINS.md)
 8. [SQL](SQL.md)
-9. [Plugins](PLUGINS.md) (future design overview)
-10. [Orchestration Plugins](ORCHESTRATION_PLUGINS.md)
-11. [Storage Plugins](STORAGE_PLUGINS.md)
-12. [Resource Providers](RESOURCE_PLUGINS.md)
-13. [Compilation](COMPILATION.md)
-14. [PySpark](PYSPARK.md)
+9. [PySpark](PYSPARK.md)
+10. [Plugins](PLUGINS.md) (future design overview)
+11. [Orchestration Plugins](ORCHESTRATION_PLUGINS.md)
+12. [Storage Plugins](STORAGE_PLUGINS.md)
+13. [Resource Providers](RESOURCE_PLUGINS.md)
+14. [Compilation](COMPILATION.md)
 
 ## Key Principles
 

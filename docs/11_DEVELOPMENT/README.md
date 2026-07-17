@@ -12,6 +12,7 @@ released.
 - [Release Process](RELEASE_PROCESS.md)
 - [Migration 0.4 → 0.5](MIGRATION_0_4_TO_0_5.md)
 - [Migration 0.5 → 0.6](MIGRATION_0_5_TO_0_6.md)
+- [Migration 0.6 → 0.7](MIGRATION_0_6_TO_0_7.md)
 - [Roadmap](ROADMAP.md)
 - [Dependency Strategy](DEPENDENCY_STRATEGY.md)
 

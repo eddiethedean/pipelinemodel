@@ -24,9 +24,10 @@ Airflow or other orchestration plugins.
 No.
 
 ETLantic does not implement a dataframe engine, database clients,
-scheduling, or distributed execution. It includes an in-process local runtime
-with memory, callable, JSON, CSV, and no-write storage, plus optional Polars,
-Pandas, and SQL plugins that execute through versioned protocols.
+scheduling, or distributed cluster management. It includes an in-process local
+runtime with memory, callable, JSON, CSV, and no-write storage, plus optional
+Polars, Pandas, SQL, and PySpark plugins that execute through versioned
+protocols.
 
 Instead, it coordinates existing tools through a common typed model.
 
@@ -48,7 +49,7 @@ Its focus is:
 
 ETLantic's architecture is designed so future plugins can consume the same
 plans without changing pipeline definitions. External orchestrator compilation
-is not included in 0.6.
+is not included in 0.7 (planned for 0.8).
 
 ------------------------------------------------------------------------
 
@@ -111,7 +112,8 @@ Examples include:
 - local Python
 - Polars / Pandas (optional plugins)
 - SQL (`etlantic-sql`)
-- future Spark or Airflow backends
+- PySpark (`etlantic-pyspark`)
+- future Airflow / orchestrator compilers
 
 Business logic remains unchanged.
 
@@ -125,8 +127,8 @@ Install `etlantic-polars` or `etlantic-pandas`, register
 `@Transformation.implementation("polars")` / `"pandas"`, and set
 `Profile.dataframe_engine` accordingly. Prefer Polars when you need lazy
 preservation; use Pandas when you need the Pandas ecosystem. SQL is available
-via `etlantic-sql` and `Profile.sql_engine="sql"`. Spark backends are a later
-milestone.
+via `etlantic-sql` and `Profile.sql_engine="sql"`. Spark is available via
+`etlantic-pyspark` and `Profile.spark_engine="pyspark"`.
 
 ------------------------------------------------------------------------
 
@@ -183,7 +185,8 @@ For example, the same transformation contract may have:
 - a Polars implementation
 - a Pandas implementation
 - a SQL implementation (`@….implementation("sql")` with `Profile.sql_engine`)
-- later, a Spark implementation (future milestone)
+- a PySpark implementation (`@….implementation("pyspark")` with
+  `Profile.spark_engine`)
 
 The logical transformation remains unchanged.
 
@@ -203,7 +206,7 @@ Cloud-specific integrations are implemented through plugins.
 
 Yes.
 
-ETLantic 0.6 generates or exposes:
+ETLantic 0.7 generates or exposes:
 
 -   contract documentation
 -   pipeline documentation

@@ -1,6 +1,6 @@
 # Mermaid
 
-> **Status: Available in ETLantic 0.6.0** for logical pipeline graphs via
+> **Status: Available in ETLantic 0.7.0** for logical pipeline graphs via
 > `Pipeline.to_mermaid()`. Graphviz/HTML exporters and plan-level Mermaid APIs
 > are not shipped.
 

@@ -23,7 +23,9 @@ manager.
 | Env + mounted-file secrets | Yes |
 | Polars / Pandas plugins | Yes (separate packages) |
 | SQL plugin (`etlantic-sql`) | Yes (PostgreSQL reference) |
-| Spark / Airflow | No — future design |
+| PySpark plugin (`etlantic-pyspark`) | Yes (local provider; batch production path) |
+| Structured Streaming | Experimental |
+| Airflow / orchestrator compilation | No — future design (0.8) |
 | Multi-tenant durable orchestration | No |
 | Formal SLA / support response times | No |
 
@@ -32,6 +34,7 @@ manager.
 - Plans never contain resolved secrets
 - SQL plugins use structured compilation with identifier/parameter safety;
   untrusted raw SQL is out of scope
+- Spark session credentials resolve at acquire time and never embed in plans
 - Threat model documents many controls as **Gap** (plugin allowlists, DoS
   budgets, stronger isolation)—read
   [Security](../02_FOUNDATIONS/SECURITY.md) and the repository
@@ -40,7 +43,8 @@ manager.
 
 ## What not to bet on yet
 
-- Copying long Spark/Airflow “design study” tutorials into production
+- Copying long Airflow “design study” tutorials into production
+- Treating Structured Streaming APIs as stable (they are experimental in 0.7)
 - AWS Secrets Manager / Vault / keyring configuration from older docs
 - Process-local reports as an audit system of record
 - Stable 1.0 compatibility guarantees
@@ -52,8 +56,9 @@ manager.
 3. Optional: `examples/dataframe_parity.py` with Polars or Pandas
 4. Optional: `examples/sql_to_sql.py` (and other `examples/sql_*.py`) with
    `etlantic-sql`
-5. [Migration 0.5 → 0.6](../11_DEVELOPMENT/MIGRATION_0_5_TO_0_6.md) if upgrading
-6. [Roadmap](../11_DEVELOPMENT/ROADMAP.md) for sequencing
+5. Optional: `examples/pyspark_local.py` with `etlantic-pyspark`
+6. [Migration 0.6 → 0.7](../11_DEVELOPMENT/MIGRATION_0_6_TO_0_7.md) if upgrading
+7. [Roadmap](../11_DEVELOPMENT/ROADMAP.md) for sequencing
 
 ## Support channel
 

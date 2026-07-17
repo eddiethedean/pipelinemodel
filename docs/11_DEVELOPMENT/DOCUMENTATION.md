@@ -6,7 +6,8 @@ Documentation is part of the public API.
 
 Every page describing product behavior must be one of:
 
-- **Available in 0.6** (or an earlier shipped milestone such as 0.5)
+- **Available in 0.7** (or an earlier shipped milestone such as 0.5/0.6)
+- **Experimental**
 - **Partially available**
 - **Future design**
 - **Normative specification**
@@ -19,8 +20,11 @@ Future design must not be described as a complete or runnable current example.
 ```bash
 uv run pytest -q
 uv run python scripts/check_docs.py
-uv run mkdocs build --strict
+NO_MKDOCS_2_WARNING=1 uv run mkdocs build --strict
 ```
+
+Set `NO_MKDOCS_2_WARNING=1` to suppress Material for MkDocs' advisory about
+unreleased MkDocs 2.0 (unrelated to this project's content).
 
 The example test imports and runs `examples/quickstart.py`. Documentation CI
 also checks release-version consistency and rejects future-backend claims in

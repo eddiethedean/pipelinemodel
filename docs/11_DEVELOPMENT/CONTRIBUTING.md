@@ -39,7 +39,7 @@ uv run ruff check .
 uv run ruff format --check .
 uv run python scripts/check_docs.py
 uv run python examples/quickstart.py
-uv run mkdocs build --strict
+NO_MKDOCS_2_WARNING=1 uv run mkdocs build --strict
 ```
 
 `uv sync` installs runtime dependencies, the editable package, and the `dev`
@@ -120,7 +120,7 @@ uv run pytest
 uv run ruff check .
 uv run ruff format --check .
 uv run python scripts/check_docs.py
-uv run mkdocs build --strict
+NO_MKDOCS_2_WARNING=1 uv run mkdocs build --strict
 ```
 
 For dataframe plugin work:

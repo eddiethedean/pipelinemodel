@@ -1,6 +1,6 @@
 # Python API Reference
 
-> **Status: Available in ETLantic 0.6.0.** Signatures and docstrings below
+> **Status: Available in ETLantic 0.7.0.** Signatures and docstrings below
 > are generated from the package source.
 
 The package root is the supported convenience import surface for common

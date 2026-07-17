@@ -1,5 +1,8 @@
 # PySpark Plugin
 
+**Status: shipped in 0.7.0** (`etlantic.spark/1`). The reference plugin is
+`etlantic-pyspark`.
+
 A **PySpark Plugin** implements the ETLantic PySpark Plugin API for Apache
 Spark execution environments.
 

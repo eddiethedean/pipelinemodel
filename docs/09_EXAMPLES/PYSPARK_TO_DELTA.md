@@ -1,6 +1,6 @@
 # PySpark to Delta
 
-!!! warning "Future design—not a ETLantic 0.6 API guide"
+!!! warning "Design study—beyond the shipped 0.7 batch Spark surface"
     This page is a design study. It may describe packages, commands, or
     interfaces that are not installable yet. Use Current Capabilities, the
     runnable examples under `examples/`, the API reference, and the CLI

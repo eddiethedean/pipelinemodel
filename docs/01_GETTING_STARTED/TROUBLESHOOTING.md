@@ -27,7 +27,7 @@ If pip still resolves an older release, you may be on a mirror or pin. Check
 [PyPI](https://pypi.org/project/etlantic/)) and clear conflicting constraints
 in your environment.
 
-## `pip install etlantic-polars` / `etlantic-pandas` / `etlantic-sql` fails
+## `pip install etlantic-polars` / `etlantic-pandas` / `etlantic-sql` / `etlantic-pyspark` fails
 
 Those packages ship with ETLantic 0.7.0. They are separate distributions:
 
@@ -35,17 +35,18 @@ Those packages ship with ETLantic 0.7.0. They are separate distributions:
 python -m pip install --upgrade etlantic-polars
 python -m pip install --upgrade etlantic-pandas
 python -m pip install --upgrade etlantic-sql
+python -m pip install --upgrade etlantic-pyspark
 ```
 
 If pip reports no matching distribution:
 
 1. Confirm core is already at 0.7.0 or newer.
 2. Confirm Python is 3.11+.
-3. Confirm the package name uses a hyphen (`etlantic-polars`), not an
+3. Confirm the package name uses a hyphen (`etlantic-pyspark`), not an
    underscore.
 
 Until 0.7.0 is on PyPI, install from a git checkout with
-`uv sync --group dataframes` (and install `etlantic-sql` from the workspace)
+`uv sync --group dataframes` / `--group sql` / `--group pyspark`
 instead.
 
 ## A transformation has no implementation
@@ -80,11 +81,12 @@ runtime examples. Do not silently switch profile names within one workflow.
 
 ## A Pandas, Polars, SQL, Spark, or Airflow example fails
 
-Install the matching plugin for dataframe engines
-(`etlantic-polars` / `etlantic-pandas`) and set `Profile.dataframe_engine`,
-or install `etlantic-sql` and set `Profile.sql_engine="sql"`. Spark and
-Airflow remain design material for later milestones. Start with the runnable
-examples under `examples/` (including `examples/sql_to_sql.py`).
+Install the matching plugin (`etlantic-polars`, `etlantic-pandas`,
+`etlantic-sql`, or `etlantic-pyspark`) and set the corresponding profile engine
+(`dataframe_engine`, `sql_engine`, or `spark_engine`). Airflow compilation
+remains design material for later milestones. Start with the runnable
+examples under `examples/` (including `examples/pyspark_local.py` and
+`examples/sql_to_sql.py`).
 
 ## Commands in a design page do not exist
 

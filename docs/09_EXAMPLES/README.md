@@ -1,6 +1,6 @@
 # Examples
 
-## Runnable now (0.6)
+## Runnable now (0.7)
 
 These scripts live in the repository `examples/` directory and are exercised by
 tests:
@@ -44,18 +44,29 @@ Defaults to in-memory SQLite for demos; set `ETLANTIC_SQL_URL` for
 PostgreSQL. Use `Profile(sql_engine="sql")` and
 `@….implementation("sql")`.
 
+### Local PySpark
+
+```bash
+# requires etlantic-pyspark
+python examples/pyspark_local.py
+```
+
+Use `Profile(spark_engine="pyspark")` and
+`@….implementation("pyspark")`.
+
 ## Design studies (not installable)
 
 The remaining pages in this section explore intended integrations. Each page
 opens with a Future design warning. They may contain APIs, packages, or
 commands that do not exist yet (or that go beyond the shipped surface).
 
-| Topic | 0.6 status |
+| Topic | 0.7 status |
 |---|---|
 | CSV and JSON through built-in storage | Use `examples/file_storage.py` |
 | Pandas and Polars pipelines | Use `examples/dataframe_parity.py` |
 | SQL execution and pushdown | Use `examples/sql_*.py` (+ SQL docs) |
-| PySpark and streaming | Future plugin design |
+| PySpark batch | Use `examples/pyspark_local.py` (+ PySpark docs) |
+| Structured Streaming | Experimental foundation |
 | Airflow compilation | Future plugin design |
 | Generated Graphviz/HTML documentation | Future design |
 

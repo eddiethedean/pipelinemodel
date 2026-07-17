@@ -1,10 +1,12 @@
 # Documentation Status and Conventions
 
-ETLantic 0.6 implements the typed modeling kernel, contract interoperability,
+ETLantic 0.7 implements the typed modeling kernel, contract interoperability,
 Validation / Pipeline Plan IR, the local runtime / operational model,
-dataframe execution (Polars reference + Pandas compatibility), and SQL-native
-execution (`etlantic-sql`). Much of the documentation still describes the
-intended 1.0 product. It serves three related purposes:
+dataframe execution (Polars reference + Pandas compatibility), SQL-native
+execution (`etlantic-sql`), and distributed Spark batch execution
+(`etlantic-pyspark`). Structured Streaming APIs are experimental. Much of the
+documentation still describes the intended 1.0 product. It serves three related
+purposes:
 
 1. Explain the product vision and user experience.
 2. Specify the intended 1.0 architecture and public interfaces.
@@ -27,18 +29,20 @@ Public pages use these visible statuses:
 
 | Page status | Meaning |
 |---|---|
-| Available in 0.6 | Tested against the current package |
+| Available in 0.7 | Tested against the current package |
+| Shipped in 0.x | Available since that milestone (still current) |
+| Experimental | Public APIs that may change without a major version bump |
 | Partially available | Shipped and future behavior are explicitly separated |
 | Future design | Not a current API or installation guide |
 | Normative specification | Contract requirements, not package behavior |
 | Internal project plan | Maintainer sequencing and implementation notes |
 
-Unless a chapter says otherwise, user-guide code beyond the shipped 0.6
+Unless a chapter says otherwise, user-guide code beyond the shipped 0.7
 modeling, interchange, validation, planning, local runtime, **dataframe
-plugin**, and **SQL plugin** surface should be read as an **accepted design
-example**, not as evidence of a published package API. The 0.6 surface is
-defined by the package, [API reference](../10_REFERENCE/API_REFERENCE.md),
-tests, and changelog.
+plugin**, **SQL plugin**, and **PySpark batch** surface should be read as an
+**accepted design example**, not as evidence of a published package API. The
+0.7 surface is defined by the package,
+[API reference](../10_REFERENCE/API_REFERENCE.md), tests, and changelog.
 
 **Shipped in 0.5:** dataframe execution protocol, `etlantic-polars`, and
 `etlantic-pandas` (see Execution → Polars / Pandas and the Dataframe Plugin
@@ -48,9 +52,15 @@ protocol page).
 `etlantic-sql`, `Profile.sql_engine`, and SQL→SQL fusion without intermediate
 Python fetch (see Execution → SQL and the SQL Plugin protocol page).
 
-**Still accepted design until later milestones:** Spark, external
-orchestration, Graphviz/HTML visualization, and non-dataframe / non-SQL Plugin
-SDK surfaces.
+**Shipped in 0.7:** Spark execution protocol (`etlantic.spark/1`),
+`etlantic-pyspark`, local Spark provider, lazy Spark regions, Delta-compatible
+write intents, and `Profile.spark_engine` (see Execution → PySpark).
+
+**Experimental in 0.7:** Structured Streaming foundation APIs.
+
+**Still accepted design until later milestones:** Airflow / external
+orchestration, managed Spark providers (Databricks/EMR/Connect),
+Graphviz/HTML visualization, and remaining Plugin SDK surfaces.
 
 ## Normative Authority
 

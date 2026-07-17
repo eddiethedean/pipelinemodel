@@ -1,5 +1,8 @@
 # PySpark Execution
 
+**Status: shipped in 0.7.0** for batch Spark via `etlantic-pyspark`. Streaming
+callouts on this page are **experimental**.
+
 The PySpark Execution subsystem defines how ETLantic executes validated
 Pipeline Plans on Apache Spark.
 

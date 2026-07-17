@@ -3,8 +3,9 @@
 ETLantic 0.7.0 provides the typed modeling kernel, contract interoperability
 (ODCS/DTCS/DPCS), multi-phase validation, profiles, deterministic planning,
 a local runtime that executes plans with Python callables, in-memory
-artifacts, and stdlib JSON/CSV bindings, plus optional Polars, Pandas, and
-SQL plugins. Spark/orchestration plugins arrive in later milestones.
+artifacts, and stdlib JSON/CSV bindings, plus optional Polars, Pandas, SQL,
+and PySpark plugins. Airflow and other orchestrator compilation arrive in
+later milestones. Structured Streaming APIs are experimental.
 
 ## Requirements
 
@@ -33,20 +34,22 @@ Verify the installed version matches these docs (0.7.0 or newer):
 python -c "import etlantic; print(etlantic.__version__)"
 ```
 
-### Optional dataframe and SQL plugins
+### Optional engine plugins
 
-Core never installs Polars, Pandas, or database drivers. Add engines
+Core never installs Polars, Pandas, database drivers, or PySpark. Add engines
 explicitly:
 
 ```bash
 pip install etlantic-polars    # Polars reference plugin
 pip install etlantic-pandas    # Pandas compatibility plugin
 pip install etlantic-sql       # PostgreSQL SQL reference plugin
+pip install etlantic-pyspark   # PySpark reference plugin + local provider
 # or extras:
 pip install 'etlantic[polars]'
 pip install 'etlantic[pandas]'
 pip install 'etlantic[dataframes]'
 pip install 'etlantic[sql]'
+pip install 'etlantic[pyspark]'
 ```
 
 For SQL, set a connection URL (PostgreSQL is the reference; SQLite is demo-only):
@@ -57,11 +60,15 @@ export ETLANTIC_SQL_URL=postgresql+psycopg://user:pass@localhost:5432/etlantic
 export ETLANTIC_SQL_URL=sqlite+pysqlite:///:memory:
 ```
 
-Select SQL with `Profile(sql_engine="sql")`. The 0.6 reference plugin does not
+Select SQL with `Profile(sql_engine="sql")`. The SQL reference plugin does not
 implement `MERGE` (`sql_merge=False`).
 
-Spark and Airflow plugins are not part of 0.6. Do not install undocumented
-extras expecting those backends.
+Select Spark with `Profile(spark_engine="pyspark")` and
+`@Transformation.implementation("pyspark")`. See
+[Migration 0.6 → 0.7](../11_DEVELOPMENT/MIGRATION_0_6_TO_0_7.md).
+
+Airflow and other orchestrator compilers are not part of 0.7. Do not install
+undocumented extras expecting those backends.
 
 ## Upgrade
 
@@ -73,7 +80,7 @@ uv lock --upgrade-package etlantic
 
 Review the
 [changelog](https://github.com/eddiethedean/etlantic/blob/main/CHANGELOG.md)
-and [Migration 0.5 → 0.6](../11_DEVELOPMENT/MIGRATION_0_5_TO_0_6.md) before
+and [Migration 0.6 → 0.7](../11_DEVELOPMENT/MIGRATION_0_6_TO_0_7.md) before
 upgrading between 0.x releases because breaking changes remain possible.
 
 ## Development Setup
@@ -98,12 +105,14 @@ group (pytest, ruff, mkdocs). The lockfile `uv.lock` pins exact versions.
 |---|---|
 | `uv sync` | Create/update `.venv` from `uv.lock` |
 | `uv sync --group dataframes` | Also install Polars and Pandas plugins |
+| `uv sync --group pyspark` | Also install the PySpark plugin |
+| `uv sync --group sql` | Also install the SQL plugin |
 | `uv lock` | Refresh the lockfile after dependency changes |
 | `uv run pytest` | Run tests |
 | `uv run ruff check .` | Lint |
 | `uv run ruff format .` | Format |
 | `uv run python scripts/check_docs.py` | Docs consistency gate |
-| `uv run mkdocs build --strict` | Build the documentation site |
+| `NO_MKDOCS_2_WARNING=1 uv run mkdocs build --strict` | Build the documentation site |
 
 ## Repository Layout
 
@@ -115,6 +124,7 @@ src/etlantic/
 packages/etlantic-polars/
 packages/etlantic-pandas/
 packages/etlantic-sql/
+packages/etlantic-pyspark/
 tests/
 examples/
 docs/

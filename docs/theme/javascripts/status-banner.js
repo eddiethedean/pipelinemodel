@@ -1,28 +1,32 @@
 document.addEventListener("DOMContentLoaded", () => {
   const path = window.location.pathname;
+  // Shipped in 0.5: DATAFRAME_PLUGINS, POLARS, PANDAS.
+  // Shipped in 0.6: SQL, SQL_EXECUTION, SQL_PUSHDOWN.
+  // Shipped in 0.7: PYSPARK, PYSPARK_EXECUTION, SPARK_OPTIMIZATION (batch).
+  // Experimental in 0.7: STRUCTURED_STREAMING (separate experimental banner).
   const futureExecutionPages = [
     "PLUGINS",
     "ORCHESTRATION_PLUGINS",
     "STORAGE_PLUGINS",
     "RESOURCE_PLUGINS",
-    "PYSPARK",
-    "PYSPARK_EXECUTION",
-    "SPARK_OPTIMIZATION",
-    "STRUCTURED_STREAMING",
     "AIRFLOW",
     "COMPILATION",
   ];
-  // Shipped in 0.5: DATAFRAME_PLUGINS, POLARS, PANDAS.
-  // Shipped in 0.6: SQL, SQL_EXECUTION, SQL_PUSHDOWN stay out of this list.
+  const experimentalExecutionPages = ["STRUCTURED_STREAMING"];
   const isFutureExecution = futureExecutionPages.some((name) =>
     path.includes(`/06_EXECUTION/${name}/`)
   );
-  // Dataframe and SQL plugin protocols are shipped; other Plugin SDK pages are future.
+  const isExperimentalExecution = experimentalExecutionPages.some((name) =>
+    path.includes(`/06_EXECUTION/${name}/`)
+  );
+  // Dataframe, SQL, and Spark plugin protocols are shipped; other Plugin SDK pages are future.
   const isPluginSdk =
     path.includes("/07_PLUGIN_SDK/") &&
     !path.includes("/07_PLUGIN_SDK/DATAFRAME_PLUGIN/") &&
     !path.includes("/07_PLUGIN_SDK/SQL_PLUGIN/") &&
-    !path.includes("/07_PLUGIN_SDK/SQL_DIALECT/");
+    !path.includes("/07_PLUGIN_SDK/SQL_DIALECT/") &&
+    !path.includes("/07_PLUGIN_SDK/PYSPARK_PLUGIN/") &&
+    !path.includes("/07_PLUGIN_SDK/SPARK_PROVIDER/");
   const isDesignExample =
     path.includes("/09_EXAMPLES/") && !path.endsWith("/09_EXAMPLES/");
   const isFutureVisualization =
@@ -34,6 +38,20 @@ document.addEventListener("DOMContentLoaded", () => {
     path.includes("/10_REFERENCE/CONFIGURATION/") ||
     path.includes("/10_REFERENCE/ENVIRONMENT_VARIABLES/");
 
+  const article = document.querySelector("article.md-content__inner");
+  if (!article) return;
+
+  if (isExperimentalExecution) {
+    const banner = document.createElement("div");
+    banner.className = "admonition warning";
+    banner.innerHTML =
+      '<p class="admonition-title">Experimental in ETLantic 0.7</p>' +
+      "<p>Structured Streaming APIs are experimental. Batch Spark via " +
+      "<code>etlantic-pyspark</code> is the production path. See Current Capabilities.</p>";
+    article.prepend(banner);
+    return;
+  }
+
   if (
     !isFutureExecution &&
     !isPluginSdk &&
@@ -44,14 +62,12 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  const article = document.querySelector("article.md-content__inner");
-  if (!article) return;
-
   const banner = document.createElement("div");
   banner.className = "admonition warning";
   banner.innerHTML =
-    '<p class="admonition-title">Future design—not a ETLantic 0.6 API guide</p>' +
+    '<p class="admonition-title">Future design—not a ETLantic 0.7 API guide</p>' +
     "<p>This page may contain unshipped packages, commands, or interfaces. " +
-    "Use Current Capabilities, the API reference, and the CLI reference for shipped behavior.</p>";
+    "Use Current Capabilities, the API reference, and the CLI reference for shipped behavior. " +
+    "PySpark batch execution is available via <code>etlantic-pyspark</code>.</p>";
   article.prepend(banner);
 });

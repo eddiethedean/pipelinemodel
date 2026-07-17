@@ -53,10 +53,18 @@ def main() -> None:
         "SQL, Spark, and Airflow compilation are not shipped",
         "These examples use only APIs and dependencies shipped in ETLantic 0.4",
         "These examples use only APIs and dependencies shipped in ETLantic 0.5",
+        "These examples use only APIs and dependencies shipped in ETLantic 0.6",
         "Available in ETLantic 0.4.0",
         "not a ETLantic 0.4 API guide",
         "not a ETLantic 0.5 API guide",
+        "not a ETLantic 0.6 API guide",
         "Dataframe, SQL, Spark, and external orchestration chapters remain accepted",
+        "Spark and Airflow plugins are not part of 0.6",
+        "Spark / Airflow | No",
+        "PySpark and streaming | Future plugin design",
+        "Still accepted design until later milestones:** Spark",
+        "Spark and Airflow remain design material",
+        "Later milestones add Spark",
         "plan.to_mermaid()",
         "lightweight production workloads",
         "uv run pyright",
@@ -66,6 +74,8 @@ def main() -> None:
         raise SystemExit("README.md capability table still labels the release as 0.4")
     if "| Capability | 0.5 |" in (ROOT / "README.md").read_text(encoding="utf-8"):
         raise SystemExit("README.md capability table still labels the release as 0.5")
+    if "| Capability | 0.6 |" in (ROOT / "README.md").read_text(encoding="utf-8"):
+        raise SystemExit("README.md capability table still labels the release as 0.6")
 
     scrub_paths = [
         ROOT / "README.md",
@@ -96,19 +106,27 @@ def main() -> None:
                     f"{path} still contains banned stale phrase: {phrase!r}"
                 )
 
-    # Design example pages must carry a future-design admonition
+    # Design example pages must carry a future-design / design-study admonition
     for path in (ROOT / "docs/09_EXAMPLES").glob("*.md"):
         if path.name == "README.md":
             continue
         text = path.read_text(encoding="utf-8")
-        if "Future design—not a ETLantic 0.6 API guide" not in text:
-            raise SystemExit(f"{path} missing Future design admonition")
+        if "!!! warning" not in text:
+            raise SystemExit(f"{path} missing design/future admonition")
+        if (
+            "Future design—not a ETLantic 0.7 API guide" not in text
+            and "Design study—" not in text
+            and "Experimental design study—" not in text
+        ):
+            raise SystemExit(f"{path} missing Future design / design-study admonition")
 
     banner_js = (ROOT / "docs/theme/javascripts/status-banner.js").read_text(
         encoding="utf-8"
     )
-    if "Future design—not a ETLantic 0.6 API guide" not in banner_js:
-        raise SystemExit("status-banner.js missing 0.6 future-design banner text")
+    if "Future design—not a ETLantic 0.7 API guide" not in banner_js:
+        raise SystemExit("status-banner.js missing 0.7 future-design banner text")
+    if "Experimental in ETLantic 0.7" not in banner_js:
+        raise SystemExit("status-banner.js missing experimental streaming banner text")
 
     start = banner_js.find("futureExecutionPages = [")
     end = banner_js.find("];", start)
@@ -122,6 +140,10 @@ def main() -> None:
         "POLARS",
         "PANDAS",
         "DATAFRAME_PLUGINS",
+        "PYSPARK",
+        "PYSPARK_EXECUTION",
+        "SPARK_OPTIMIZATION",
+        "STRUCTURED_STREAMING",
     ):
         # Exact token match: "SQL" must not match SQL_EXECUTION incorrectly —
         # check quoted entries.
@@ -131,7 +153,13 @@ def main() -> None:
             )
 
     # Shipped plugin-protocol pages must be excluded from the future Plugin SDK banner
-    for shipped_sdk in ("DATAFRAME_PLUGIN", "SQL_PLUGIN", "SQL_DIALECT"):
+    for shipped_sdk in (
+        "DATAFRAME_PLUGIN",
+        "SQL_PLUGIN",
+        "SQL_DIALECT",
+        "PYSPARK_PLUGIN",
+        "SPARK_PROVIDER",
+    ):
         if f"/07_PLUGIN_SDK/{shipped_sdk}/" not in banner_js:
             raise SystemExit(
                 f"status-banner.js must exclude {shipped_sdk} from future Plugin SDK banner"
@@ -152,6 +180,7 @@ def main() -> None:
         ROOT / "packages/etlantic-polars/pyproject.toml",
         ROOT / "packages/etlantic-pandas/pyproject.toml",
         ROOT / "packages/etlantic-sql/pyproject.toml",
+        ROOT / "packages/etlantic-pyspark/pyproject.toml",
     ):
         plugin_version = version_from(plugin_pyproject, r'(?m)^version = "([^"]+)"')
         if plugin_version != package_version:

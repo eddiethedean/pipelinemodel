@@ -1,6 +1,6 @@
 # Runnable Examples
 
-These examples use only APIs and dependencies shipped in ETLantic 0.6.
+These examples use only APIs and dependencies shipped in ETLantic 0.7.
 
 ## Quickstart
 
@@ -45,5 +45,16 @@ python examples/sql_failure_recovery.py
 Runs SQL-native pipelines. Defaults to in-memory SQLite for demos; set
 `ETLANTIC_SQL_URL` for PostgreSQL.
 
-Documentation pages for Spark, Airflow, and other future plugins are design
-material and are not runnable examples for the current release.
+## Local PySpark
+
+```bash
+# requires etlantic-pyspark
+python examples/pyspark_local.py
+```
+
+Runs a batch Spark pipeline with the local provider via
+`Profile.spark_engine="pyspark"`.
+
+Documentation pages for Airflow and other unshipped orchestrators are design
+material and are not runnable examples for the current release. Structured
+Streaming APIs are experimental.
