@@ -1,6 +1,6 @@
 # Runnable Examples
 
-These examples use only APIs and dependencies shipped in ETLantic 0.7.
+These examples use only APIs and dependencies shipped in ETLantic 0.8.
 
 ## Quickstart
 
@@ -55,6 +55,15 @@ python examples/pyspark_local.py
 Runs a batch Spark pipeline with the local provider via
 `Profile.spark_engine="pyspark"`.
 
-Documentation pages for Airflow and other unshipped orchestrators are design
-material and are not runnable examples for the current release. Structured
-Streaming APIs are experimental.
+## Airflow compile
+
+```bash
+# requires etlantic-airflow
+python examples/airflow_compile.py
+```
+
+Runs a pipeline locally, then compiles the same plan to an Airflow DAG module
+via `compile_plan(..., target="airflow")`.
+
+Longer design-study pages under Documentation → Examples remain illustrative.
+Structured Streaming APIs are experimental.

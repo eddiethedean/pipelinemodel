@@ -9,6 +9,7 @@ resolution-markers = [
 [manifest]
 members = [
     "etlantic",
+    "etlantic-airflow",
     "etlantic-pandas",
     "etlantic-polars",
     "etlantic-pyspark",
@@ -257,7 +258,7 @@ wheels = [
 
 [[package]]
 name = "etlantic"
-version = "0.7.0"
+version = "0.8.0"
 source = { editable = "." }
 dependencies = [
     { name = "anyio" },
@@ -271,6 +272,9 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+airflow = [
+    { name = "etlantic-airflow" },
+]
 arrow = [
     { name = "pyarrow" },
 ]
@@ -298,6 +302,9 @@ sql = [
 ]
 
 [package.dev-dependencies]
+airflow = [
+    { name = "etlantic-airflow" },
+]
 dataframes = [
     { name = "etlantic-pandas" },
     { name = "etlantic-polars" },
@@ -334,6 +341,7 @@ requires-dist = [
     { name = "contractmodel", specifier = ">=0.1.2" },
     { name = "dpcs", specifier = ">=0.13,<1" },
     { name = "dtcs", specifier = ">=0.11,<1" },
+    { name = "etlantic-airflow", marker = "extra == 'airflow'", editable = "packages/etlantic-airflow" },
     { name = "etlantic-pandas", marker = "extra == 'dataframes'", editable = "packages/etlantic-pandas" },
     { name = "etlantic-pandas", marker = "extra == 'pandas'", editable = "packages/etlantic-pandas" },
     { name = "etlantic-polars", marker = "extra == 'dataframes'", editable = "packages/etlantic-polars" },
@@ -347,9 +355,10 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.12,<3" },
     { name = "typer", specifier = ">=0.15,<1" },
 ]
-provides-extras = ["polars", "pandas", "sql", "postgresql", "pyspark", "spark", "arrow", "dataframes"]
+provides-extras = ["polars", "pandas", "sql", "postgresql", "pyspark", "spark", "airflow", "arrow", "dataframes"]
 
 [package.metadata.requires-dev]
+airflow = [{ name = "etlantic-airflow", editable = "packages/etlantic-airflow" }]
 dataframes = [
     { name = "etlantic-pandas", editable = "packages/etlantic-pandas" },
     { name = "etlantic-polars", editable = "packages/etlantic-polars" },
@@ -378,8 +387,19 @@ pyspark = [
 sql = [{ name = "etlantic-sql", editable = "packages/etlantic-sql" }]
 
 [[package]]
+name = "etlantic-airflow"
+version = "0.8.0"
+source = { editable = "packages/etlantic-airflow" }
+dependencies = [
+    { name = "etlantic" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "etlantic", editable = "." }]
+
+[[package]]
 name = "etlantic-pandas"
-version = "0.7.0"
+version = "0.8.0"
 source = { editable = "packages/etlantic-pandas" }
 dependencies = [
     { name = "etlantic" },
@@ -401,7 +421,7 @@ provides-extras = ["arrow"]
 
 [[package]]
 name = "etlantic-polars"
-version = "0.7.0"
+version = "0.8.0"
 source = { editable = "packages/etlantic-polars" }
 dependencies = [
     { name = "etlantic" },
@@ -423,7 +443,7 @@ provides-extras = ["arrow"]
 
 [[package]]
 name = "etlantic-pyspark"
-version = "0.7.0"
+version = "0.8.0"
 source = { editable = "packages/etlantic-pyspark" }
 dependencies = [
     { name = "etlantic" },
@@ -445,7 +465,7 @@ provides-extras = ["delta"]
 
 [[package]]
 name = "etlantic-sql"
-version = "0.7.0"
+version = "0.8.0"
 source = { editable = "packages/etlantic-sql" }
 dependencies = [
     { name = "etlantic" },

@@ -1,6 +1,6 @@
 [project]
 name = "etlantic"
-version = "0.7.0"
+version = "0.8.0"
 description = "Typed, contract-driven data pipeline modeling for Python."
 readme = "README.md"
 license = "MIT"
@@ -29,16 +29,17 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-polars = ["etlantic-polars==0.7.0"]
-pandas = ["etlantic-pandas==0.7.0"]
-sql = ["etlantic-sql==0.7.0"]
-postgresql = ["etlantic-sql==0.7.0"]
-pyspark = ["etlantic-pyspark==0.7.0"]
-spark = ["etlantic-pyspark==0.7.0"]
+polars = ["etlantic-polars==0.8.0"]
+pandas = ["etlantic-pandas==0.8.0"]
+sql = ["etlantic-sql==0.8.0"]
+postgresql = ["etlantic-sql==0.8.0"]
+pyspark = ["etlantic-pyspark==0.8.0"]
+spark = ["etlantic-pyspark==0.8.0"]
+airflow = ["etlantic-airflow==0.8.0"]
 arrow = ["pyarrow>=14"]
 dataframes = [
-    "etlantic-polars==0.7.0",
-    "etlantic-pandas==0.7.0",
+    "etlantic-polars==0.8.0",
+    "etlantic-pandas==0.8.0",
 ]
 
 [project.scripts]
@@ -80,6 +81,9 @@ pyspark = [
     "etlantic-pyspark",
     "sparkless>=4.13,<5",
 ]
+airflow = [
+    "etlantic-airflow",
+]
 
 [build-system]
 requires = ["hatchling"]
@@ -112,6 +116,7 @@ members = [
     "packages/etlantic-pandas",
     "packages/etlantic-sql",
     "packages/etlantic-pyspark",
+    "packages/etlantic-airflow",
 ]
 
 [tool.uv.sources]
@@ -120,6 +125,7 @@ etlantic-polars = { workspace = true }
 etlantic-pandas = { workspace = true }
 etlantic-sql = { workspace = true }
 etlantic-pyspark = { workspace = true }
+etlantic-airflow = { workspace = true }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -129,12 +135,14 @@ pythonpath = [
     "packages/etlantic-pandas/src",
     "packages/etlantic-sql/src",
     "packages/etlantic-pyspark/src",
+    "packages/etlantic-airflow/src",
 ]
 markers = [
     "polars: tests requiring the Polars plugin",
     "pandas: tests requiring the Pandas plugin",
     "sql: tests requiring the SQL plugin",
     "spark: tests requiring the PySpark plugin (backed by sparkless by default)",
+    "airflow: tests requiring the Airflow orchestrator plugin",
 ]
 
 [tool.ruff]
@@ -172,6 +180,7 @@ known-first-party = [
     "etlantic_pandas",
     "etlantic_sql",
     "etlantic_pyspark",
+    "etlantic_airflow",
 ]
 
 [tool.ruff.format]

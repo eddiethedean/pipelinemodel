@@ -183,6 +183,40 @@ jobs:
           ETLANTIC_SPARK_BACKEND: sparkless
         run: uv run python examples/pyspark_local.py
 
+  airflow:
+    name: Airflow orchestrator plugin
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.3"
+          python-version: "3.11"
+          enable-cache: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync with Airflow plugin
+        run: uv sync --locked --group airflow
+
+      - name: Discovery smoke
+        run: |
+          uv run python -c "
+          from etlantic.orchestration.discovery import discover_orchestrator_plugins
+          found = discover_orchestrator_plugins()
+          assert 'airflow' in found, found
+          print('discovered', sorted(found))
+          "
+
+      - name: Pytest orchestration + Airflow compile suite
+        run: |
+          uv run pytest -q tests/orchestration
+          uv run pytest -q tests/airflow -m airflow
+
+      - name: Runnable Airflow compile example
+        run: uv run python examples/airflow_compile.py
+
   package:
     name: Build and test wheel
     runs-on: ubuntu-latest

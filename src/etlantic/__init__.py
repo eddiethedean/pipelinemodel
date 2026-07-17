@@ -1,8 +1,8 @@
 """ETLantic — typed, contract-driven data pipeline modeling.
 
-0.7 adds distributed Spark execution with an independently installable
-PySpark reference plugin (``etlantic-pyspark``). Structured Streaming APIs
-are experimental.
+0.8 adds external orchestration with an independently installable Airflow
+reference compiler (``etlantic-airflow``). Structured Streaming APIs remain
+experimental.
 """
 
 from __future__ import annotations
@@ -59,6 +59,11 @@ from etlantic.lifecycle import (
     StepFailureContext,
 )
 from etlantic.model import Edge, LogicalGraph, Node, NodeKind
+from etlantic.orchestration import (
+    ORCHESTRATION_PROTOCOL_VERSION,
+    compile_plan,
+    discover_orchestrator_plugins,
+)
 from etlantic.pipeline import Pipeline, Sink, Source, SubpipelineInstance
 from etlantic.plan import (
     ArtifactRef,
@@ -151,6 +156,7 @@ from etlantic.transformation import ImplementationRecord, Step, Transformation
 
 __all__ = [
     "DATAFRAME_PROTOCOL_VERSION",
+    "ORCHESTRATION_PROTOCOL_VERSION",
     "SPARK_PROTOCOL_VERSION",
     "SQL_PROTOCOL_VERSION",
     "STREAMING_STABILITY",
@@ -250,6 +256,7 @@ __all__ = [
     "__version__",
     "builtin_stub_registry",
     "col",
+    "compile_plan",
     "concat",
     "development_profile",
     "diff_contract_schemas",
@@ -258,6 +265,7 @@ __all__ = [
     "diff_pipelines",
     "diff_transformations",
     "discover_dataframe_plugins",
+    "discover_orchestrator_plugins",
     "discover_spark_plugins",
     "discover_spark_providers",
     "discover_sql_plugins",

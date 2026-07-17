@@ -140,6 +140,14 @@ uv run pytest tests/spark
 SPARKLESS_TEST_MODE=pyspark uv run pytest tests/spark -m spark
 ```
 
+For Airflow orchestrator work:
+
+```bash
+uv sync --group airflow
+uv run pytest tests/orchestration tests/airflow
+uv run python examples/airflow_compile.py
+```
+
 The committed toolchain is uv + pytest + ruff + mkdocs. Type checking with
 pyright is not part of CI yet.
 

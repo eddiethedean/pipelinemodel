@@ -741,6 +741,8 @@ marked stable or experimental rather than implied.
 
 ## 0.8 — External Orchestration
 
+**Status: shipped in 0.8.0**
+
 ### Deliver
 
 - Stable orchestrator-plugin and compilation protocols

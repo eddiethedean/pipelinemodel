@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2026-07-17
+
+### Added
+
+- Versioned orchestration protocol (`etlantic.orchestration/1`) with compile,
+  artifact transport, retry-safety, and lifecycle correlation models
+- Independently installable `etlantic-airflow` reference compiler
+- `compile_plan(...)` and `PipelinePlan.compile(target=...)`
+- `Profile.schedule`, `Profile.execution`, and
+  `required_orchestrator_capabilities`
+- Entry-point group `etlantic.orchestrator_plugins`
+- Runnable example `examples/airflow_compile.py`
+- Migration guide `docs/11_DEVELOPMENT/MIGRATION_0_7_TO_0_8.md`
+
+### Changed
+
+- Package version advances to 0.8 (External Orchestration)
+- Plugin packages (polars/pandas/sql/pyspark/airflow) require
+  `etlantic>=0.8.0,<0.9`
+
+### Upgrade notes
+
+- Install `etlantic-airflow` to enable Airflow DAG compilation
+- Core remains free of Airflow, PySpark, and SQL driver dependencies
+- Unsupported orchestrator semantics fail compilation visibly (`PMORCH3xx`)
+
 ## [0.7.0] - 2026-07-17
 
 ### Added

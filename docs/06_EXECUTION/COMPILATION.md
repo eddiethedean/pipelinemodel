@@ -1,3 +1,5 @@
+**Status: shipped in 0.8.0** via `etlantic-airflow`.
+
 # Compilation
 
 Compilation is the process of transforming a validated **Pipeline Plan** into an

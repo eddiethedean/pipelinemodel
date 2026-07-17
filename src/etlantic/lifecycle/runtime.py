@@ -46,6 +46,7 @@ class PipelineRuntime:
     sql_plugins: dict[str, Any] = field(default_factory=dict)
     spark_plugins: dict[str, Any] = field(default_factory=dict)
     spark_providers: dict[str, Any] = field(default_factory=dict)
+    orchestrator_plugins: dict[str, Any] = field(default_factory=dict)
     memory: MemoryStorage = field(default_factory=MemoryStorage)
     callables: CallableStorage = field(default_factory=CallableStorage)
     _entered: bool = False
@@ -116,6 +117,25 @@ class PipelineRuntime:
                 msg = f"Spark plugin discovery failed during runtime init: {exc}"
                 logging.getLogger(__name__).warning(msg)
                 warnings.warn(msg, RuntimeWarning, stacklevel=2)
+        if not self.orchestrator_plugins:
+            try:
+                from etlantic.orchestration.discovery import (
+                    discover_orchestrator_plugins,
+                )
+                from etlantic.orchestration.discovery import (
+                    register_discovered_plugins as register_orch_plugins,
+                )
+
+                discovered_orch = discover_orchestrator_plugins()
+                self.orchestrator_plugins.update(discovered_orch)
+                register_orch_plugins(self.registry, plugins=discovered_orch)
+            except Exception as exc:
+                import logging
+                import warnings
+
+                msg = f"Orchestrator plugin discovery failed during runtime init: {exc}"
+                logging.getLogger(__name__).warning(msg)
+                warnings.warn(msg, RuntimeWarning, stacklevel=2)
         if not self.storage:
             self.storage = {
                 "memory": self.memory,
@@ -170,6 +190,13 @@ class PipelineRuntime:
     def register_spark_provider(self, name: str, provider: Any) -> None:
         """Register a live Spark session provider."""
         self.spark_providers[name] = provider
+
+    def register_orchestrator_plugin(self, engine: str, plugin: Any) -> None:
+        """Register a live orchestrator plugin and its planning descriptor."""
+        from etlantic.orchestration.discovery import register_discovered_plugins
+
+        self.orchestrator_plugins[engine] = plugin
+        register_discovered_plugins(self.registry, plugins={engine: plugin})
 
     @asynccontextmanager
     async def session(self) -> AsyncIterator[PipelineRuntime]:

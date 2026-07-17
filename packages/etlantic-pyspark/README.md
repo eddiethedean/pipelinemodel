@@ -30,5 +30,5 @@ Spark DataFrames (or lists of contract models) and return Spark DataFrames.
 - Delta-compatible write intents (append/overwrite/merge) when Delta is enabled
 - Structured Streaming foundation (**experimental**)
 
-**Not included:** managed cloud providers (Databricks/EMR/Connect), Airflow
-compilation (0.8), SparkForge migration (0.10).
+**Not included:** managed cloud providers (Databricks/EMR/Connect), SparkForge
+migration (0.10).

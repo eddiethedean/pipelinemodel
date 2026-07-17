@@ -135,6 +135,24 @@ class PipelinePlan:
             "metadata": dict(self.metadata),
         }
 
+    def compile(
+        self,
+        *,
+        target: str = "airflow",
+        profile: Any = None,
+        plugin: Any = None,
+        **kwargs: Any,
+    ) -> Any:
+        """Compile this plan for an external orchestrator (0.8).
+
+        Delegates to :func:`etlantic.orchestration.compile_plan`.
+        """
+        from etlantic.orchestration.compile import compile_plan
+
+        return compile_plan(
+            self, target=target, profile=profile, plugin=plugin, **kwargs
+        )
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> PipelinePlan:
         """Deserialize a plan mapping."""

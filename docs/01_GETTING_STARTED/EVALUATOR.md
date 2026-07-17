@@ -11,7 +11,7 @@ plans them; plugins execute.
 It is **not** a dataframe engine, distributed scheduler, warehouse, or secret
 manager.
 
-## What is ready in alpha 0.7.0
+## What is ready in alpha 0.8.0
 
 | Area | Ready? |
 |---|---|
@@ -25,7 +25,7 @@ manager.
 | SQL plugin (`etlantic-sql`) | Yes (PostgreSQL reference) |
 | PySpark plugin (`etlantic-pyspark`) | Yes (local provider; batch production path) |
 | Structured Streaming | Experimental |
-| Airflow / orchestrator compilation | No — future design (0.8) |
+| Airflow / orchestrator compilation | Yes (`etlantic-airflow`) |
 | Multi-tenant durable orchestration | No |
 | Formal SLA / support response times | No |
 

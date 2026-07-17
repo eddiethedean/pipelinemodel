@@ -49,7 +49,7 @@ Its focus is:
 
 ETLantic's architecture is designed so future plugins can consume the same
 plans without changing pipeline definitions. External orchestrator compilation
-is not included in 0.7 (planned for 0.8).
+is available in 0.8 via `etlantic-airflow` (`compile_plan(..., target="airflow")`).
 
 ------------------------------------------------------------------------
 

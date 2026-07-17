@@ -1,3 +1,5 @@
+**Status: shipped in 0.8.0** via `etlantic-airflow`.
+
 # Orchestrator Plugin
 
 An **Orchestrator Plugin** implements the ETLantic Orchestrator Plugin API

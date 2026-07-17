@@ -1,3 +1,5 @@
+**Status: shipped in 0.8.0** via `etlantic-airflow`.
+
 # Airflow
 
 The Airflow plugin enables ETLantic to execute validated **Pipeline Plans**

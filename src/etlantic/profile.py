@@ -32,8 +32,12 @@ class Profile:
     concurrency: int | None = None
     timeout_seconds: float | None = None
     retry_max_attempts: int | None = None
+    # Portable orchestration intents (0.8); Airflow-specific types stay in plugins.
+    schedule: dict[str, Any] = field(default_factory=dict)
+    execution: dict[str, Any] = field(default_factory=dict)
     required_sql_capabilities: tuple[str, ...] = ()
     required_spark_capabilities: tuple[str, ...] = ()
+    required_orchestrator_capabilities: tuple[str, ...] = ()
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def identity(self) -> str:
@@ -76,11 +80,16 @@ class Profile:
             concurrency=data.get("concurrency"),
             timeout_seconds=data.get("timeout_seconds"),
             retry_max_attempts=data.get("retry_max_attempts"),
+            schedule=dict(data.get("schedule") or {}),
+            execution=dict(data.get("execution") or {}),
             required_sql_capabilities=tuple(
                 str(x) for x in (data.get("required_sql_capabilities") or ())
             ),
             required_spark_capabilities=tuple(
                 str(x) for x in (data.get("required_spark_capabilities") or ())
+            ),
+            required_orchestrator_capabilities=tuple(
+                str(x) for x in (data.get("required_orchestrator_capabilities") or ())
             ),
             metadata=dict(data.get("metadata") or {}),
         )

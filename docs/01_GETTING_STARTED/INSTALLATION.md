@@ -1,11 +1,10 @@
 # Installation
 
-ETLantic 0.7.0 provides the typed modeling kernel, contract interoperability
+ETLantic 0.8.0 provides the typed modeling kernel, contract interoperability
 (ODCS/DTCS/DPCS), multi-phase validation, profiles, deterministic planning,
 a local runtime that executes plans with Python callables, in-memory
 artifacts, and stdlib JSON/CSV bindings, plus optional Polars, Pandas, SQL,
-and PySpark plugins. Airflow and other orchestrator compilation arrive in
-later milestones. Structured Streaming APIs are experimental.
+PySpark, and Airflow plugins. Structured Streaming APIs are experimental.
 
 ## Requirements
 
@@ -44,6 +43,7 @@ pip install etlantic-polars    # Polars reference plugin
 pip install etlantic-pandas    # Pandas compatibility plugin
 pip install etlantic-sql       # PostgreSQL SQL reference plugin
 pip install etlantic-pyspark   # PySpark reference plugin + local provider
+pip install etlantic-airflow   # Airflow DAG compiler
 # or extras:
 pip install 'etlantic[polars]'
 pip install 'etlantic[pandas]'
@@ -106,10 +106,12 @@ group (pytest, ruff, mkdocs). The lockfile `uv.lock` pins exact versions.
 | `uv sync` | Create/update `.venv` from `uv.lock` |
 | `uv sync --group dataframes` | Also install Polars and Pandas plugins |
 | `uv sync --group pyspark` | Also install the PySpark plugin + sparkless (JVM-free tests) |
+| `uv sync --group airflow` | Also install the Airflow orchestrator plugin |
 | `uv sync --group sql` | Also install the SQL plugin |
 | `uv lock` | Refresh the lockfile after dependency changes |
 | `uv run pytest` | Run tests |
 | `uv run pytest tests/spark` | Run Spark suite (uses sparkless by default) |
+| `uv run pytest tests/airflow` | Run Airflow compile suite |
 | `uv run ruff check .` | Lint |
 | `uv run ruff format .` | Format |
 | `uv run python scripts/check_docs.py` | Docs consistency gate |
@@ -126,6 +128,7 @@ packages/etlantic-polars/
 packages/etlantic-pandas/
 packages/etlantic-sql/
 packages/etlantic-pyspark/
+packages/etlantic-airflow/
 tests/
 examples/
 docs/

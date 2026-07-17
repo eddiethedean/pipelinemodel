@@ -1,9 +1,9 @@
 # Current Capabilities and Limitations
 
-ETLantic 0.7.0 is an alpha release. This page is the shortest answer to
+ETLantic 0.8.0 is an alpha release. This page is the shortest answer to
 "What can I use today?"
 
-## Available in 0.7
+## Available in 0.8
 
 | Capability | Status |
 |---|---|
@@ -27,15 +27,19 @@ ETLantic 0.7.0 is an alpha release. This page is the shortest answer to
 | Lazy Spark region fusion | Available |
 | Delta-compatible write intents | Available (fail-closed without Delta) |
 | Structured Streaming foundation | **Experimental** |
+| Orchestration protocol (`etlantic.orchestration/1`) | Available |
+| Airflow reference compiler | Available (`etlantic-airflow`) |
+| Schedule / retry / artifact-ref mapping | Available |
 | Mermaid diagrams (`Pipeline.to_mermaid`) | Available |
 
-## Not included in 0.7
+## Not included in 0.8
 
 | Capability | Status |
 |---|---|
 | `MERGE` / upsert in the reference SQL plugin | Not implemented (`sql_merge=False`; fail closed) |
 | Managed Spark providers (Databricks/EMR/Connect) | Future / optional adapters |
-| Airflow or other orchestrator compilation | Future design (0.8) |
+| Event sensors / Dagster / Prefect compilers | Future plugins |
+| Full CLI `compile` / generate tooling | Continues in 0.9 |
 | Public third-party Plugin SDK polish | Continues in 0.9 |
 | SparkForge migration adapter | Future design (0.10) |
 | Graphviz and generated HTML pipeline documentation | Future design |
@@ -49,15 +53,21 @@ pip install etlantic-polars          # Polars reference plugin
 pip install etlantic-pandas          # Pandas compatibility plugin
 pip install etlantic-sql             # PostgreSQL SQL reference plugin
 pip install etlantic-pyspark         # PySpark reference plugin
+pip install etlantic-airflow         # Airflow DAG compiler
 pip install 'etlantic[sql]'          # same as etlantic-sql via extra
 pip install 'etlantic[pyspark]'      # same as etlantic-pyspark via extra
+pip install 'etlantic[airflow]'      # same as etlantic-airflow via extra
 pip install 'etlantic-polars[arrow]' # optional PyArrow
 ```
 
-Core never imports Polars, Pandas, PyArrow, NumPy, database drivers, or PySpark.
+Core never imports Polars, Pandas, PyArrow, NumPy, database drivers, PySpark,
+or Airflow.
 
 Select Spark with `Profile(spark_engine="pyspark")` and
 `@Transformation.implementation("pyspark")`.
+
+Compile to Airflow with `Profile(orchestrator="airflow")` and
+`compile_plan(plan, target="airflow")` (requires `etlantic-airflow`).
 
 ## Next Step
 

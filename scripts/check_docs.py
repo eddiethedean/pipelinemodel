@@ -58,6 +58,7 @@ def main() -> None:
         "not a ETLantic 0.4 API guide",
         "not a ETLantic 0.5 API guide",
         "not a ETLantic 0.6 API guide",
+        "not a ETLantic 0.7 API guide",
         "Dataframe, SQL, Spark, and external orchestration chapters remain accepted",
         "Spark and Airflow plugins are not part of 0.6",
         "Spark / Airflow | No",
@@ -69,6 +70,8 @@ def main() -> None:
         "lightweight production workloads",
         "uv run pyright",
         "Commands are provisional until the implementation toolchain is committed",
+        "Airflow or other orchestrator compilation | Future design (0.8)",
+        "External orchestrator compilation is not included in 0.7",
     ]
     if "| Capability | 0.4 |" in (ROOT / "README.md").read_text(encoding="utf-8"):
         raise SystemExit("README.md capability table still labels the release as 0.4")
@@ -76,6 +79,8 @@ def main() -> None:
         raise SystemExit("README.md capability table still labels the release as 0.5")
     if "| Capability | 0.6 |" in (ROOT / "README.md").read_text(encoding="utf-8"):
         raise SystemExit("README.md capability table still labels the release as 0.6")
+    if "| Capability | 0.7 |" in (ROOT / "README.md").read_text(encoding="utf-8"):
+        raise SystemExit("README.md capability table still labels the release as 0.7")
 
     scrub_paths = [
         ROOT / "README.md",
@@ -114,7 +119,7 @@ def main() -> None:
         if "!!! warning" not in text:
             raise SystemExit(f"{path} missing design/future admonition")
         if (
-            "Future design—not a ETLantic 0.7 API guide" not in text
+            "Future design—not a ETLantic 0.8 API guide" not in text
             and "Design study—" not in text
             and "Experimental design study—" not in text
         ):
@@ -123,8 +128,8 @@ def main() -> None:
     banner_js = (ROOT / "docs/theme/javascripts/status-banner.js").read_text(
         encoding="utf-8"
     )
-    if "Future design—not a ETLantic 0.7 API guide" not in banner_js:
-        raise SystemExit("status-banner.js missing 0.7 future-design banner text")
+    if "Future design—not a ETLantic 0.8 API guide" not in banner_js:
+        raise SystemExit("status-banner.js missing 0.8 future-design banner text")
     if "Experimental in ETLantic 0.7" not in banner_js:
         raise SystemExit("status-banner.js missing experimental streaming banner text")
 
@@ -144,6 +149,9 @@ def main() -> None:
         "PYSPARK_EXECUTION",
         "SPARK_OPTIMIZATION",
         "STRUCTURED_STREAMING",
+        "ORCHESTRATION_PLUGINS",
+        "AIRFLOW",
+        "COMPILATION",
     ):
         # Exact token match: "SQL" must not match SQL_EXECUTION incorrectly —
         # check quoted entries.
@@ -159,6 +167,7 @@ def main() -> None:
         "SQL_DIALECT",
         "PYSPARK_PLUGIN",
         "SPARK_PROVIDER",
+        "ORCHESTRATOR_PLUGIN",
     ):
         if f"/07_PLUGIN_SDK/{shipped_sdk}/" not in banner_js:
             raise SystemExit(
@@ -181,6 +190,7 @@ def main() -> None:
         ROOT / "packages/etlantic-pandas/pyproject.toml",
         ROOT / "packages/etlantic-sql/pyproject.toml",
         ROOT / "packages/etlantic-pyspark/pyproject.toml",
+        ROOT / "packages/etlantic-airflow/pyproject.toml",
     ):
         plugin_version = version_from(plugin_pyproject, r'(?m)^version = "([^"]+)"')
         if plugin_version != package_version:

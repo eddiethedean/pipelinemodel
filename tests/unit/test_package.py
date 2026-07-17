@@ -4,7 +4,7 @@ import etlantic
 
 
 def test_version() -> None:
-    assert etlantic.__version__ == "0.7.0"
+    assert etlantic.__version__ == "0.8.0"
 
 
 def test_root_exports() -> None:
@@ -36,6 +36,9 @@ def test_root_exports() -> None:
     assert hasattr(etlantic, "STREAMING_STABILITY")
     assert hasattr(etlantic, "discover_spark_plugins")
     assert hasattr(etlantic, "DatasetRef")
+    assert hasattr(etlantic, "ORCHESTRATION_PROTOCOL_VERSION")
+    assert hasattr(etlantic, "compile_plan")
+    assert hasattr(etlantic, "discover_orchestrator_plugins")
     assert hasattr(etlantic, "col")
     assert hasattr(etlantic, "concat")
     assert hasattr(etlantic, "select")

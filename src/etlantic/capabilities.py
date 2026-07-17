@@ -58,6 +58,14 @@ class PluginCapabilities:
     spark_udf: bool = False
     spark_cache: bool = False
     spark_checkpoint: bool = False
+    # Orchestration 0.8 vocabulary
+    orchestration: bool = False
+    orch_scheduling: bool = False
+    orch_retries: bool = False
+    orch_timeouts: bool = False
+    orch_parallel: bool = False
+    orch_sensors: bool = False
+    orch_artifacts_only_xcom: bool = False
     extras: frozenset[str] = field(default_factory=frozenset)
 
     def supports(self, requirement: str) -> bool:
@@ -103,6 +111,19 @@ class PluginCapabilities:
             "spark_udf": self.spark_udf,
             "spark_cache": self.spark_cache,
             "spark_checkpoint": self.spark_checkpoint,
+            "orchestration": self.orchestration,
+            "orch_scheduling": self.orch_scheduling,
+            "scheduling": self.orch_scheduling,
+            "orch_retries": self.orch_retries,
+            "retries": self.orch_retries,
+            "orch_timeouts": self.orch_timeouts,
+            "timeouts": self.orch_timeouts,
+            "orch_parallel": self.orch_parallel,
+            "parallel": self.orch_parallel,
+            "orch_sensors": self.orch_sensors,
+            "sensors": self.orch_sensors,
+            "orch_artifacts_only_xcom": self.orch_artifacts_only_xcom,
+            "artifacts_only_xcom": self.orch_artifacts_only_xcom,
         }
         if requirement in known:
             return known[requirement]
@@ -143,6 +164,13 @@ class PluginCapabilities:
             "spark_udf": self.spark_udf,
             "spark_cache": self.spark_cache,
             "spark_checkpoint": self.spark_checkpoint,
+            "orchestration": self.orchestration,
+            "orch_scheduling": self.orch_scheduling,
+            "orch_retries": self.orch_retries,
+            "orch_timeouts": self.orch_timeouts,
+            "orch_parallel": self.orch_parallel,
+            "orch_sensors": self.orch_sensors,
+            "orch_artifacts_only_xcom": self.orch_artifacts_only_xcom,
             "extras": sorted(self.extras),
         }
 
@@ -183,6 +211,13 @@ class PluginCapabilities:
             spark_udf=bool(data.get("spark_udf", False)),
             spark_cache=bool(data.get("spark_cache", False)),
             spark_checkpoint=bool(data.get("spark_checkpoint", False)),
+            orchestration=bool(data.get("orchestration", False)),
+            orch_scheduling=bool(data.get("orch_scheduling", False)),
+            orch_retries=bool(data.get("orch_retries", False)),
+            orch_timeouts=bool(data.get("orch_timeouts", False)),
+            orch_parallel=bool(data.get("orch_parallel", False)),
+            orch_sensors=bool(data.get("orch_sensors", False)),
+            orch_artifacts_only_xcom=bool(data.get("orch_artifacts_only_xcom", False)),
             extras=frozenset(str(x) for x in extras),
         )
 

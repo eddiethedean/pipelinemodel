@@ -1,10 +1,11 @@
 # Documentation Status and Conventions
 
-ETLantic 0.7 implements the typed modeling kernel, contract interoperability,
+ETLantic 0.8 implements the typed modeling kernel, contract interoperability,
 Validation / Pipeline Plan IR, the local runtime / operational model,
 dataframe execution (Polars reference + Pandas compatibility), SQL-native
-execution (`etlantic-sql`), and distributed Spark batch execution
-(`etlantic-pyspark`). Structured Streaming APIs are experimental. Much of the
+execution (`etlantic-sql`), distributed Spark batch execution
+(`etlantic-pyspark`), and external orchestration compilation
+(`etlantic-airflow`). Structured Streaming APIs are experimental. Much of the
 documentation still describes the intended 1.0 product. It serves three related
 purposes:
 
@@ -29,7 +30,7 @@ Public pages use these visible statuses:
 
 | Page status | Meaning |
 |---|---|
-| Available in 0.7 | Tested against the current package |
+| Available in 0.8 | Tested against the current package |
 | Shipped in 0.x | Available since that milestone (still current) |
 | Experimental | Public APIs that may change without a major version bump |
 | Partially available | Shipped and future behavior are explicitly separated |
@@ -37,11 +38,11 @@ Public pages use these visible statuses:
 | Normative specification | Contract requirements, not package behavior |
 | Internal project plan | Maintainer sequencing and implementation notes |
 
-Unless a chapter says otherwise, user-guide code beyond the shipped 0.7
+Unless a chapter says otherwise, user-guide code beyond the shipped 0.8
 modeling, interchange, validation, planning, local runtime, **dataframe
-plugin**, **SQL plugin**, and **PySpark batch** surface should be read as an
-**accepted design example**, not as evidence of a published package API. The
-0.7 surface is defined by the package,
+plugin**, **SQL plugin**, **PySpark batch**, and **Airflow compilation**
+surface should be read as an **accepted design example**, not as evidence of a
+published package API. The 0.8 surface is defined by the package,
 [API reference](../10_REFERENCE/API_REFERENCE.md), tests, and changelog.
 
 **Shipped in 0.5:** dataframe execution protocol, `etlantic-polars`, and
@@ -56,11 +57,15 @@ Python fetch (see Execution → SQL and the SQL Plugin protocol page).
 `etlantic-pyspark`, local Spark provider, lazy Spark regions, Delta-compatible
 write intents, and `Profile.spark_engine` (see Execution → PySpark).
 
-**Experimental in 0.7:** Structured Streaming foundation APIs.
+**Shipped in 0.8:** Orchestration protocol (`etlantic.orchestration/1`),
+`etlantic-airflow`, `compile_plan`, and `Profile.orchestrator` /
+schedule / execution intents (see Execution → Airflow).
 
-**Still accepted design until later milestones:** Airflow / external
-orchestration, managed Spark providers (Databricks/EMR/Connect),
-Graphviz/HTML visualization, and remaining Plugin SDK surfaces.
+**Experimental in 0.7+:** Structured Streaming foundation APIs.
+
+**Still accepted design until later milestones:** managed Spark providers
+(Databricks/EMR/Connect), Dagster/Prefect compilers, Graphviz/HTML
+visualization, and remaining Plugin SDK surfaces.
 
 ## Normative Authority
 
