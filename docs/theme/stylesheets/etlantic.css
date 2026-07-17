@@ -380,6 +380,8 @@ html {
   }
 
   .md-content__inner {
+    margin-right: 0.8rem;
+    margin-left: 0.8rem;
     padding-bottom: 2.5rem;
   }
 
