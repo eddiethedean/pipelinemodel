@@ -9,6 +9,28 @@ lifecycle integration. Logging and observability providers route those records
 to the Python logging system, console, files, OpenTelemetry, cloud services, or
 other destinations.
 
+## Quick start (shipped)
+
+JSON console logging works without extras. For OpenTelemetry, install the
+optional extra when available:
+
+```bash
+pip install 'etlantic[otel]'
+# or from a checkout, ensure otel deps are present in your environment
+```
+
+```python
+from etlantic.observability import JsonConsoleLogger
+from etlantic.runtime.logging import RunLogger
+
+# RunLogger redacts secrets before emission.
+logger = RunLogger(run_id="run-demo", pipeline_id="demo")
+logger.log("info", "starting", step_name="raw")
+```
+
+Use `etlantic.observability` for provider protocols and adapters. Prefer
+public imports; do not embed secret values in log extras.
+
 ## Goals
 
 ETLantic logging should be:

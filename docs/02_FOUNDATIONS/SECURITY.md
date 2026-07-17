@@ -72,7 +72,7 @@ The analysis boundary must not require runtime privileges.
 | Contract loading | parser abuse, traversal, SSRF | bounded safe loaders and approved resolvers | Partial |
 | Python discovery | import-time execution | static discovery or explicit trusted import | Gap |
 | Planning | code or secret resolution | pure, secret-free planning | Strong |
-| Plugins | supply-chain execution | allowlists, pins, provenance | Gap |
+| Plugins | supply-chain execution | allowlists, pins, provenance | Partial (allowlists/pins shipped in 0.9+; provenance Gap) |
 | Resource providers | excessive authority | scopes, least privilege, cleanup | Strong concept |
 | SQL | injection and query leakage | structured compilation and parameters | Strong |
 | PySpark | remote code and cluster overreach | isolation and provider policy | Partial |

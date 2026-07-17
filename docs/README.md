@@ -35,10 +35,16 @@ PostgreSQL reference plugin, a versioned Spark protocol with the
 orchestration protocol with the `etlantic-airflow` reference compiler.
 Structured Streaming APIs are experimental.
 
-Many chapters still describe the intended 1.0 product. Examples beyond the
-shipped surface are design examples, not a promise that every illustrated API
-is already available. Start with
-[Current Capabilities and Limitations](01_GETTING_STARTED/CAPABILITIES.md).
+!!! tip "Green path (start here only)"
+    1. [Capabilities](01_GETTING_STARTED/CAPABILITIES.md) — shipped vs not
+    2. [Installation](01_GETTING_STARTED/INSTALLATION.md) — prefer from-source until PyPI has 0.10.0
+    3. [Quickstart](01_GETTING_STARTED/QUICKSTART.md) — five-minute success
+
+    Pages marked **Future design** are not APIs. [Capabilities](01_GETTING_STARTED/CAPABILITIES.md)
+    is the single source of truth.
+
+Many chapters still describe the intended 1.0 product. Design studies under
+Examples are not a promise that every illustrated API is already available.
 
 ## Thirty-Second Example
 

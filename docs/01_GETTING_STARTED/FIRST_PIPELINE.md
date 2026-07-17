@@ -142,10 +142,16 @@ async application.
 ## Current boundary
 
 This tutorial stays on the local Python runtime with memory, callable, JSON,
-CSV, and no-write storage. Optional Polars and Pandas dataframe plugins are
-available in 0.5 via `etlantic-polars` / `etlantic-pandas`. SQL is available
-in 0.6 via `etlantic-sql`, and Spark batch in 0.7 via `etlantic-pyspark`. External orchestrators remain future
-plugin designs.
+CSV, and no-write storage. Optional plugins are available today:
+
+- Polars / Pandas — `etlantic-polars` / `etlantic-pandas`
+- SQL — `etlantic-sql`
+- PySpark batch — `etlantic-pyspark`
+- Airflow compile — `etlantic-airflow`
+- SparkForge adapter — `etlantic-sparkforge`
+
+Dagster/Prefect compilers and managed cloud Spark providers remain future
+work. See [Capabilities](CAPABILITIES.md).
 
 Continue with [Project Structure](PROJECT_STRUCTURE.md) or run the complete
 repository example in `examples/quickstart.py`.

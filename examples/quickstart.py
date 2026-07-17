@@ -1,8 +1,8 @@
-"""Smallest complete ETLantic 0.5 local-runtime pipeline.
+"""Smallest complete ETLantic local-runtime pipeline.
 
 Run with:
 
-    python examples/quickstart.py
+    uv run python examples/quickstart.py
 """
 
 from etlantic import (

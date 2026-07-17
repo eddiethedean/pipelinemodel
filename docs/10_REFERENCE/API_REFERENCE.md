@@ -1,6 +1,6 @@
 # Python API Reference
 
-> **Status: Available in ETLantic 0.7.0.** Signatures and docstrings below
+> **Status: Available in ETLantic 0.10.0.** Signatures and docstrings below
 > are generated from the package source.
 
 The package root is the supported convenience import surface for common
@@ -127,6 +127,58 @@ from etlantic import (
 ## SQL protocol
 
 ::: etlantic.sql
+    options:
+      show_root_heading: true
+      members_order: source
+
+## Spark protocol
+
+::: etlantic.spark
+    options:
+      show_root_heading: true
+      members_order: source
+
+## Orchestration protocol
+
+::: etlantic.orchestration
+    options:
+      show_root_heading: true
+      members_order: source
+
+## Visualization
+
+::: etlantic.viz
+    options:
+      show_root_heading: true
+      members_order: source
+
+## Agents, IDE, and notebooks
+
+::: etlantic.agents
+    options:
+      show_root_heading: true
+      members_order: source
+
+::: etlantic.ide
+    options:
+      show_root_heading: true
+      members_order: source
+
+::: etlantic.notebook
+    options:
+      show_root_heading: true
+      members_order: source
+
+## Observability
+
+::: etlantic.observability
+    options:
+      show_root_heading: true
+      members_order: source
+
+## Schema history
+
+::: etlantic.schema_history
     options:
       show_root_heading: true
       members_order: source

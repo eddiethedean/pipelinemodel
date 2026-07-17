@@ -89,6 +89,21 @@ def main() -> None:
         "git tag v0.6.1",
         "full CLI `compile` command (0.9)",
         "not a ETLantic 0.9 API guide",
+        "Airflow compilation remains design material",
+        "External orchestrators remain future",
+        "cloud providers (Databricks/EMR/Connect) and Airflow compilation are not",
+        "etlantic.readthedocs.io",
+        "Examples that require Airflow or other orchestrators describe",
+        "Spark / remote (future)",
+        "# spark/             # future",
+        "Data` remains as a deprecated",
+        "These examples use only APIs and dependencies shipped in ETLantic 0.8",
+        "Runnable now (0.7)",
+        "ETLantic 0.8 can execute",
+        "This section separates ETLantic **0.6**",
+        "ETLantic 0.6\n    does not load",
+        "future Airflow/orchestration plugins",
+        "Visualization (beyond Mermaid)",
     ]
     if "| Capability | 0.4 |" in (ROOT / "README.md").read_text(encoding="utf-8"):
         raise SystemExit("README.md capability table still labels the release as 0.4")
@@ -127,6 +142,7 @@ def main() -> None:
     scrub_paths = [
         ROOT / "README.md",
         ROOT / "examples/README.md",
+        ROOT / "examples/quickstart.py",
         ROOT / "docs/README.md",
         ROOT / "docs/01_GETTING_STARTED/INSTALLATION.md",
         ROOT / "docs/01_GETTING_STARTED/TROUBLESHOOTING.md",
@@ -134,6 +150,8 @@ def main() -> None:
         ROOT / "docs/01_GETTING_STARTED/README.md",
         ROOT / "docs/01_GETTING_STARTED/QUICKSTART.md",
         ROOT / "docs/01_GETTING_STARTED/FIRST_PIPELINE.md",
+        ROOT / "docs/01_GETTING_STARTED/PROJECT_STRUCTURE.md",
+        ROOT / "docs/01_GETTING_STARTED/EVALUATOR.md",
         ROOT / "docs/01_GETTING_STARTED/CAPABILITIES.md",
         ROOT / "docs/02_FOUNDATIONS/DOCUMENTATION_STATUS.md",
         ROOT / "docs/06_EXECUTION/LOCAL_PYTHON.md",
@@ -142,6 +160,8 @@ def main() -> None:
         ROOT / "docs/08_VISUALIZATION/DOCUMENTATION.md",
         ROOT / "docs/09_EXAMPLES/README.md",
         ROOT / "docs/10_REFERENCE/API_REFERENCE.md",
+        ROOT / "docs/10_REFERENCE/README.md",
+        ROOT / "docs/10_REFERENCE/KNOWN_ISSUES.md",
         ROOT / "docs/10_REFERENCE/CLI.md",
         ROOT / "docs/10_REFERENCE/COMPATIBILITY.md",
         ROOT / "docs/10_REFERENCE/CONFIGURATION.md",
@@ -150,6 +170,7 @@ def main() -> None:
         ROOT / "SECURITY.md",
         ROOT / "packages/etlantic-airflow/README.md",
         ROOT / "docs/theme/javascripts/status-banner.js",
+        ROOT / "mkdocs.yml",
     ]
     for path in scrub_paths:
         text = path.read_text(encoding="utf-8")
@@ -159,9 +180,18 @@ def main() -> None:
                     f"{path} still contains banned stale phrase: {phrase!r}"
                 )
 
-    # Design example pages must carry a future-design / design-study admonition
+    # Design study pages need future/design admonitions; runnable guides do not.
+    runnable_guides = {
+        "AIRFLOW_COMPILE.md",
+        "SPARKFORGE_ADAPTER.md",
+        "README.md",
+    }
     for path in (ROOT / "docs/09_EXAMPLES").glob("*.md"):
-        if path.name == "README.md":
+        if path.name in runnable_guides:
+            if path.name != "README.md":
+                text = path.read_text(encoding="utf-8")
+                if "**Status: Available" not in text and "Status: Available" not in text:
+                    raise SystemExit(f"{path} runnable guide missing Available status")
             continue
         text = path.read_text(encoding="utf-8")
         if "!!! warning" not in text:
@@ -173,9 +203,46 @@ def main() -> None:
         ):
             raise SystemExit(f"{path} missing Future design / design-study admonition")
 
+    # Honesty gate + nav SSOT
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    if "Install note" not in readme and "from source" not in readme.lower():
+        raise SystemExit("README.md missing from-source install honesty note")
+    if "readthedocs.io" in readme:
+        raise SystemExit("README.md still links to missing ReadTheDocs site")
+    if "Green path" not in (ROOT / "docs/README.md").read_text(encoding="utf-8"):
+        raise SystemExit("docs/README.md missing Green path rail")
+    known = (ROOT / "docs/10_REFERENCE/KNOWN_ISSUES.md").read_text(encoding="utf-8")
+    if "etlantic-airflow" not in known:
+        raise SystemExit("KNOWN_ISSUES.md must state Airflow is available via etlantic-airflow")
+    mkdocs = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
+    viz_idx = mkdocs.find("  - Visualization:")
+    future_viz = mkdocs.find("Visualization (beyond Mermaid)")
+    if future_viz >= 0:
+        raise SystemExit("mkdocs.yml still nests shipped viz under Visualization (beyond Mermaid)")
+    if viz_idx < 0:
+        raise SystemExit("mkdocs.yml missing Visualization section")
+    viz_block = mkdocs[viz_idx : viz_idx + 500]
+    for shipped_viz in ("GRAPHVIZ.md", "HTML.md", "LINEAGE.md"):
+        if shipped_viz not in viz_block:
+            raise SystemExit(f"mkdocs.yml Visualization section missing {shipped_viz}")
+    if "AIRFLOW_COMPILE.md" not in mkdocs or "SPARKFORGE_ADAPTER.md" not in mkdocs:
+        raise SystemExit("mkdocs.yml missing runnable example guide pages")
+    if "RUNTIME_CONFIGURATION.md" not in mkdocs:
+        raise SystemExit("mkdocs.yml missing RUNTIME_CONFIGURATION.md")
+    api_ref = (ROOT / "docs/10_REFERENCE/API_REFERENCE.md").read_text(encoding="utf-8")
+    if "Available in ETLantic 0.10" not in api_ref:
+        raise SystemExit("API_REFERENCE.md must claim Available in ETLantic 0.10")
+    for mod in ("etlantic.spark", "etlantic.orchestration", "etlantic.viz"):
+        if mod not in api_ref:
+            raise SystemExit(f"API_REFERENCE.md missing {mod}")
+
     banner_js = (ROOT / "docs/theme/javascripts/status-banner.js").read_text(
         encoding="utf-8"
     )
+    if "AIRFLOW_COMPILE/" not in banner_js or "SPARKFORGE_ADAPTER/" not in banner_js:
+        raise SystemExit(
+            "status-banner.js must exclude runnable example guides from design banner"
+        )
     if "Future design—not a ETLantic 0.10 API guide" not in banner_js:
         raise SystemExit("status-banner.js missing 0.10 future-design banner text")
     if "Experimental in ETLantic 0.7" not in banner_js:

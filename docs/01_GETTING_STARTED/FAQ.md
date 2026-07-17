@@ -242,5 +242,8 @@ ETLantic is intended for:
 
 ## Where should I go next?
 
-Continue with the **Foundations** section to learn the design
-philosophy, architecture, and core concepts behind ETLantic.
+1. [Quickstart](QUICKSTART.md) or [Your First Pipeline](FIRST_PIPELINE.md)
+2. [Capabilities](CAPABILITIES.md) for the shipped boundary
+3. Runnable examples under `examples/` (see [Examples](../09_EXAMPLES/README.md))
+4. [CLI reference](../10_REFERENCE/CLI.md) for `etlantic validate|plan|run|compile|viz`
+5. Foundations (philosophy / architecture) when you want deeper design context

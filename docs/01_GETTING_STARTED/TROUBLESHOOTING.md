@@ -1,5 +1,24 @@
 # Troubleshooting
 
+## `pip install etlantic` fails with “No matching distribution”
+
+ETLantic 0.10.0 may not be on PyPI yet (git tags historically lagged published
+docs). Install from source:
+
+```bash
+git clone https://github.com/eddiethedean/etlantic.git
+cd etlantic
+uv sync
+uv run python -c "import etlantic; print(etlantic.__version__)"
+```
+
+Or with pip editable install:
+
+```bash
+python3.11 -m venv .venv && source .venv/bin/activate
+python -m pip install -e .
+```
+
 ## `pip install etlantic` rejects my Python version
 
 ETLantic requires Python 3.11 or newer. Check with:
@@ -16,38 +35,39 @@ These docs describe ETLantic **0.10.0**. Confirm what you installed:
 python -c "import etlantic; print(etlantic.__version__)"
 ```
 
-If the version is older, upgrade:
+If the version is older and wheels exist on PyPI:
 
 ```bash
-python -m pip install --upgrade 'etlantic>=0.7.0'
+python -m pip install --upgrade 'etlantic>=0.10.0'
 ```
 
-If pip still resolves an older release, you may be on a mirror or pin. Check
-`pip index versions etlantic` (or visit
-[PyPI](https://pypi.org/project/etlantic/)) and clear conflicting constraints
-in your environment.
+From a checkout, prefer `uv sync` / `git pull` instead of relying on PyPI.
 
-## `pip install etlantic-polars` / `etlantic-pandas` / `etlantic-sql` / `etlantic-pyspark` fails
+## Plugin install fails (`etlantic-polars`, `etlantic-pyspark`, …)
 
-Those packages ship with ETLantic 0.10.0. They are separate distributions:
+Those packages ship with ETLantic 0.10.0 as separate distributions. From a
+checkout:
 
 ```bash
-python -m pip install --upgrade etlantic-polars
-python -m pip install --upgrade etlantic-pandas
-python -m pip install --upgrade etlantic-sql
-python -m pip install --upgrade etlantic-pyspark
+uv sync --group dataframes   # polars + pandas
+uv sync --group sql
+uv sync --group pyspark
+uv sync --group airflow
+uv sync --group sparkforge
+uv sync --group keyring
+uv sync --group sqlmodel
 ```
 
-If pip reports no matching distribution:
+If using PyPI once wheels exist:
 
-1. Confirm core is already at 0.10.0 or newer.
-2. Confirm Python is 3.11+.
-3. Confirm the package name uses a hyphen (`etlantic-pyspark`), not an
-   underscore.
+```bash
+python -m pip install --upgrade etlantic-polars etlantic-pandas
+python -m pip install --upgrade etlantic-sql etlantic-pyspark
+python -m pip install --upgrade etlantic-airflow etlantic-sparkforge
+```
 
-From a git checkout, install optional groups with
-`uv sync --group dataframes` / `--group sql` / `--group pyspark` /
-`--group airflow` / `--group sparkforge` as needed.
+Confirm Python is 3.11+ and the package name uses a hyphen
+(`etlantic-pyspark`), not an underscore.
 
 ## A transformation has no implementation
 
@@ -81,17 +101,30 @@ runtime examples. Do not silently switch profile names within one workflow.
 
 ## A Pandas, Polars, SQL, Spark, or Airflow example fails
 
-Install the matching plugin (`etlantic-polars`, `etlantic-pandas`,
-`etlantic-sql`, or `etlantic-pyspark`) and set the corresponding profile engine
-(`dataframe_engine`, `sql_engine`, or `spark_engine`). Airflow compilation
-remains design material for later milestones. Start with the runnable
-examples under `examples/` (including `examples/pyspark_local.py` and
-`examples/sql_to_sql.py`).
+Install the matching plugin and set the corresponding profile engine
+(`dataframe_engine`, `sql_engine`, `spark_engine`, or `orchestrator`).
+
+| Need | Install | Example |
+|---|---|---|
+| Polars / Pandas | `uv sync --group dataframes` | `examples/dataframe_parity.py` |
+| SQL | `uv sync --group sql` | `examples/sql_to_sql.py` |
+| PySpark | `uv sync --group pyspark` | `examples/pyspark_local.py` |
+| Airflow compile | `uv sync --group airflow` | `examples/airflow_compile.py` |
+| SparkForge adapter | `uv sync --group sparkforge` | `tests/sparkforge/` |
+
+Airflow compilation is **available** via `etlantic-airflow` (0.8+). Dagster
+and Prefect compilers are not shipped.
 
 ## Commands in a design page do not exist
 
-The current CLI supports `validate`, `inspect`, `plan`, `plan explain`, `run`,
-and `report show|export`. See the [CLI reference](../10_REFERENCE/CLI.md).
+The shipped CLI includes:
+
+`validate`, `inspect`, `plan`, `run`, `compile`, `generate`, `diff`,
+`plugin`, `schema`, `reliability`, `viz`, `report`
+
+See the [CLI reference](../10_REFERENCE/CLI.md). Pages marked **Future
+design** may show commands that are not shipped—check
+[Capabilities](CAPABILITIES.md) first.
 
 ## A virtual environment breaks after moving the repository
 

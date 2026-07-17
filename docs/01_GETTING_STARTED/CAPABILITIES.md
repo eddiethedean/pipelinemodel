@@ -57,6 +57,9 @@ ETLantic 0.10.0 is an alpha release. This page is the shortest answer to
 
 ## Install matrix
 
+Prefer **from-source** until a matching `v0.10.0` tag is on PyPI (see
+[Installation](INSTALLATION.md)). When wheels exist:
+
 ```bash
 pip install etlantic                 # core only — no engines
 pip install etlantic-polars          # Polars reference plugin

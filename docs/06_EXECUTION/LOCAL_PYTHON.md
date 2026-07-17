@@ -8,10 +8,10 @@ reference execution environment for development, testing, experimentation, and
 CI.
 
 It is **not** a multi-tenant production orchestrator. Prefer an external
-scheduler (future Airflow/orchestration plugins) when you need durable
-scheduling, cross-process isolation, or fleet-scale coordination.
+scheduler such as Airflow (`etlantic-airflow` compile target) when you need
+durable scheduling, cross-process isolation, or fleet-scale coordination.
 
-## Known limitations (0.5)
+## Known limitations
 
 - Run reports and the default report store are process-scoped
 - In-memory storage does not survive process restart

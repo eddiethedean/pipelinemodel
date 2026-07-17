@@ -1,6 +1,7 @@
 # Runnable Examples
 
-These examples use only APIs and dependencies shipped in ETLantic 0.8.
+These examples use APIs and dependencies shipped in ETLantic 0.10. Prefer
+`uv sync` from a checkout until matching wheels are on PyPI.
 
 ## Quickstart
 

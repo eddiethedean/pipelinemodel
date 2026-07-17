@@ -5,11 +5,10 @@ Welcome to ETLantic!
 > **Project status:** 0.10.0 provides the typed modeling kernel, contract
 > interoperability (ODCS/DTCS/DPCS), multi-phase validation, profiles, an
 > immutable secret-free `PipelinePlan`, a local async runtime with run
-> reports, Polars/Pandas dataframe plugins, the `etlantic-sql` SQL plugin, and
-> the `etlantic-pyspark` Spark plugin (batch). Structured Streaming is
-> experimental. Examples that require Airflow or other orchestrators describe
-> later milestones. See
-> [Documentation Status](../02_FOUNDATIONS/DOCUMENTATION_STATUS.md).
+> reports, Polars/Pandas dataframe plugins, the `etlantic-sql` SQL plugin,
+> the `etlantic-pyspark` Spark plugin (batch), and Airflow DAG compilation
+> via `etlantic-airflow`. Structured Streaming is experimental. See
+> [Capabilities](CAPABILITIES.md) for the shipped boundary.
 
 This section is designed to get you productive as quickly as possible.
 Rather than starting with implementation details, you'll learn the core
@@ -63,7 +62,7 @@ You describe *what* the pipeline is:
 
 ETLantic validates and plans the pipeline.
 
-ETLantic 0.8 can execute registered Python implementations with its local
+ETLantic 0.10 can execute registered Python implementations with its local
 runtime and optional Polars/Pandas/SQL/PySpark plugins, and can compile plans
 to Airflow DAGs via `etlantic-airflow`.
 
@@ -80,7 +79,7 @@ Pipeline Validation
 Execution Planning
       │
       ▼
-Local + Dataframe (0.5) + SQL (0.6) + PySpark (0.7) + Airflow (0.8)
+Local + Dataframe + SQL + PySpark + Airflow (0.10)
 ```
 
 ## A Preview

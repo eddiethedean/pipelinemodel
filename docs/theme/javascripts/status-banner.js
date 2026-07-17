@@ -29,7 +29,10 @@ document.addEventListener("DOMContentLoaded", () => {
     !path.includes("/07_PLUGIN_SDK/SPARK_PROVIDER/") &&
     !path.includes("/07_PLUGIN_SDK/ORCHESTRATOR_PLUGIN/");
   const isDesignExample =
-    path.includes("/09_EXAMPLES/") && !path.endsWith("/09_EXAMPLES/");
+    path.includes("/09_EXAMPLES/") &&
+    !path.endsWith("/09_EXAMPLES/") &&
+    !path.includes("/09_EXAMPLES/AIRFLOW_COMPILE/") &&
+    !path.includes("/09_EXAMPLES/SPARKFORGE_ADAPTER/");
   const isFutureVisualization =
     path.includes("/08_VISUALIZATION/") &&
     !path.endsWith("/08_VISUALIZATION/") &&

@@ -18,15 +18,25 @@ core package and in-memory storage.
 
 ETLantic requires Python 3.11 or newer.
 
+**Recommended (works today):** clone and sync
+
 ```bash
-python -m pip install etlantic
+git clone https://github.com/eddiethedean/etlantic.git
+cd etlantic
+uv sync
+uv run python -c "import etlantic; print(etlantic.__version__)"
 ```
 
-Verify the installation:
+When wheels are on PyPI:
 
 ```bash
+python -m pip install 'etlantic>=0.10.0'
 python -c "import etlantic; print(etlantic.__version__)"
 ```
+
+If `pip install etlantic` fails with “No matching distribution,” use the
+from-source path above. See [Installation](INSTALLATION.md) and
+[Troubleshooting](TROUBLESHOOTING.md).
 
 ## 2. Create `pipeline.py`
 
@@ -132,9 +142,19 @@ The same example is available at `examples/quickstart.py`.
 
 ## Next
 
-- File-backed JSON/CSV: run `python examples/file_storage.py`
-- Polars or Pandas (after installing plugins):
-  `python examples/dataframe_parity.py polars`
+- Keep going in this file: the full script above is self-contained (no clone
+  required once the package is installed).
+- From a checkout: file-backed JSON/CSV with
+  `uv run python examples/file_storage.py`
+- From a checkout: Polars/Pandas with
+  `uv sync --group dataframes` then
+  `uv run python examples/dataframe_parity.py polars`
+- Inline second step (memory seed pattern already in the script above) —
+  change the seeded rows and re-run.
 - Build the example in smaller steps in [Your First Pipeline](FIRST_PIPELINE.md)
 - Review [Current Capabilities and Limitations](CAPABILITIES.md)
 - See [Troubleshooting](TROUBLESHOOTING.md) if the run fails
+- Airflow compile (checkout): `uv sync --group airflow` then
+  `uv run python examples/airflow_compile.py`
+- SparkForge adapter (checkout): `uv sync --group sparkforge` then
+  `uv run pytest tests/sparkforge -m sparkforge`

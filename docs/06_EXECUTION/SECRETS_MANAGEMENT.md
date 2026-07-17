@@ -71,19 +71,20 @@ Resolved secrets use `SecretValue`:
 - Missing or unreadable secrets fail closed at runtime
 - Redact exception messages before they enter reports or logs
 
-## Future providers (not installable in 0.5)
+## Future providers (not shipped)
 
-The following belong in later Plugin SDK milestones. Configuration examples
-that mention them are design sketches only:
+The following belong in later milestones. Configuration examples that mention
+them are design sketches only. **OS keyring is available today** via
+`etlantic-keyring` (0.9+).
 
-| Target environment | Intended provider |
+| Target environment | Status |
 |---|---|
-| Developer workstation | `keyring` |
-| AWS | Secrets Manager (`boto3`) |
-| Azure | Key Vault |
-| Google Cloud | Secret Manager |
-| HashiCorp Vault | `hvac` |
-| 1Password | official SDK |
+| Developer workstation (`etlantic-keyring`) | Available (optional package) |
+| AWS Secrets Manager | Future |
+| Azure Key Vault | Future |
+| Google Cloud Secret Manager | Future |
+| HashiCorp Vault | Future |
+| 1Password | Future |
 
 See the [Secret Provider SDK](../07_PLUGIN_SDK/SECRET_PROVIDER.md) (future
 design) for the intended plugin shape.

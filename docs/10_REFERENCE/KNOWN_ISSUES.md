@@ -2,9 +2,11 @@
 
 - The project is alpha and does not promise 1.0 API stability.
 - Local execution is in-process; ETLantic is not a distributed scheduler.
-- Spark batch execution is available via `etlantic-pyspark` (0.7); managed
-  cloud providers (Databricks/EMR/Connect) and Airflow compilation are not.
-- Structured Streaming APIs are experimental in 0.7.
+- Spark batch execution is available via `etlantic-pyspark` (0.7+). Managed
+  cloud providers (Databricks/EMR/Connect) are not.
+- Airflow DAG compilation is available via `etlantic-airflow` (0.8+).
+  Dagster and Prefect compilers are not.
+- Structured Streaming APIs are experimental in 0.7+.
 - SQL plugins do not treat untrusted raw SQL as safe; use the typed expression
   model and dialect identifier/parameter APIs.
 - `MERGE` / upsert is not implemented in the SQL reference plugin; requiring
@@ -25,11 +27,14 @@
 - Cancellation and thread-safety capability flags are not fully enforced by
   the reference plugins.
 - Many design pages still describe intended 1.0 behavior. Check the page
-  status before copying code.
+  status and [Capabilities](../01_GETTING_STARTED/CAPABILITIES.md) before
+  copying code.
 - Process-local report history is not a durable report database.
 - In-memory storage is intended for local development and tests.
 - Generated plans should be regenerated after incompatible schema changes
   rather than edited by hand.
+- PyPI / hosted docs may lag the `main` branch until a matching tag is
+  published; install from source when in doubt.
 
 Release-specific fixes and changes are recorded in the
 [changelog](https://github.com/eddiethedean/etlantic/blob/main/CHANGELOG.md).

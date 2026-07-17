@@ -2,8 +2,6 @@
 
 # ETLantic
 
-[![Documentation Status](https://readthedocs.org/projects/etlantic/badge/?version=latest)](https://etlantic.readthedocs.io/en/latest/?badge=latest)
-
 Catch incompatible data-pipeline wiring before you process data.
 
 Define datasets, transformations, and pipelines as typed Python classes.
@@ -14,54 +12,31 @@ backends without rewriting the logical pipeline.
 Polars/Pandas/SQL/PySpark/Airflow plugins. Structured Streaming is
 experimental.
 
-## Install
+> **Install note:** Until a matching `v0.10.0` tag is published to PyPI, prefer
+> installing from source (below). Anonymous `pip install etlantic` may fail if
+> wheels are not yet uploaded.
 
-Requires Python 3.11 or newer.
+## Install (from source — works today)
+
+Requires Python 3.11+ and [uv](https://docs.astral.sh/uv/).
+
+```bash
+git clone https://github.com/eddiethedean/etlantic.git
+cd etlantic
+uv sync
+uv run python -c "import etlantic; print(etlantic.__version__)"
+uv run python examples/quickstart.py
+```
+
+### Optional when wheels are on PyPI
 
 ```bash
 pip install etlantic
 # optional engines / compilers
-pip install etlantic-polars
-pip install etlantic-pandas
-pip install etlantic-sql
-pip install etlantic-pyspark
-pip install etlantic-airflow
-pip install etlantic-keyring
-pip install etlantic-sqlmodel
-pip install etlantic-sparkforge
+pip install etlantic-polars etlantic-pandas etlantic-sql
+pip install etlantic-pyspark etlantic-airflow
+pip install etlantic-keyring etlantic-sqlmodel etlantic-sparkforge
 ```
-
-Verify:
-
-```bash
-python -c "import etlantic; print(etlantic.__version__)"
-```
-
-### Development
-
-Requires [uv](https://docs.astral.sh/uv/).
-
-```bash
-uv sync
-uv run pytest
-uv run ruff check .
-uv run ruff format .
-```
-
-`uv sync` creates `.venv`, installs the package in editable mode, and installs
-the `dev` dependency group (pytest, ruff, mkdocs) by default.
-
-## Release
-
-Tag a version that matches `src/etlantic/_version.py`, then push the tag:
-
-```bash
-git tag v0.10.0
-git push origin v0.10.0
-```
-
-GitHub Actions runs checks and publishes to PyPI using the `PYPI_API_TOKEN`
-repository secret.
 
 ## Quick example
 
@@ -146,13 +121,41 @@ Run the complete tested version at
 
 ## Documentation
 
-- [Documentation site](https://etlantic.readthedocs.io/)
-- [Getting Started](docs/01_GETTING_STARTED/README.md)
+- [Getting Started](docs/01_GETTING_STARTED/README.md) (start here)
 - [Capabilities and Limitations](docs/01_GETTING_STARTED/CAPABILITIES.md)
+- [Quickstart](docs/01_GETTING_STARTED/QUICKSTART.md)
 - [Evaluator brief](docs/01_GETTING_STARTED/EVALUATOR.md)
 - [Core Concepts](docs/02_FOUNDATIONS/CORE_CONCEPTS.md)
 - [Architecture](docs/02_FOUNDATIONS/ARCHITECTURE.md)
 - [Roadmap](docs/11_DEVELOPMENT/ROADMAP.md)
+
+Build the docs locally with `uv run mkdocs serve` (hosted site TBD).
+
+## Development
+
+Requires [uv](https://docs.astral.sh/uv/).
+
+```bash
+uv sync
+uv run pytest
+uv run ruff check .
+uv run ruff format .
+```
+
+`uv sync` creates `.venv`, installs the package in editable mode, and installs
+the `dev` dependency group (pytest, ruff, mkdocs) by default.
+
+## Release
+
+Tag a version that matches `src/etlantic/_version.py`, then push the tag:
+
+```bash
+git tag v0.10.0
+git push origin v0.10.0
+```
+
+GitHub Actions runs checks and publishes to PyPI using the `PYPI_API_TOKEN`
+repository secret. Publish steps wait 60 seconds between packages.
 
 ## License
 

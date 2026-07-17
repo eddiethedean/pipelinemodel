@@ -1,58 +1,66 @@
 # Examples
 
-## Runnable now (0.7)
+## Green path
 
-These scripts live in the repository `examples/` directory and are exercised by
-tests:
+Start with Capabilities → Installation → Quickstart, then use the runnable
+scripts below. Pages under **Design Studies** are aspirational and may show
+APIs that are not shipped.
+
+## Runnable guides (docs)
+
+- [Airflow Compile](AIRFLOW_COMPILE.md) — `examples/airflow_compile.py`
+- [SparkForge Adapter](SPARKFORGE_ADAPTER.md) — `tests/sparkforge/`
+
+## Runnable scripts (repository `examples/`)
+
+These scripts are exercised by CI. From a checkout:
 
 ### In-memory quickstart
 
 ```bash
-python examples/quickstart.py
+uv run python examples/quickstart.py
 ```
-
-Typed contracts, a local Python implementation, validation, planning,
-execution, a run report, and output inspection.
 
 ### JSON and CSV storage
 
 ```bash
-python examples/file_storage.py
+uv run python examples/file_storage.py
 ```
-
-Runs built-in JSON and CSV storage bindings end-to-end.
 
 ### Dataframe parity (Polars / Pandas)
 
 ```bash
-# requires etlantic-polars / etlantic-pandas
-python examples/dataframe_parity.py polars
-python examples/dataframe_parity.py pandas
+uv sync --group dataframes
+uv run python examples/dataframe_parity.py polars
+uv run python examples/dataframe_parity.py pandas
 ```
 
 ### SQL to SQL
 
 ```bash
-# requires etlantic-sql
-python examples/sql_to_sql.py
-python examples/sql_boundary_hybrid.py
-python examples/sql_transactional_write.py
-python examples/sql_failure_recovery.py
+uv sync --group sql
+uv run python examples/sql_to_sql.py
+uv run python examples/sql_boundary_hybrid.py
+uv run python examples/sql_transactional_write.py
+uv run python examples/sql_failure_recovery.py
 ```
 
 Defaults to in-memory SQLite for demos; set `ETLANTIC_SQL_URL` for
-PostgreSQL. Use `Profile(sql_engine="sql")` and
-`@….implementation("sql")`.
+PostgreSQL.
 
 ### Local PySpark
 
 ```bash
-# requires etlantic-pyspark
-python examples/pyspark_local.py
+uv sync --group pyspark
+uv run python examples/pyspark_local.py
 ```
 
-Use `Profile(spark_engine="pyspark")` and
-`@….implementation("pyspark")`.
+### Airflow compile
+
+```bash
+uv sync --group airflow
+uv run python examples/airflow_compile.py
+```
 
 ## Design studies (not installable)
 
@@ -60,16 +68,16 @@ The remaining pages in this section explore intended integrations. Each page
 opens with a Future design warning. They may contain APIs, packages, or
 commands that do not exist yet (or that go beyond the shipped surface).
 
-| Topic | Status |
+| Topic | Prefer instead |
 |---|---|
-| CSV and JSON through built-in storage | Use `examples/file_storage.py` |
-| Pandas and Polars pipelines | Use `examples/dataframe_parity.py` |
-| SQL execution and pushdown | Use `examples/sql_*.py` (+ SQL docs) |
-| PySpark batch | Use `examples/pyspark_local.py` (+ PySpark docs) |
-| Structured Streaming | Experimental foundation |
-| Airflow compilation | Available (`etlantic-airflow`) |
-| Graphviz DOT / HTML lineage | Available (`etlantic.viz`) |
-| SparkForge migration adapter | Available (`etlantic-sparkforge`) |
+| CSV and JSON through built-in storage | `examples/file_storage.py` |
+| Pandas and Polars pipelines | `examples/dataframe_parity.py` |
+| SQL execution and pushdown | `examples/sql_*.py` |
+| PySpark batch | `examples/pyspark_local.py` |
+| Airflow compilation | [Airflow Compile](AIRFLOW_COMPILE.md) |
+| Graphviz DOT / HTML lineage | `etlantic.viz` / `etlantic viz` |
+| SparkForge migration adapter | [SparkForge Adapter](SPARKFORGE_ADAPTER.md) |
+| Structured Streaming | Experimental foundation only |
 
 Do not use a design study as an installation or API reference. The
 [capabilities page](../01_GETTING_STARTED/CAPABILITIES.md) and

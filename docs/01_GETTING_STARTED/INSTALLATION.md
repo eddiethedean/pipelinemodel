@@ -6,28 +6,58 @@ a local runtime that executes plans with Python callables, in-memory
 artifacts, and stdlib JSON/CSV bindings, plus optional Polars, Pandas, SQL,
 PySpark, and Airflow plugins. Structured Streaming APIs are experimental.
 
+!!! warning "PyPI may not have 0.10.0 yet"
+    Until a matching `v0.10.0` release is published to PyPI, **install from
+    source** (recommended path below). Anonymous `pip install etlantic` can
+    fail with “No matching distribution.” See
+    [Troubleshooting](TROUBLESHOOTING.md).
+
 ## Requirements
 
 - Python 3.11 or newer
 - ContractModel as a companion package (installed automatically with ETLantic)
 
-[uv](https://docs.astral.sh/uv/) is recommended for contributors and lockfile
-workflows. Adopters can install with plain `pip`.
+[uv](https://docs.astral.sh/uv/) is recommended. Adopters can also use plain
+`pip` once wheels are on PyPI.
 
-## User Installation
+## Recommended: install from source
+
+```bash
+git clone https://github.com/eddiethedean/etlantic.git
+cd etlantic
+uv sync
+uv run python -c "import etlantic; print(etlantic.__version__)"
+uv run python examples/quickstart.py
+```
+
+`uv sync` creates `.venv`, installs the package in editable mode, and installs
+the `dev` group (pytest, ruff, mkdocs).
+
+### Editable install with pip (no uv)
+
+```bash
+git clone https://github.com/eddiethedean/etlantic.git
+cd etlantic
+python3.11 -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+python -m pip install -e .
+python -c "import etlantic; print(etlantic.__version__)"
+```
+
+## When wheels are on PyPI
 
 ```bash
 python3.11 -m pip install --upgrade pip
-python3.11 -m pip install etlantic
+python3.11 -m pip install 'etlantic>=0.10.0'
 ```
 
 Or with uv:
 
 ```bash
-uv add etlantic
+uv add 'etlantic>=0.10.0'
 ```
 
-Verify the installed version matches these docs (0.10.0 or newer):
+Verify:
 
 ```bash
 python -c "import etlantic; print(etlantic.__version__)"
@@ -36,7 +66,7 @@ python -c "import etlantic; print(etlantic.__version__)"
 ### Optional engine plugins
 
 Core never installs Polars, Pandas, database drivers, or PySpark. Add engines
-explicitly:
+explicitly (from a checkout use `uv sync --group …`; from PyPI use pip):
 
 ```bash
 pip install etlantic-polars    # Polars reference plugin
@@ -80,20 +110,22 @@ plugins.
 
 ## Upgrade
 
+Prefer a git checkout and `uv sync` until PyPI carries 0.10.0. When wheels
+exist:
+
 ```bash
-python -m pip install --upgrade etlantic
+python -m pip install --upgrade 'etlantic>=0.10.0'
 # or
 uv lock --upgrade-package etlantic
 ```
 
 Review the
 [changelog](https://github.com/eddiethedean/etlantic/blob/main/CHANGELOG.md)
-and [Migration 0.6 → 0.7](../11_DEVELOPMENT/MIGRATION_0_6_TO_0_7.md) before
-upgrading between 0.x releases because breaking changes remain possible.
+and migration guides under
+[Development](../11_DEVELOPMENT/README.md) before upgrading between 0.x
+releases because breaking changes remain possible.
 
 ## Development Setup
-
-Contributors need [uv](https://docs.astral.sh/uv/):
 
 ```bash
 git clone https://github.com/eddiethedean/etlantic.git
@@ -104,26 +136,24 @@ uv run ruff check .
 uv run ruff format --check .
 ```
 
-`uv sync` installs runtime dependencies, the editable package, and the `dev`
-group (pytest, ruff, mkdocs). The lockfile `uv.lock` pins exact versions.
-
 ### Common commands
 
 | Command | Purpose |
 |---|---|
 | `uv sync` | Create/update `.venv` from `uv.lock` |
 | `uv sync --group dataframes` | Also install Polars and Pandas plugins |
-| `uv sync --group pyspark` | Also install the PySpark plugin + sparkless (JVM-free tests) |
+| `uv sync --group pyspark` | Also install the PySpark plugin + sparkless |
 | `uv sync --group airflow` | Also install the Airflow orchestrator plugin |
 | `uv sync --group sql` | Also install the SQL plugin |
+| `uv sync --group sparkforge` | Also install the SparkForge adapter |
+| `uv sync --group keyring` | Also install the keyring provider |
+| `uv sync --group sqlmodel` | Also install the SQLModel bridge |
 | `uv lock` | Refresh the lockfile after dependency changes |
 | `uv run pytest` | Run tests |
-| `uv run pytest tests/spark` | Run Spark suite (uses sparkless by default) |
-| `uv run pytest tests/airflow` | Run Airflow compile suite |
 | `uv run ruff check .` | Lint |
-| `uv run ruff format .` | Format |
 | `uv run python scripts/check_docs.py` | Docs consistency gate |
 | `NO_MKDOCS_2_WARNING=1 uv run mkdocs build --strict` | Build the documentation site |
+| `uv run mkdocs serve` | Preview docs locally |
 
 ## Repository Layout
 
@@ -137,6 +167,7 @@ packages/etlantic-pandas/
 packages/etlantic-sql/
 packages/etlantic-pyspark/
 packages/etlantic-airflow/
+packages/etlantic-sparkforge/
 tests/
 examples/
 docs/
@@ -144,9 +175,9 @@ docs/
 
 ## Installation Problems
 
-See [Troubleshooting](TROUBLESHOOTING.md) for Python-version errors, version
-mismatches with the docs, missing plugins, stale virtual environments, and
-unsupported backend examples.
+See [Troubleshooting](TROUBLESHOOTING.md) for Python-version errors, missing
+PyPI wheels, version mismatches, missing plugins, and stale virtual
+environments.
 
 ## Dependency Philosophy
 
@@ -154,8 +185,7 @@ ETLantic keeps the core install small. Dataframe engines, SQL drivers,
 orchestrators, and storage clients belong in optional plugins—not the base
 package.
 
-See [Dependency Strategy](../11_DEVELOPMENT/DEPENDENCY_STRATEGY.md) for the
-full dependency policy.
+See [Dependency Strategy](../11_DEVELOPMENT/DEPENDENCY_STRATEGY.md).
 
 ## Next Step
 

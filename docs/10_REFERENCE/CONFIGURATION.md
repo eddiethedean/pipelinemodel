@@ -1,11 +1,10 @@
 # Configuration Reference
 
 !!! warning "Future design—not a ETLantic 0.10 API guide"
-    This page describes a proposed 1.0 configuration surface. ETLantic 0.6
+    This page describes a proposed 1.0 configuration surface. ETLantic 0.10
     does not load `etlantic.toml` or these environment variables. Configure
-    profiles and bindings in Python. For SQL, set `ETLANTIC_SQL_URL` and
-    `Profile(sql_engine="sql")` as documented in Installation and the SQL
-    pages.
+    profiles and bindings in Python. For what is shipped today, see
+    [Runtime configuration](RUNTIME_CONFIGURATION.md).
 
 
 ETLantic configuration binds portable pipeline models to concrete

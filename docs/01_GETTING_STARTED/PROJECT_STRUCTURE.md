@@ -32,7 +32,8 @@ customer-pipeline/
 │       │   ├── polars/          # optional (0.5+)
 │       │   ├── pandas/          # optional (0.5+)
 │       │   ├── sql/             # optional (0.6+)
-│       │   # spark/             # future — do not require yet
+│       │   ├── spark/           # optional (0.7+, etlantic-pyspark)
+│       │   # airflow compile lives in tooling / CI, not under implementations/
 │       │
 │       ├── pipelines/
 │       │   ├── customer_pipeline.py
@@ -61,8 +62,8 @@ customer-pipeline/
 
 ### contracts/
 
-Contains `Data` contract models (`Data` remains as a deprecated
-alias).
+Contains `Data` contract models (`Data` is the preferred public alias;
+`DataContractModel` remains as a deprecated name).
 
 ``` python
 class Customer(Data):
@@ -89,9 +90,9 @@ Contains runtime-specific implementations.
 Example:
 
 - Local Python (`"local"`)
-- Polars / Pandas (optional plugins in 0.5+)
-- SQL (`"sql"` via `etlantic-sql` and `Profile.sql_engine` in 0.6+)
-- Spark / remote (future)
+- Polars / Pandas (optional plugins)
+- SQL (`"sql"` via `etlantic-sql` and `Profile.sql_engine`)
+- PySpark (`"pyspark"` via `etlantic-pyspark` and `Profile.spark_engine`)
 
 A single transformation contract may have multiple implementations.
 

@@ -1,13 +1,12 @@
 # Environment Variables
 
 !!! warning "Future design—not a ETLantic 0.10 API guide"
-    This page describes a proposed 1.0 configuration surface. ETLantic 0.6
+    This page describes a proposed 1.0 configuration surface. ETLantic 0.10
     does not load `etlantic.toml` or most of these environment variables.
     Configure profiles and bindings in Python.
 
-    **Shipped in 0.6 for SQL:** `ETLANTIC_SQL_URL` is read by
-    `etlantic-sql` (and the SQL examples/fixtures). It is not part of the
-    proposed 1.0 `etlantic.toml` surface below.
+    **Shipped today:** see [Runtime configuration](RUNTIME_CONFIGURATION.md)
+    for `ETLANTIC_SQL_URL`, secret prefixes, and related vars.
 
 
 Environment variables provide deployment-time overrides and references to
