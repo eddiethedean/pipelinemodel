@@ -1,6 +1,6 @@
 # Documentation Status and Conventions
 
-ETLantic **0.16.0** implements the typed modeling kernel, contract
+ETLantic **0.17.0** implements the typed modeling kernel, contract
 interoperability, Validation / Pipeline Plan IR, the local runtime /
 operational model, dataframe execution (Polars reference + Pandas
 compatibility), SQL-native execution (`etlantic-sql`), distributed Spark batch
@@ -12,11 +12,11 @@ adapter (`etlantic-sparkforge`), `@Transformation.portable` /
 Pandas + SQL portable compilers for kernel + `portable-relational/1`, Gate A
 `Extract` / `Load` / `asset=` authoring, and optional `etlantic-prefect`
 direct-execution scheduling. Structured Streaming APIs are experimental.
-Advanced profiles graduate later under the 0.15 continuation backlog. Keep
-`@implementation(...)` for dialects or profiles outside the advertised claim
-set.
+Advanced profiles graduate under the 0.17 roadmap (Wave 1 / Wave 2 /
+continuation). Keep `@implementation(...)` for dialects or profiles outside
+the advertised claim set.
 
-Prefer pages marked **Available in 0.16** and the Green path on the docs home.
+Prefer pages marked **Available in 0.17** and the Green path on the docs home.
 Design Proposals and **Future design** chapters describe intended 1.0 surfaces
 and are not current APIs. Documentation serves three related purposes:
 
@@ -41,7 +41,7 @@ Public pages use these visible statuses:
 
 | Page status | Meaning |
 |---|---|
-| Available in 0.16 | Tested against the current package |
+| Available in 0.17 | Tested against the current package |
 | Shipped in 0.x | Available since that milestone (still current) |
 | Experimental | Public APIs that may change without a major version bump |
 | Partially available | Shipped and future behavior are explicitly separated |
@@ -103,7 +103,7 @@ Polars, PySpark, and Pandas.
 (Databricks/EMR/Connect), Dagster compile plugins, remaining Plugin SDK
 surfaces, optional Prefect `ExecutionScheduler` (**0.16** Gate B), authoring
 vocabulary cleanup (**0.16** Gate A), and advanced profile graduation
-(0.15 continuation). SQL lowering shipped in **0.15**.
+(**0.17**). SQL lowering shipped in **0.15**. Prefect MVP shipped in **0.16**.
 
 ## Normative Authority
 

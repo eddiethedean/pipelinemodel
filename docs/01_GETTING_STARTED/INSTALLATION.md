@@ -17,14 +17,14 @@ For reproducible evaluation, pin the published release:
 
 ```bash
 python3.11 -m pip install --upgrade pip
-python3.11 -m pip install 'etlantic==0.16.0'
+python3.11 -m pip install 'etlantic==0.17.0'
 etlantic --version
 ```
 
 Or with [uv](https://docs.astral.sh/uv/):
 
 ```bash
-uv add 'etlantic==0.16.0'
+uv add 'etlantic==0.17.0'
 uv run etlantic --version
 ```
 
@@ -41,7 +41,7 @@ python -c "import etlantic; print(etlantic.__version__)"
 
 ```powershell
 py -3.11 -m pip install --upgrade pip
-py -3.11 -m pip install 'etlantic==0.16.0'
+py -3.11 -m pip install 'etlantic==0.17.0'
 py -3.11 -m etlantic --version
 # equivalent: etlantic --version
 ```
@@ -52,14 +52,14 @@ Core never installs Polars, Pandas, database drivers, or PySpark. Add engines
 explicitly (match the core minor):
 
 ```bash
-pip install 'etlantic-polars==0.16.0'     # dataframe + Polars portable compiler
-pip install 'etlantic-pandas==0.16.0'     # dataframe + Pandas portable compiler
-pip install 'etlantic-sql==0.16.0'        # PostgreSQL SQL reference plugin
-pip install 'etlantic-pyspark==0.16.0'    # PySpark plugin + portable compiler
-pip install 'etlantic-airflow==0.16.0'    # Airflow DAG compiler
-pip install 'etlantic-keyring==0.16.0'    # OS keyring secret provider
-pip install 'etlantic-sqlmodel==0.16.0'   # SQLModel bridge helpers
-pip install 'etlantic-sparkforge==0.16.0' # SparkForge → ETLantic IR adapter
+pip install 'etlantic-polars==0.17.0'     # dataframe + Polars portable compiler
+pip install 'etlantic-pandas==0.17.0'     # dataframe + Pandas portable compiler
+pip install 'etlantic-sql==0.17.0'        # PostgreSQL SQL reference plugin
+pip install 'etlantic-pyspark==0.17.0'    # PySpark plugin + portable compiler
+pip install 'etlantic-airflow==0.17.0'    # Airflow DAG compiler
+pip install 'etlantic-keyring==0.17.0'    # OS keyring secret provider
+pip install 'etlantic-sqlmodel==0.17.0'   # SQLModel bridge helpers
+pip install 'etlantic-sparkforge==0.17.0' # SparkForge → ETLantic IR adapter
 # or extras (resolve to the same minor):
 pip install 'etlantic[polars]'
 pip install 'etlantic[pandas]'

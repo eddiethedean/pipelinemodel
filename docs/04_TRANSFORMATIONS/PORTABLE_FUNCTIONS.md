@@ -8,7 +8,7 @@
     [portable compiler matrix](../10_REFERENCE/PORTABLE_COMPILER_MATRIX.md)).
     Kernel + `portable-relational/1` execute on Polars / PySpark / Pandas in
     0.13–0.14; safe SQL lowering for that claim set shipped in **0.15**;
-    advanced families graduate under the 0.15 continuation backlog.
+    advanced families graduate under the 0.17 roadmap.
 
 Portable functions are imported through one stable namespace:
 
@@ -209,8 +209,8 @@ published standard catalog and remain excluded until standardized.
 DTCS 3.0 publishes independently claimable profiles that cover many formerly
 excluded PySpark-like surfaces. Facade methods may exist for IR authoring;
 ETLantic must not advertise them as **executable** until the corresponding
-compiler claims the profile and conformance fixtures pass (0.15 continuation,
-not the 0.15 SQL exit gate):
+compiler claims the profile and conformance fixtures pass (0.17 Waves 1–2 or
+continuation, not the 0.15 SQL exit gate):
 
 | Planned facade examples | DTCS 3.0 profile |
 |---|---|

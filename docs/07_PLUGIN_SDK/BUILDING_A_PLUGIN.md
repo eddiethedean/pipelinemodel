@@ -193,14 +193,16 @@ mandatory capability the plugin cannot provide.
 Portable compilers must advertise exact DTCS profiles, actions, functions,
 operators, types, and modes. The compiler name alone never implies coverage.
 
-### First-party portable policy (0.17+)
+### First-party portable policy (0.17)
 
-Beginning with the 0.17+ roadmap, every first-party ETLantic plugin that
+Beginning with the 0.17 roadmap, every first-party ETLantic plugin that
 executes dataframe, SQL, or Spark transformations is expected to ship a
 portable transform compiler as well as its runtime integration. The compiler
 may live in the same distribution or a clearly documented companion package,
 but it must use the `etlantic.transform_compilers` entry point and pass the
-public portable conformance suite for every advertised claim.
+public portable conformance suite for every advertised claim. Gate A of 0.17
+makes those claims inspectable through the capability matrix, `etlantic plugin
+list` transform-compiler inventory, and guide-drift checks.
 
 This is a first-party completeness policy, not a universal protocol
 requirement. Third-party execution plugins may be native-only. Orchestrator,
@@ -210,10 +212,11 @@ transformations. A native-only plugin must omit the compiler entry point and
 state the limitation explicitly.
 
 Portable coverage is capability-based rather than all-or-nothing. First-party
-plugins expand support one DTCS family at a time, and a family graduates only
-after normative semantics, shared fixtures, and two independent conformant
-compilers exist. Until then, backend-specific behavior stays available through
-native implementations.
+plugins expand support by graduated DTCS family under the 0.17 Wave 1 / Wave 2
+plan, and a family graduates only after normative semantics, shared fixtures,
+and two independent conformant compilers exist. Until then, backend-specific
+behavior stays available through native implementations. Families outside the
+0.17 exit gate remain in 0.17 continuation.
 
 ## 5. Keep discovery deterministic and safe
 

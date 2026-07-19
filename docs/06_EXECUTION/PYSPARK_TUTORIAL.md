@@ -1,6 +1,6 @@
 # Run a Local PySpark Batch
 
-> **Status: Available in ETLantic 0.16.0.** Structured Streaming remains
+> **Status: Available in ETLantic 0.17.0.** Structured Streaming remains
 > experimental.
 
 

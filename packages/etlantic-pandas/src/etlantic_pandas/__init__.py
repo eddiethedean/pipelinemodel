@@ -26,7 +26,7 @@ from etlantic.dataframe.protocol import (
 )
 from etlantic.storage.protocol import as_records, records_to_dicts
 
-__version__ = "0.16.0"
+__version__ = "0.17.0"
 
 __all__ = [
     "PandasDataframePlugin",

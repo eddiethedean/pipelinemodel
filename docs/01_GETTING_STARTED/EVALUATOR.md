@@ -87,8 +87,8 @@ How to read status labels in deeper chapters:
 - Stable 1.0 compatibility guarantees
 - Managed Databricks/EMR/Connect Spark providers
 - **Advanced portable profiles** — Polars, PySpark, Pandas, and SQL claim
-  kernel + `portable-relational/1` in 0.13–0.15. Richer profiles graduate one
-  family at a time afterward (0.15 continuation). Keep a native
+  kernel + `portable-relational/1` in 0.13–0.15. Richer profiles graduate under
+  **0.17** (Wave 1 / Wave 2 / continuation). Keep a native
   `@implementation(...)` for profiles outside the advertised claim set, or
   for `portable_transform_policy="native"`.
 
@@ -108,7 +108,7 @@ How to read status labels in deeper chapters:
 
 ## Recommended evaluation path
 
-1. [Installation](INSTALLATION.md) — `pip install etlantic==0.16.0`
+1. [Installation](INSTALLATION.md) — `pip install etlantic==0.17.0`
 2. [Quickstart](QUICKSTART.md) or `examples/quickstart.py`
 3. [Capabilities](CAPABILITIES.md)
 4. Optional: `examples/portable_polars_kernel.py` with `etlantic-polars`

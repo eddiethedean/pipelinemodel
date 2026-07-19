@@ -53,4 +53,5 @@ vocabulary cleanup is the independent Gate A. See the
 ## Not in 0.15
 
 Advanced portable profile graduation (window, reshape, complex values, …)
-remains **0.15 continuation** work and is not required to close this release.
+was deferred as **0.15 continuation** and is now owned by **0.17**; it is not
+required to close this release.

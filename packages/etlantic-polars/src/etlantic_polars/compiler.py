@@ -18,15 +18,23 @@ from etlantic.transform.compiler import (
     TransformSupportFinding,
     TransformSupportReport,
 )
-from etlantic.transform.protocol import KERNEL_PROFILE_V1, RELATIONAL_PROFILE_V1
+from etlantic.transform.protocol import (
+    KERNEL_PROFILE_V1,
+    PROFILE_COMPLEX_TYPES,
+    PROFILE_COMPLEX_VALUES,
+    PROFILE_CONVERSION,
+    PROFILE_RESHAPE,
+    PROFILE_STATISTICS,
+    PROFILE_STRING_ADVANCED,
+    PROFILE_WINDOW_V1,
+    RELATIONAL_PROFILE_V1,
+)
 from etlantic_polars.lowering.actions import (
     CLAIMED_ACTIONS,
-    KERNEL_ACTIONS,
-    RELATIONAL_ACTIONS,
     apply_action,
 )
 
-__version__ = "0.16.0"
+__version__ = "0.17.0"
 
 # Kernel scalar / string / numeric functions claimed in 0.12+.
 KERNEL_FUNCTIONS = frozenset(
@@ -69,7 +77,39 @@ RELATIONAL_FUNCTIONS = frozenset(
     }
 )
 
-CLAIMED_FUNCTIONS = KERNEL_FUNCTIONS | RELATIONAL_FUNCTIONS
+WAVE_FUNCTIONS = frozenset(
+    {
+        "dtcs:trim",
+        "dtcs:ltrim",
+        "dtcs:rtrim",
+        "dtcs:regex_extract",
+        "dtcs:regex_replace",
+        "dtcs:split",
+        "dtcs:to_string",
+        "dtcs:try_cast",
+        "dtcs:cast",
+        "dtcs:to_integer",
+        "dtcs:variance",
+        "dtcs:stddev",
+        "dtcs:corr",
+        "dtcs:row_number",
+        "dtcs:rank",
+        "dtcs:dense_rank",
+        "dtcs:lag",
+        "dtcs:lead",
+        "dtcs:first_value",
+        "dtcs:last_value",
+        "dtcs:array",
+        "dtcs:map",
+        "dtcs:object",
+        "dtcs:size",
+        "dtcs:field",
+        "dtcs:index",
+        "dtcs:element_at",
+    }
+)
+
+CLAIMED_FUNCTIONS = KERNEL_FUNCTIONS | RELATIONAL_FUNCTIONS | WAVE_FUNCTIONS
 
 _JOIN_TYPES = frozenset(
     {"inner", "left", "right", "full", "semi", "anti", "cross", "outer"}
@@ -88,7 +128,19 @@ class PolarsTransformCompiler:
 
     def __init__(self) -> None:
         caps = TransformCapabilities(
-            profiles=frozenset({KERNEL_PROFILE_V1, RELATIONAL_PROFILE_V1}),
+            profiles=frozenset(
+                {
+                    KERNEL_PROFILE_V1,
+                    RELATIONAL_PROFILE_V1,
+                    PROFILE_STRING_ADVANCED,
+                    PROFILE_CONVERSION,
+                    PROFILE_STATISTICS,
+                    PROFILE_WINDOW_V1,
+                    PROFILE_COMPLEX_VALUES,
+                    PROFILE_COMPLEX_TYPES,
+                    PROFILE_RESHAPE,
+                }
+            ),
             actions=CLAIMED_ACTIONS,
             functions=CLAIMED_FUNCTIONS,
             lazy=True,
@@ -116,12 +168,14 @@ class PolarsTransformCompiler:
         from etlantic.transform.capabilities import (
             merge_requirements,
             requirements_from_plan,
+            three_state_findings,
         )
 
         req = merge_requirements(requirements, requirements_from_plan(dict(definition)))
         report = match_requirements(req, self._info.capabilities)
         findings = list(report.findings)
         findings.extend(_analyze_modes(definition))
+        findings.extend(three_state_findings(definition, self._info.capabilities))
         return TransformSupportReport(
             supported=not findings,
             findings=tuple(findings),
@@ -291,19 +345,7 @@ def _analyze_modes(definition: Mapping[str, Any]) -> list[TransformSupportFindin
                         expression_path=path,
                     )
                 )
-        elif name == "dtcs:with_fields":
-            for item in params.get("assignments") or []:
-                if isinstance(item, dict) and item.get("window") is not None:
-                    findings.append(
-                        TransformSupportFinding(
-                            code="PMXFORM301",
-                            requirement="action:dtcs:with_fields:window",
-                            reason="with_fields window specs are not implemented",
-                            expression_path=path,
-                        )
-                    )
-                    break
-        elif name in RELATIONAL_ACTIONS | KERNEL_ACTIONS:
+        elif name in CLAIMED_ACTIONS:
             continue
         elif name is not None:
             findings.append(

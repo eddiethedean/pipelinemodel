@@ -52,11 +52,11 @@ Typed contracts ──▶ Validation ──▶ Deterministic plan ──▶ Run 
 - **Adopt incrementally.** The core has no dataframe, SQL, Spark, or Airflow
   dependency. Install only the integrations you need.
 
-> **Project status:** Alpha **0.16.0**. The local runtime and reference plugins
+> **Project status:** Alpha **0.17.0**. The local runtime and reference plugins
 > are available today. Structured Streaming is experimental. Portable
 > transformation authoring and Polars/PySpark/Pandas/SQL relational compilers
 > plus the public conformance SDK are available; advanced portable profiles
-> follow as **0.15 continuation**. See the
+> graduate under **0.17**. See the
 > [capabilities guide](docs/01_GETTING_STARTED/CAPABILITIES.md) before choosing
 > a production architecture.
 
@@ -235,7 +235,7 @@ before mutation.
 
 ## Capability boundary
 
-| Capability | 0.16 |
+| Capability | 0.17 |
 |---|---|
 | Typed modeling, validation, contracts, and deterministic planning | Available |
 | Local Python execution and structured run reports | Available |
@@ -250,7 +250,7 @@ before mutation.
 | Polars + PySpark + Pandas + SQL portable compilers (kernel + relational `/1`) | Available |
 | Public portable transform conformance SDK | Available |
 | Structured Streaming | Experimental |
-| Advanced portable profile graduation | Planned for **0.15 continuation** |
+| Advanced portable profile graduation | **Available** on Polars + PySpark (0.17); Pandas/SQL baseline only |
 
 See [Capabilities and Limitations](docs/01_GETTING_STARTED/CAPABILITIES.md)
 and the [roadmap](ROADMAP.md) for the precise support

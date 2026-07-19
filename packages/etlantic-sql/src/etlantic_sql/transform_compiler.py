@@ -32,7 +32,7 @@ from etlantic_sql.lowering.actions import (
     apply_action_to_query,
 )
 
-__version__ = "0.16.0"
+__version__ = "0.17.0"
 
 KERNEL_FUNCTIONS = frozenset(
     {
@@ -121,12 +121,14 @@ class SqlTransformCompiler:
         from etlantic.transform.capabilities import (
             merge_requirements,
             requirements_from_plan,
+            three_state_findings,
         )
 
         req = merge_requirements(requirements, requirements_from_plan(dict(definition)))
         report = match_requirements(req, self._info.capabilities)
         findings = list(report.findings)
         findings.extend(_analyze_modes(definition))
+        findings.extend(three_state_findings(definition, self._info.capabilities))
         # Reject trusted SQL fragments in portable definitions.
         blob = json.dumps(definition, sort_keys=True)
         if "trusted_fragment" in blob or "TrustedSqlFragment" in blob:

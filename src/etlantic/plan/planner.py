@@ -427,7 +427,6 @@ def _select_implementations(
     )
     from etlantic.transform.discovery import (
         discover_transform_compilers_for_profile,
-        load_transform_compiler,
     )
 
     selected: dict[str, ImplementationDescriptor] = {}
@@ -451,9 +450,7 @@ def _select_implementations(
             portable_def = transform.portable_definition()
 
         requested_engine = engine
-        compiler = compilers.get(requested_engine) or load_transform_compiler(
-            requested_engine
-        )
+        compiler = compilers.get(requested_engine)
 
         # Registry fallback: transform_id::engine. Do not short-circuit
         # prefer/require when a portable definition + compiler exist — that
@@ -518,6 +515,11 @@ def _select_implementations(
                     },
                     support_summary=report.to_dict(),
                     portable_plan=dict(portable_def.plan),
+                    metadata={
+                        "compiler_capabilities": info.capabilities.to_dict(),
+                        "support_summary": report.to_dict(),
+                        "selection_reason": "portable_compiled",
+                    },
                 )
                 continue
 

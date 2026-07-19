@@ -293,7 +293,6 @@ async def execute_portable_spark_step(
     )
     from etlantic.transform.discovery import (
         discover_transform_compilers_for_profile,
-        load_transform_compiler,
     )
 
     if session_handle is None or session_handle.session is None:
@@ -327,9 +326,7 @@ async def execute_portable_spark_step(
             compiler = candidate
             break
     else:
-        compiler = compilers.get(descriptor.engine) or load_transform_compiler(
-            descriptor.engine
-        )
+        compiler = compilers.get(descriptor.engine)
     if compiler is None:
         raise NodeExecutionError(
             redact_message(

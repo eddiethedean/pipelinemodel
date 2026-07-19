@@ -47,6 +47,20 @@ def test_cli_plugin_list() -> None:
     assert "plugins" in payload
 
 
+def test_cli_plugin_list_transform_compiler() -> None:
+    result = runner.invoke(
+        app, ["plugin", "list", "--kind", "transform_compiler", "--format", "json"]
+    )
+    assert result.exit_code == 0, result.stdout + result.stderr
+    payload = json.loads(result.stdout)
+    assert "plugins" in payload
+    compilers = [p for p in payload["plugins"] if p.get("kind") == "transform_compiler"]
+    # Workspace may or may not have optional compilers installed in core CI.
+    for item in compilers:
+        assert "capabilities" in item
+        assert "compiler_protocol" in item
+
+
 def test_cli_generate(tmp_path: Path) -> None:
     out = tmp_path / "contracts"
     result = runner.invoke(

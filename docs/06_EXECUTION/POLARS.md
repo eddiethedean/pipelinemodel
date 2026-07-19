@@ -44,7 +44,7 @@ metadata aliases — no candidate `/2` extensions). It:
 It must not fall back to Python row functions or collect data to emulate an
 unsupported operation. Richer authored profiles (windows, complex values,
 conversion, …) still need a native `@implementation("polars")` or a later
-compiler claim under the 0.15 continuation backlog.
+compiler claim under the 0.17 roadmap.
 
 ## Example
 

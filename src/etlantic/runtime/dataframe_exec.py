@@ -369,7 +369,6 @@ async def _execute_portable(
     )
     from etlantic.transform.discovery import (
         discover_transform_compilers_for_profile,
-        load_transform_compiler,
     )
 
     profile = getattr(plan, "profile_snapshot", None)
@@ -408,9 +407,7 @@ async def _execute_portable(
             )
     else:
         compilers = discover_transform_compilers_for_profile(profile)
-        compiler = compilers.get(descriptor.engine) or load_transform_compiler(
-            descriptor.engine
-        )
+        compiler = compilers.get(descriptor.engine)
     if compiler is None:
         raise NodeExecutionError(
             redact_message(

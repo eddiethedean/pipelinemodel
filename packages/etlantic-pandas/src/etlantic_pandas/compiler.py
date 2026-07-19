@@ -28,7 +28,7 @@ from etlantic_pandas.lowering.actions import (
     apply_action,
 )
 
-__version__ = "0.16.0"
+__version__ = "0.17.0"
 
 KERNEL_FUNCTIONS = frozenset(
     {
@@ -117,6 +117,7 @@ class PandasTransformCompiler:
         from etlantic.transform.capabilities import (
             merge_requirements,
             requirements_from_plan,
+            three_state_findings,
         )
 
         del context
@@ -137,6 +138,7 @@ class PandasTransformCompiler:
                 )
             )
         findings.extend(_analyze_modes(definition))
+        findings.extend(three_state_findings(definition, self._info.capabilities))
         return TransformSupportReport(
             supported=not findings,
             findings=tuple(findings),

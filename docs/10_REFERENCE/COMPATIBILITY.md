@@ -13,15 +13,15 @@ This table describes the declared compatibility of ETLantic 0.16.0.
 | Pipeline plan schema | `etlantic.plan/1` |
 | Dataframe protocol | `etlantic.dataframe/1` |
 | SQL protocol | `etlantic.sql/1` |
-| Polars plugin | `etlantic-polars==0.16.0` |
-| Pandas plugin | `etlantic-pandas==0.16.0` |
-| SQL plugin | `etlantic-sql==0.16.0` |
-| PySpark plugin | `etlantic-pyspark==0.16.0` |
-| Airflow plugin | `etlantic-airflow==0.16.0` |
-| Prefect scheduler | `etlantic-prefect==0.16.0` |
-| Keyring provider | `etlantic-keyring==0.16.0` |
-| SQLModel bridge | `etlantic-sqlmodel==0.16.0` |
-| SparkForge adapter | `etlantic-sparkforge==0.16.0` |
+| Polars plugin | `etlantic-polars==0.17.0` |
+| Pandas plugin | `etlantic-pandas==0.17.0` |
+| SQL plugin | `etlantic-sql==0.17.0` |
+| PySpark plugin | `etlantic-pyspark==0.17.0` |
+| Airflow plugin | `etlantic-airflow==0.17.0` |
+| Prefect scheduler | `etlantic-prefect==0.17.0` |
+| Keyring provider | `etlantic-keyring==0.17.0` |
+| SQLModel bridge | `etlantic-sqlmodel==0.17.0` |
+| SparkForge adapter | `etlantic-sparkforge==0.17.0` |
 | Orchestration protocol | `etlantic.orchestration/1` |
 | DTCS Transformation Plan protocol | Published in DTCS 3.0 / `dtcs` 0.13 as `dtcs.transform-plan/2` (v1 readable); ETLantic authoring shipped in 0.11 |
 | Portable authoring profile | Shipped as `etlantic.transform/1` (full DTCS 3.0 facade→IR authoring) |
@@ -60,10 +60,10 @@ Package metadata declares these backend dependency ranges:
 A declared range means the resolver may install that version; it does not mean
 every backend version and operating system combination is exercised in CI.
 For a controlled deployment, test the exact resolved environment and pin
-`etlantic==0.16.0` plus every official plugin to `==0.16.0`.
+`etlantic==0.17.0` plus every official plugin to `==0.17.0`.
 
 Core extras already enforce exact official plugin versions, for example
-`etlantic[polars]==0.16.0` depends on `etlantic-polars==0.16.0`. Official
+`etlantic[polars]==0.17.0` depends on `etlantic-polars==0.17.0`. Official
 plugin source metadata accepts core `etlantic>=0.16.0,<0.17`, which is
 minor-matched but less exact. Published, older, or third-party plugin metadata
 may use a broader bound such as `etlantic>=0.14,<1.0`; do not treat that broad
@@ -79,19 +79,19 @@ already implemented. Compatibility is tracked independently:
 |---|---|---|---|
 | `dtcs:profile/portable-relational-kernel/1` | Published (2.0) | shipped (authoring) | shipped (Polars + PySpark + Pandas, 0.12–0.14) |
 | `dtcs:profile/portable-relational/1` | Published (2.0) | shipped (authoring) | shipped (Polars + PySpark + Pandas, 0.13–0.14) |
-| `dtcs:profile/portable-window/1` | Experimental (2.0) | shipped (alias authoring) | 0.15 continuation (two-compiler graduation; not 0.15 exit gate) |
-| `dtcs:profile/portable-complex-types/1` | Experimental (2.0) | shipped (alias authoring) | 0.15 continuation (two-compiler graduation; not 0.15 exit gate) |
+| `dtcs:profile/portable-window/1` | Experimental (2.0) | shipped (alias authoring) | shipped (Polars + PySpark, 0.17 Gate B) |
+| `dtcs:profile/portable-complex-types/1` | Experimental (2.0) | shipped (alias authoring) | shipped (Polars + PySpark, 0.17 Gate C) |
 | `dtcs:profile/portable-relational-kernel/2` | Candidate (3.0) | shipped (authoring, plan v2) | shipped (plan-v2 metadata via Polars kernel, 0.12) |
 | `dtcs:profile/portable-relational/2` | Candidate (3.0) | shipped (authoring) | metadata alias of `/1` on Polars + PySpark + Pandas (0.13–0.14); no candidate extensions |
-| `dtcs:profile/portable-string-advanced/1` | Experimental (3.0) | shipped (authoring) | 0.15 continuation (not 0.15 exit gate) |
-| `dtcs:profile/portable-conversion/1` | Experimental (3.0) | shipped (authoring) | 0.15 continuation (not 0.15 exit gate) |
-| `dtcs:profile/portable-statistics/1` | Experimental (3.0) | shipped (authoring) | 0.15 continuation (not 0.15 exit gate) |
-| `dtcs:profile/portable-complex-values/1` | Experimental (3.0) | shipped (authoring) | 0.15 continuation (not 0.15 exit gate) |
-| `dtcs:profile/portable-reshape/1` | Experimental (3.0) | shipped (authoring) | 0.15 continuation (not 0.15 exit gate) |
-| `dtcs:profile/portable-relational-extended/1` | Experimental (3.0) | shipped (authoring) | 0.15 continuation (not 0.15 exit gate) |
-| `dtcs:profile/portable-temporal-iana/1` | Experimental (3.0) | shipped (authoring) | 0.15 continuation (not 0.15 exit gate) |
-| `dtcs:profile/portable-nondeterministic/1` | Experimental (3.0) | shipped (authoring) | 0.15 continuation (policy-gated; not 0.15 exit gate) |
-| `dtcs:profile/portable-window/2` | Candidate (3.0) | shipped (authoring) | 0.15 continuation (not 0.15 exit gate) |
+| `dtcs:profile/portable-string-advanced/1` | Experimental (3.0) | shipped (authoring) | shipped (Polars + PySpark, 0.17 Gate B) |
+| `dtcs:profile/portable-conversion/1` | Experimental (3.0) | shipped (authoring) | shipped (Polars + PySpark, 0.17 Gate B) |
+| `dtcs:profile/portable-statistics/1` | Experimental (3.0) | shipped (authoring) | shipped (Polars + PySpark, 0.17 Gate B) |
+| `dtcs:profile/portable-complex-values/1` | Experimental (3.0) | shipped (authoring) | shipped (Polars + PySpark, 0.17 Gate C) |
+| `dtcs:profile/portable-reshape/1` | Experimental (3.0) | shipped (authoring) | shipped (Polars + PySpark, 0.17 Gate C) |
+| `dtcs:profile/portable-relational-extended/1` | Experimental (3.0) | shipped (authoring) | 0.17 continuation |
+| `dtcs:profile/portable-temporal-iana/1` | Experimental (3.0) | shipped (authoring) | 0.17 continuation |
+| `dtcs:profile/portable-nondeterministic/1` | Experimental (3.0) | shipped (authoring) | 0.17 continuation (policy-gated) |
+| `dtcs:profile/portable-window/2` | Candidate (3.0) | shipped (authoring) | 0.17 continuation |
 
 See [Capabilities](../01_GETTING_STARTED/CAPABILITIES.md) and the
 [DTCS 3.0 publication record](../11_DEVELOPMENT/DTCS_3_0_SPEC_PROPOSAL.md).

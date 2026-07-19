@@ -476,6 +476,477 @@ def _reject_suffix_collision() -> FixtureCase:
     )
 
 
+def _string_advanced_trim_regex() -> FixtureCase:
+    from etlantic.transform.protocol import PROFILE_STRING_ADVANCED
+
+    return FixtureCase(
+        name="string_advanced_trim_regex_replace",
+        required_profiles=frozenset({KERNEL_PROFILE_V1, PROFILE_STRING_ADVANCED}),
+        required_actions=frozenset({"dtcs:with_fields", "dtcs:project"}),
+        required_functions=frozenset({"dtcs:trim", "dtcs:regex_replace"}),
+        plan={
+            "planIdentity": "dtcs.transform-plan/2",
+            "inputs": {"t": {"id": "t"}},
+            "actions": [
+                {
+                    "id": "w1",
+                    "kind": {
+                        "action": "dtcs:with_fields",
+                        "id": "w1",
+                        "parameters": {
+                            "assignments": [
+                                {
+                                    "name": "name",
+                                    "expression": {
+                                        "kind": "call",
+                                        "callee": "dtcs:trim",
+                                        "args": [
+                                            {
+                                                "kind": "fieldRef",
+                                                "scope": "field",
+                                                "target": "name",
+                                            }
+                                        ],
+                                    },
+                                },
+                                {
+                                    "name": "code",
+                                    "expression": {
+                                        "kind": "call",
+                                        "callee": "dtcs:regex_replace",
+                                        "args": [
+                                            {
+                                                "kind": "fieldRef",
+                                                "scope": "field",
+                                                "target": "code",
+                                            },
+                                            {
+                                                "kind": "literal",
+                                                "value": {
+                                                    "type": "string",
+                                                    "value": r"\d+",
+                                                },
+                                            },
+                                            {
+                                                "kind": "literal",
+                                                "value": {
+                                                    "type": "string",
+                                                    "value": "N",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ]
+                        },
+                        "target": "t",
+                    },
+                },
+                {
+                    "id": "p1",
+                    "kind": {
+                        "action": "dtcs:project",
+                        "id": "p1",
+                        "parameters": {"fields": ["name", "code"]},
+                        "target": "w1",
+                    },
+                },
+            ],
+            "outputs": {"result": {"id": "result"}},
+            "requirements": {
+                "dependencies": [{"from": "p1", "to": "result", "reason": "lineage"}]
+            },
+        },
+        inputs={"t": [{"name": "  Alice  ", "code": "A12B"}]},
+        expected=[{"name": "Alice", "code": "ANB"}],
+    )
+
+
+def _conversion_to_string() -> FixtureCase:
+    from etlantic.transform.protocol import PROFILE_CONVERSION
+
+    return FixtureCase(
+        name="conversion_to_string",
+        required_profiles=frozenset({KERNEL_PROFILE_V1, PROFILE_CONVERSION}),
+        required_actions=frozenset({"dtcs:project"}),
+        required_functions=frozenset({"dtcs:to_string"}),
+        plan={
+            "planIdentity": "dtcs.transform-plan/2",
+            "inputs": {"t": {"id": "t"}},
+            "actions": [
+                {
+                    "id": "p1",
+                    "kind": {
+                        "action": "dtcs:project",
+                        "id": "p1",
+                        "parameters": {
+                            "fields": [
+                                {
+                                    "name": "label",
+                                    "expression": {
+                                        "kind": "call",
+                                        "callee": "dtcs:to_string",
+                                        "args": [
+                                            {
+                                                "kind": "fieldRef",
+                                                "scope": "field",
+                                                "target": "n",
+                                            }
+                                        ],
+                                    },
+                                }
+                            ]
+                        },
+                        "target": "t",
+                    },
+                }
+            ],
+            "outputs": {"result": {"id": "result"}},
+            "requirements": {
+                "dependencies": [{"from": "p1", "to": "result", "reason": "lineage"}]
+            },
+        },
+        inputs={"t": [{"n": 42}]},
+        expected=[{"label": "42"}],
+    )
+
+
+def _statistics_variance() -> FixtureCase:
+    from etlantic.transform.protocol import PROFILE_STATISTICS
+
+    return FixtureCase(
+        name="statistics_variance",
+        required_profiles=frozenset(
+            {KERNEL_PROFILE_V1, RELATIONAL_PROFILE_V1, PROFILE_STATISTICS}
+        ),
+        required_actions=frozenset({"dtcs:aggregate"}),
+        required_functions=frozenset({"dtcs:variance"}),
+        plan={
+            "planIdentity": "dtcs.transform-plan/2",
+            "inputs": {"t": {"id": "t"}},
+            "actions": [
+                {
+                    "id": "a1",
+                    "kind": {
+                        "action": "dtcs:aggregate",
+                        "id": "a1",
+                        "parameters": {
+                            "groupBy": [],
+                            "aggregations": [
+                                {
+                                    "name": "v",
+                                    "expression": {
+                                        "kind": "call",
+                                        "callee": "dtcs:variance",
+                                        "args": [
+                                            {
+                                                "kind": "fieldRef",
+                                                "scope": "field",
+                                                "target": "x",
+                                            }
+                                        ],
+                                    },
+                                }
+                            ],
+                        },
+                        "target": "t",
+                    },
+                }
+            ],
+            "outputs": {"result": {"id": "result"}},
+            "requirements": {
+                "dependencies": [{"from": "a1", "to": "result", "reason": "lineage"}]
+            },
+        },
+        inputs={"t": [{"x": 1.0}, {"x": 3.0}]},
+        expected=[{"v": 2.0}],
+    )
+
+
+def _window_v1_row_number() -> FixtureCase:
+    from etlantic.transform.protocol import PROFILE_WINDOW_V1
+
+    return FixtureCase(
+        name="window_v1_row_number",
+        required_profiles=frozenset({KERNEL_PROFILE_V1, PROFILE_WINDOW_V1}),
+        required_actions=frozenset({"dtcs:with_fields", "dtcs:project"}),
+        required_functions=frozenset({"dtcs:row_number"}),
+        plan={
+            "planIdentity": "dtcs.transform-plan/2",
+            "inputs": {"t": {"id": "t"}},
+            "actions": [
+                {
+                    "id": "w1",
+                    "kind": {
+                        "action": "dtcs:with_fields",
+                        "id": "w1",
+                        "parameters": {
+                            "assignments": [
+                                {
+                                    "name": "rn",
+                                    "expression": {
+                                        "kind": "call",
+                                        "callee": "dtcs:row_number",
+                                        "args": [],
+                                    },
+                                    "window": {
+                                        "partitionBy": ["g"],
+                                        "orderBy": [
+                                            {
+                                                "expression": {
+                                                    "kind": "fieldRef",
+                                                    "scope": "field",
+                                                    "target": "x",
+                                                },
+                                                "direction": "asc",
+                                            }
+                                        ],
+                                    },
+                                }
+                            ]
+                        },
+                        "target": "t",
+                    },
+                },
+                {
+                    "id": "p1",
+                    "kind": {
+                        "action": "dtcs:project",
+                        "id": "p1",
+                        "parameters": {"fields": ["g", "x", "rn"]},
+                        "target": "w1",
+                    },
+                },
+            ],
+            "outputs": {"result": {"id": "result"}},
+            "requirements": {
+                "dependencies": [{"from": "p1", "to": "result", "reason": "lineage"}]
+            },
+        },
+        inputs={"t": [{"g": "a", "x": 2}, {"g": "a", "x": 1}, {"g": "b", "x": 9}]},
+        expected=[
+            {"g": "a", "x": 1, "rn": 1},
+            {"g": "a", "x": 2, "rn": 2},
+            {"g": "b", "x": 9, "rn": 1},
+        ],
+    )
+
+
+def _complex_values_array_size() -> FixtureCase:
+    from etlantic.transform.protocol import PROFILE_COMPLEX_VALUES
+
+    return FixtureCase(
+        name="complex_values_array_size",
+        required_profiles=frozenset({KERNEL_PROFILE_V1, PROFILE_COMPLEX_VALUES}),
+        required_actions=frozenset({"dtcs:project"}),
+        required_functions=frozenset({"dtcs:array", "dtcs:size"}),
+        plan={
+            "planIdentity": "dtcs.transform-plan/2",
+            "inputs": {"t": {"id": "t"}},
+            "actions": [
+                {
+                    "id": "p1",
+                    "kind": {
+                        "action": "dtcs:project",
+                        "id": "p1",
+                        "parameters": {
+                            "fields": [
+                                {
+                                    "name": "n",
+                                    "expression": {
+                                        "kind": "call",
+                                        "callee": "dtcs:size",
+                                        "args": [
+                                            {
+                                                "kind": "call",
+                                                "callee": "dtcs:array",
+                                                "args": [
+                                                    {
+                                                        "kind": "fieldRef",
+                                                        "scope": "field",
+                                                        "target": "a",
+                                                    },
+                                                    {
+                                                        "kind": "fieldRef",
+                                                        "scope": "field",
+                                                        "target": "b",
+                                                    },
+                                                ],
+                                            }
+                                        ],
+                                    },
+                                }
+                            ]
+                        },
+                        "target": "t",
+                    },
+                }
+            ],
+            "outputs": {"result": {"id": "result"}},
+            "requirements": {
+                "dependencies": [{"from": "p1", "to": "result", "reason": "lineage"}]
+            },
+        },
+        inputs={"t": [{"a": 1, "b": 2}]},
+        expected=[{"n": 2}],
+    )
+
+
+def _complex_types_field_access() -> FixtureCase:
+    from etlantic.transform.protocol import (
+        PROFILE_COMPLEX_TYPES,
+        PROFILE_COMPLEX_VALUES,
+    )
+
+    return FixtureCase(
+        name="complex_types_field_access",
+        required_profiles=frozenset(
+            {KERNEL_PROFILE_V1, PROFILE_COMPLEX_TYPES, PROFILE_COMPLEX_VALUES}
+        ),
+        required_actions=frozenset({"dtcs:project"}),
+        required_functions=frozenset({"dtcs:object", "dtcs:field"}),
+        plan={
+            "planIdentity": "dtcs.transform-plan/2",
+            "inputs": {"t": {"id": "t"}},
+            "actions": [
+                {
+                    "id": "p1",
+                    "kind": {
+                        "action": "dtcs:project",
+                        "id": "p1",
+                        "parameters": {
+                            "fields": [
+                                {
+                                    "name": "city",
+                                    "expression": {
+                                        "kind": "call",
+                                        "callee": "dtcs:field",
+                                        "args": [
+                                            {
+                                                "kind": "call",
+                                                "callee": "dtcs:object",
+                                                "args": [
+                                                    {
+                                                        "kind": "literal",
+                                                        "value": {
+                                                            "type": "string",
+                                                            "value": "city",
+                                                        },
+                                                    },
+                                                    {
+                                                        "kind": "fieldRef",
+                                                        "scope": "field",
+                                                        "target": "city",
+                                                    },
+                                                ],
+                                            },
+                                            {
+                                                "kind": "literal",
+                                                "value": {
+                                                    "type": "string",
+                                                    "value": "city",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                }
+                            ]
+                        },
+                        "target": "t",
+                    },
+                }
+            ],
+            "outputs": {"result": {"id": "result"}},
+            "requirements": {
+                "dependencies": [{"from": "p1", "to": "result", "reason": "lineage"}]
+            },
+        },
+        inputs={"t": [{"city": "NYC"}]},
+        expected=[{"city": "NYC"}],
+    )
+
+
+def _reshape_explode() -> FixtureCase:
+    from etlantic.transform.protocol import PROFILE_COMPLEX_VALUES, PROFILE_RESHAPE
+
+    return FixtureCase(
+        name="reshape_explode",
+        required_profiles=frozenset(
+            {KERNEL_PROFILE_V1, PROFILE_RESHAPE, PROFILE_COMPLEX_VALUES}
+        ),
+        required_actions=frozenset({"dtcs:explode", "dtcs:project"}),
+        required_functions=frozenset(),
+        plan={
+            "planIdentity": "dtcs.transform-plan/2",
+            "inputs": {"t": {"id": "t"}},
+            "actions": [
+                {
+                    "id": "e1",
+                    "kind": {
+                        "action": "dtcs:explode",
+                        "id": "e1",
+                        "parameters": {"field": "tags"},
+                        "target": "t",
+                    },
+                },
+                {
+                    "id": "p1",
+                    "kind": {
+                        "action": "dtcs:project",
+                        "id": "p1",
+                        "parameters": {"fields": ["id", "tags"]},
+                        "target": "e1",
+                    },
+                },
+            ],
+            "outputs": {"result": {"id": "result"}},
+            "requirements": {
+                "dependencies": [{"from": "p1", "to": "result", "reason": "lineage"}]
+            },
+        },
+        inputs={"t": [{"id": 1, "tags": ["a", "b"]}]},
+        expected=[{"id": 1, "tags": "a"}, {"id": 1, "tags": "b"}],
+    )
+
+
+def _reject_missing_literal_without_three_state() -> FixtureCase:
+    return FixtureCase(
+        name="reject_missing_literal_without_three_state",
+        required_profiles=frozenset({KERNEL_PROFILE_V1}),
+        required_actions=frozenset({"dtcs:project"}),
+        required_functions=frozenset(),
+        plan={
+            "planIdentity": "dtcs.transform-plan/2",
+            "inputs": {"t": {"id": "t"}},
+            "actions": [
+                {
+                    "id": "p1",
+                    "kind": {
+                        "action": "dtcs:project",
+                        "id": "p1",
+                        "parameters": {
+                            "fields": [
+                                {
+                                    "name": "x",
+                                    "expression": {
+                                        "kind": "literal",
+                                        "value": {"type": "missing", "value": None},
+                                    },
+                                }
+                            ]
+                        },
+                        "target": "t",
+                    },
+                }
+            ],
+        },
+        inputs={"t": [{"id": 1}]},
+        expected=None,
+        expect_unsupported=True,
+        unsupported_requirement_substr="three_state_distinct",
+    )
+
+
 FIXTURES: tuple[FixtureCase, ...] = (
     _kernel_filter_project(),
     _substr_literal_replace(),
@@ -484,6 +955,14 @@ FIXTURES: tuple[FixtureCase, ...] = (
     _sort_nulls_limit(),
     _empty_ungrouped_count(),
     _reject_suffix_collision(),
+    _string_advanced_trim_regex(),
+    _conversion_to_string(),
+    _statistics_variance(),
+    _window_v1_row_number(),
+    _complex_values_array_size(),
+    _complex_types_field_access(),
+    _reshape_explode(),
+    _reject_missing_literal_without_three_state(),
 )
 
 
@@ -515,8 +994,7 @@ def mandatory_capability_keys(
     """Capability keys that must have at least one selected fixture."""
     keys: set[str] = set()
     for profile in profiles:
-        if profile in {KERNEL_PROFILE_V1, RELATIONAL_PROFILE_V1}:
-            keys.add(f"profile:{profile}")
+        keys.add(f"profile:{profile}")
     for action in actions:
         keys.add(f"action:{action}")
     for function in functions:

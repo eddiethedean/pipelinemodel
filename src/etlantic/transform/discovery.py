@@ -17,9 +17,9 @@ _LOG = logging.getLogger(__name__)
 def discover_transform_compilers() -> dict[str, PortableTransformCompiler]:
     """Load compilers registered under ``etlantic.transform_compilers``.
 
-    Returns engine name → compiler instance. Broken entry points are skipped
-    with a warning (planning fails closed when the selected engine lacks a
-    compiler and policy requires portable compilation).
+    Returns entry-point name → compiler instance. The entry-point name is the
+    stable engine key. Broken entry points are skipped with a warning. Duplicate
+    entry-point names fail closed.
     """
     found: dict[str, PortableTransformCompiler] = {}
     try:
@@ -30,12 +30,30 @@ def discover_transform_compilers() -> dict[str, PortableTransformCompiler]:
         try:
             factory = ep.load()
             compiler = factory() if callable(factory) else factory
-            engine = getattr(getattr(compiler, "info", None), "engine", None) or ep.name
-            engine_key = str(engine)
+            if not isinstance(compiler, PortableTransformCompiler):
+                # runtime_checkable Protocol — require info/analyze/compile/execute
+                missing = [
+                    name
+                    for name in ("info", "analyze", "compile", "execute")
+                    if not hasattr(compiler, name)
+                ]
+                if missing:
+                    raise TypeError(
+                        f"entry point {ep.name!r} does not implement "
+                        f"PortableTransformCompiler (missing {missing})"
+                    )
+            engine_key = str(ep.name)
             if engine_key in found:
+                raise RuntimeError(
+                    f"Duplicate transform compiler entry point {engine_key!r}; "
+                    "entry-point names must be unique stable engine keys."
+                )
+            info_engine = getattr(getattr(compiler, "info", None), "engine", None)
+            if info_engine is not None and str(info_engine) != engine_key:
                 warnings.warn(
-                    f"Multiple transform compilers for engine {engine_key!r}; "
-                    f"entry point {ep.name!r} overrides the previous registration.",
+                    f"Transform compiler entry point {engine_key!r} reports "
+                    f"info.engine={info_engine!r}; the entry-point name is the "
+                    "stable discovery key.",
                     RuntimeWarning,
                     stacklevel=2,
                 )
@@ -75,7 +93,12 @@ def register_discovered_compilers(
 
 
 def load_transform_compiler(engine: str) -> PortableTransformCompiler | None:
-    """Return a discovered compiler for ``engine``, or None."""
+    """Return a discovered compiler for ``engine``, or None.
+
+    This loads the unfiltered discovery set. Prefer
+    :func:`discover_transform_compilers_for_profile` on planning and run paths
+    so production allowlists cannot be bypassed.
+    """
     return discover_transform_compilers().get(engine)
 
 

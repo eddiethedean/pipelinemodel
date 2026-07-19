@@ -1,6 +1,6 @@
 # Ops Pilot Guide
 
-> **Status: Available in ETLantic 0.16.0.** Alpha operational checklist—not a
+> **Status: Available in ETLantic 0.17.0.** Alpha operational checklist—not a
 > multi-tenant deployment product.
 
 Use this page for a **bounded pilot**: one team, pinned packages, process

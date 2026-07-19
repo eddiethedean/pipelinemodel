@@ -220,7 +220,7 @@ def register_commands(
         kind: str = typer.Option(
             "all",
             "--kind",
-            help="all|dataframe|sql|spark|orchestrator|scheduler",
+            help="all|dataframe|sql|spark|orchestrator|scheduler|transform_compiler",
         ),
     ) -> None:
         """List discovered plugins (honors profile allowlist)."""
@@ -232,6 +232,7 @@ def register_commands(
         )
         from etlantic.spark.discovery import discover_spark_plugins
         from etlantic.sql.discovery import discover_sql_plugins
+        from etlantic.transform.discovery import discover_transform_compilers
 
         resolved = resolve_profile(profile)
         groups: dict[str, dict[str, Any]] = {}
@@ -247,6 +248,8 @@ def register_commands(
             sched = dict(discover_scheduler_plugins())
             sched.setdefault("local", builtin_local_scheduler())
             groups["scheduler"] = sched
+        if kind in {"all", "transform_compiler"}:
+            groups["transform_compiler"] = discover_transform_compilers()
         items: list[dict[str, Any]] = []
         diagnostics: list[dict[str, Any]] = []
         for group_name, plugins in groups.items():
@@ -261,14 +264,25 @@ def register_commands(
             )
             for engine, plugin in kept.items():
                 info = getattr(plugin, "info", None)
-                items.append(
-                    {
-                        "kind": group_name,
-                        "engine": engine,
-                        "name": getattr(info, "name", engine),
-                        "version": getattr(info, "version", None),
-                    }
-                )
+                item: dict[str, Any] = {
+                    "kind": group_name,
+                    "engine": engine,
+                    "name": getattr(info, "name", engine),
+                    "version": getattr(info, "version", None),
+                }
+                if group_name == "transform_compiler" and info is not None:
+                    caps = getattr(info, "capabilities", None)
+                    item["compiler_protocol"] = getattr(info, "compiler_protocol", None)
+                    item["dtcs_plan_versions"] = list(
+                        getattr(info, "dtcs_plan_versions", ()) or ()
+                    )
+                    item["capabilities"] = (
+                        caps.to_dict()
+                        if caps is not None and hasattr(caps, "to_dict")
+                        else None
+                    )
+                    item["runtime_engine"] = getattr(info, "engine", engine)
+                items.append(item)
         emit_payload({"plugins": items, "diagnostics": diagnostics}, fmt=fmt)
         if any(d.get("severity") == "error" for d in diagnostics):
             raise typer.Exit(1)
@@ -297,6 +311,10 @@ def register_commands(
             from etlantic.orchestration.discovery import discover_orchestrator_plugins
 
             plugins = discover_orchestrator_plugins()
+        elif kind == "transform_compiler":
+            from etlantic.transform.discovery import discover_transform_compilers
+
+            plugins = discover_transform_compilers()
         plugin = plugins.get(engine)
         if plugin is None:
             emit_payload({"ok": False, "error": f"Unknown plugin {engine!r}"}, fmt=fmt)

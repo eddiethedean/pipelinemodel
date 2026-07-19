@@ -1,6 +1,6 @@
 # Current Capabilities and Limitations
 
-ETLantic **0.16.0** is a **published alpha** release on PyPI. This page is the
+ETLantic **0.17.0** is a **published alpha** release on PyPI. This page is the
 shortest answer to "What can I use today?"
 
 ## Recommended first production-like pilot
@@ -15,7 +15,7 @@ Controlled pilot only (see [Evaluator](EVALUATOR.md) and
 5. No multi-tenant sharing of a process; no unresolved security Gaps from the
    [Security](../02_FOUNDATIONS/SECURITY.md) chapter
 
-## Available in 0.16
+## Available in 0.17
 
 ### Core authoring and validation
 
@@ -90,7 +90,7 @@ Controlled pilot only (see [Evaluator](EVALUATOR.md) and
 | FastAPI control plane | Continues in 1.1 |
 | Full SparkForge engine retirement inside SparkForge | Progressive path (see migration guide) |
 | Stable 1.0 compatibility guarantees | Not yet |
-| Advanced portable profile graduation (window, reshape, …) | **0.15 continuation** (not part of the 0.15 exit gate) |
+| Advanced portable profile graduation (window, reshape, …) | **0.17** shipped on Polars + PySpark (continuation families remain) |
 | Dedicated deployment / multi-worker ops guide | Partial — see [Ops Pilot](../06_EXECUTION/OPS_PILOT.md) |
 
 ## CI starter

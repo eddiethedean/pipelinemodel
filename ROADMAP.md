@@ -1097,8 +1097,8 @@ Modes that must pass `analyze()` exactly (fail closed, not “supports join”):
 - to **0.14:** public `etlantic.testing.portable_transform_conformance`;
   Pandas compiler
 - to **0.15:** safe SQL lowering for kernel + `portable-relational/1`
-- to **0.15 continuation:** Rich Portable Analytics / windows /
-  complex-values / reshape / relational-extended / conversion claims
+- to **0.17** (historically 0.15 continuation): Rich Portable Analytics /
+  windows / complex-values / reshape / relational-extended / conversion claims
 - three-state missing/invalid literal fidelity beyond SQL-null
 
 ### Acceptance scenarios
@@ -1181,7 +1181,9 @@ semantic safety. See the
 **DTCS readiness:** rich facade authoring for Candidate/Experimental families
 already exists in 0.11 IR. Those families are **not** part of the 0.15 exit
 gate; they graduate later under
-[0.15 continuation (profile graduation)](#015-continuation-profile-graduation).
+[0.17](#017--portable-coverage-expansion-platform--multi-family-graduation)
+(historically
+[0.15 continuation](#015-continuation-profile-graduation)).
 
 ### Goals
 
@@ -1246,18 +1248,19 @@ and
 
 ## 0.15 continuation (profile graduation)
 
-**Status: planned — after the 0.15 SQL exit gate.** Not a separate minor
-number and not part of the 0.15 exit gate.
+**Status: superseded by [0.17](#017--portable-coverage-expansion-platform--multi-family-graduation).**
+Historical ownership of rich portable family graduation after the 0.15 SQL
+exit gate. Not a separate minor number and not part of the 0.15 exit gate.
 
 Candidate/Experimental families remain expressible in authored IR. Each
-family graduates **one at a time** only when:
+family graduates only when:
 
 - DTCS normative semantics and capability identifiers are published;
 - shared conformance fixtures exist;
 - **two independent compilers** pass those fixtures;
 - migration / compatibility notes are published.
 
-Suggested order (adjust only if DTCS readiness blocks a family):
+Historical suggested order (0.17 now assigns Wave 1 / Wave 2 / continuation):
 
 | Family | Status relative to 0.15 exit gate |
 |---|---|
@@ -1277,16 +1280,18 @@ Suggested order (adjust only if DTCS readiness blocks a family):
 Compiler claims ship only with normative semantics, two compiler
 implementations, capability vocabulary, shared fixtures, and a short
 native-to-portable migration note. Until a family graduates, keep native
-`@implementation(...)` for that behavior.
+`@implementation(...)` for that behavior. Active sequencing lives under
+[0.17](#017--portable-coverage-expansion-platform--multi-family-graduation).
 
 ## 0.16 — Authoring Vocabulary Cleanup and Optional Prefect Scheduler
 
-**Status: shipped in 0.15.0.**
+**Status: shipped in 0.16.0.**
 
 0.16 has two **independent** gates. Vocabulary cleanup (Gate A) must ship and
 must not wait on Prefect. Optional `etlantic-prefect` (Gate B) may ship in the
 same minor when ready, but it does not block Gate A. Portable profile
-graduation remains [0.15 continuation](#015-continuation-profile-graduation),
+graduation is owned by [0.17](#017--portable-coverage-expansion-platform--multi-family-graduation)
+(historically tracked as [0.15 continuation](#015-continuation-profile-graduation)),
 not 0.16.
 
 **Prerequisites already shipped in 0.15:** `ExecutionScheduler` /
@@ -1371,7 +1376,7 @@ tests use `Extract`, `Load`, and `asset=` only.
 - allowing Prefect retries or task boundaries to weaken ETLantic transaction,
   validation, security, or materialization semantics
 - replacing Airflow compilation
-- portable profile graduation (0.15 continuation)
+- portable profile graduation ([0.17](#017--portable-coverage-expansion-platform--multi-family-graduation))
 - production-default orchestrator selection or the full 1.0 security matrix
 
 #### Acceptance scenarios
@@ -1395,16 +1400,22 @@ tests use `Extract`, `Load`, and `asset=` only.
 optional plugin; `LocalScheduler` remains the zero-service default; Airflow
 remains the external compiler. Gate B does not block Gate A.
 
-## 0.17+ — Portable Coverage Across First-Party Execution Plugins
+## 0.17 — Portable Coverage Expansion (Platform + Multi-Family Graduation)
 
-**Status: planned.** This is a continuing 0.17-and-later workstream rather than
-a promise that every capability family graduates in one minor release.
+**Status: shipped in 0.17.0.**
 
-ETLantic's first-party data-processing plugins should provide portable
-transformation compilation wherever the plugin executes transformations.
-Polars, Pandas, SQL, and PySpark already ship the kernel and
-`portable-relational/1` baseline; 0.17+ expands, aligns, documents, and keeps
-that coverage conformant as richer DTCS profile families graduate.
+0.17 has three **sequenced** gates. Gate A (platform and truthful
+discoverability) must ship. Gates B and C graduate declared DTCS profile
+families under the existing two-compiler rule. Families not listed in Gates B
+or C remain in [0.17 continuation](#017-continuation) and do not block the
+0.17 exit gate.
+
+**Prerequisites already shipped:** Polars, Pandas, SQL, and PySpark ship the
+kernel and `portable-relational/1` baseline with public conformance and
+cross-engine differentials. Rich-family authoring and fixtures exist; compiler
+claims remain baseline-only until Gates B and C graduate them. Profile
+graduation ownership moves here from
+[0.15 continuation](#015-continuation-profile-graduation).
 
 This requirement applies to first-party dataframe, SQL, and Spark execution
 plugins. It does not apply to plugins that do not execute transformations,
@@ -1413,81 +1424,188 @@ resource providers, observability providers, and model/migration bridges.
 Third-party runtime plugins may remain native-only, but must document that
 choice and must not advertise or register unsupported portable compilation.
 
-### Deliver
+### Gate A — Platform and truthful discoverability (hard)
 
-- pair every applicable first-party execution plugin with a discoverable
-  `etlantic.transform_compilers` implementation in the same distribution or a
-  clearly documented companion distribution;
+#### Deliver
+
 - maintain an authoritative capability matrix for Polars, Pandas, SQL,
   PySpark, and future first-party transformation runtimes, listing exact DTCS
-  profiles, actions, functions, operators, types, modes, and limits;
+  profiles, actions, functions, operators, types, modes, and limits
 - extend `etlantic plugin list` with transform-compiler inventory and exact
   portable capability summaries so installed runtime/compiler pairs are
-  inspectable without planning a pipeline;
-- expand portable compiler coverage family by family under the existing
-  graduation rule: normative DTCS semantics, shared fixtures, and at least two
-  independent conformant compilers before a family is treated as graduated;
-- keep native implementations available for backend-specific behavior and
-  portable families that have not graduated;
-- require `run_portable_transform_conformance_suite` for every advertised
-  compiler claim and run cross-engine differential tests over each shared
-  capability intersection;
-- verify that portable lowering preserves contracts, null/missing/invalid
-  semantics, output roles, write and materialization boundaries, lineage,
-  diagnostics, and normalized report evidence;
-- keep `portable_transform_policy=require|prefer|native` behavior consistent
-  across all first-party execution plugins with no silent fallback;
-- make unsupported portable requirements fail during analyze/planning before
-  resource acquisition or mutation;
-- publish native-to-portable migration examples and one multi-engine portable
-  pipeline for each graduated profile family;
+  inspectable without planning a pipeline
+- expand public portable conformance selection beyond kernel and
+  `portable-relational/1` so graduated-family claims are enforceable from
+  advertised capability records
+- pair every applicable first-party execution plugin with a discoverable
+  `etlantic.transform_compilers` implementation in the same distribution or a
+  clearly documented companion distribution (already true for the four
+  shipped runtimes; keep as a release gate for new first-party runtimes)
 - update [Building an ETLantic Plugin](docs/07_PLUGIN_SDK/BUILDING_A_PLUGIN.md)
   and the category protocol pages whenever entry points, capability metadata,
-  conformance requirements, or the first-party portable baseline changes;
+  conformance requirements, or the first-party portable baseline changes
 - add guide-drift checks so reference plugin packaging, public factories,
   capability declarations, conformance tests, and documentation remain aligned
-  with the canonical plugin guide.
+  with the canonical plugin guide
+- frame matrix and docs as 0.17 graduated versus continuation (not the
+  historical 0.15 continuation backlog label)
 
-### Non-goals
+#### Non-goals
 
+- graduating rich profile families (Gates B and C)
 - requiring portable compilers from orchestrator, scheduler, secret, storage,
-  resource, observability, SQLModel, or SparkForge integration packages;
-- requiring every third-party execution plugin to implement portable lowering;
-- claiming the full portable authoring surface on every engine regardless of
-  backend semantics;
-- emulating unsupported semantics with Python, Pandas, Spark UDFs, raw SQL, or
-  eager collection without an explicit, policy-permitted, diagnosed boundary;
-- moving engine dependencies or compiler implementations into ETLantic core;
-- allowing plugin identity alone to imply portable capability coverage.
+  resource, observability, SQLModel, or SparkForge integration packages
+- moving engine dependencies or compiler implementations into ETLantic core
+- allowing plugin identity alone to imply portable capability coverage
 
-### Acceptance scenarios
+#### Acceptance scenarios
 
 - installing any first-party dataframe, SQL, or Spark execution plugin exposes
-  both its runtime entry point and its portable compiler entry point;
+  both its runtime entry point and its portable compiler entry point
 - `etlantic plugin list`, plan JSON, and plan explanation identify the runtime,
   compiler, protocol versions, exact portable requirements, and selection or
-  fallback reason without importing a different backend;
-- the same portable pipeline produces contract-equivalent results on every
-  first-party engine in the advertised capability intersection;
-- a profile requiring an unsupported family fails deterministically during
-  planning and performs no reads, writes, credential resolution, or cluster /
-  database acquisition;
-- native-only third-party plugins remain valid when they omit the transform
-  compiler entry point and clearly document the limitation;
+  fallback reason without importing a different backend
+- guide-drift checks fail closed when entry points, factories, capability
+  claims, conformance coverage, or the plugin guide disagree
 - plans, compiler diagnostics, golden fixtures, reports, and guide examples
-  contain no source rows, live backend objects, or resolved secret values;
+  contain no source rows, live backend objects, or resolved secret values
+
+#### Exit gate
+
+Installed first-party transformation runtimes expose runtime and compiler;
+CLI and plan explain surface exact claims; the capability matrix and plugin
+guide match shipped entry points and conformance evidence; drift checks pass.
+
+### Gate B — Wave 1 family graduation (hard)
+
+Graduate these families (authoring and fixtures already exist under
+`tests/fixtures/portable/`):
+
+| Family | Role in Wave 1 |
+|---|---|
+| `portable-window/1` | First analytics family; `/2` stays in continuation |
+| `portable-string-advanced/1` | Scalar-function family |
+| `portable-conversion/1` | Scalar-function family |
+| `portable-statistics/1` | Aggregate / analytics family |
+
+#### Deliver (per family)
+
+- publish normative DTCS semantics and capability identifiers
+- select shared conformance fixtures from advertised capability records
+- land at least **two independent** first-party compilers that pass those
+  fixtures
+- run cross-engine differential tests over each advertised capability
+  intersection
+- keep native implementations for backend-specific behavior and families that
+  have not graduated
+- keep `portable_transform_policy=require|prefer|native` consistent with no
+  silent fallback; unsupported requirements fail during analyze/planning
+  before resource acquisition or mutation
+- verify portable lowering preserves contracts, null/missing/invalid
+  semantics, output roles, write and materialization boundaries, lineage,
+  diagnostics, and normalized report evidence
+- publish a native-to-portable migration note and one multi-engine portable
+  pipeline example per graduated family
+- claim only where truthful: do not require all four engines when SQL or
+  Pandas cannot honor semantics; publish exact per-engine limits in the
+  matrix
+
+#### Non-goals
+
+- claiming `portable-window/2` or Wave 2 / continuation families
+- claiming the full portable authoring surface on every engine regardless of
+  backend semantics
+- emulating unsupported semantics with Python, Pandas, Spark UDFs, raw SQL, or
+  eager collection without an explicit, policy-permitted, diagnosed boundary
+
+#### Acceptance scenarios
+
+- each Wave 1 family has ≥2 conformant first-party compilers and differential
+  coverage for the advertised intersection
+- a profile requiring an unsupported Wave 1 claim fails deterministically
+  during planning and performs no reads, writes, credential resolution, or
+  cluster / database acquisition
+- the capability matrix lists exact Wave 1 claims, modes, and limits per
+  engine
+- migration notes and multi-engine examples cover every graduated Wave 1
+  family without secrets or source rows
+
+#### Exit gate
+
+All four Wave 1 families meet the two-compiler graduation bar with matrix,
+conformance, differentials, examples, and guide alignment.
+
+### Gate C — Wave 2 family graduation (hard, after B)
+
+Sequence after Gate B so platform and conformance machinery already enforce
+rich claims. Graduate:
+
+| Family | Role in Wave 2 |
+|---|---|
+| `portable-complex-types/1` | Nested type surface; pairs with values |
+| `portable-complex-values/1` | Constructors, accessors, and lambdas |
+| `portable-reshape/1` | Explode / reshape actions |
+
+#### Deliver / non-goals / acceptance
+
+Same per-family bar, policy, and fail-closed rules as Gate B, applied to the
+Wave 2 families only.
+
+#### Exit gate
+
+All three Wave 2 families meet the two-compiler graduation bar with matrix,
+conformance, differentials, examples, and guide alignment.
+
+### 0.17 continuation
+
+**Status: planned — after the 0.17 exit gate.** Not required to close 0.17.
+
+These families remain authorable but stay unclaimed / native-only until they
+meet the two-compiler bar:
+
+- `portable-relational-extended/1`
+- `portable-temporal-iana/1`
+- `portable-nondeterministic/1` (policy-gated)
+- `portable-window/2`
+- any Gate B or Gate C family that cannot meet the two-compiler bar before
+  cut (demote here rather than weaken claims)
+
+**Not 0.17** (post-0.16 / later runtime work):
+
+- fusion-driven `physical_units` scheduling
+- Prefect deployment/serve or durable scheduling
+- the full scheduler conformance corpus
+- SQL `MERGE`, managed Spark providers, Dagster, and other
+  [Known Issues](docs/10_REFERENCE/KNOWN_ISSUES.md) items not listed above
+
+### Non-goals (release-wide)
+
+- requiring every third-party execution plugin to implement portable lowering
+- requiring portable compilers from non-transformation integration packages
+- moving compilers into ETLantic core
+- promising that every authored rich family graduates in 0.17
+
+### Acceptance scenarios (release-wide)
+
+- Gates A, B, and C exit gates all pass
+- the same portable pipeline produces contract-equivalent results on every
+  first-party engine in the advertised capability intersection for graduated
+  families
+- native-only third-party plugins remain valid when they omit the transform
+  compiler entry point and clearly document the limitation
 - a new first-party transformation runtime cannot pass its release gate until
   its plugin-guide checklist, portable conformance suite, differential tests,
-  capability matrix, and native-to-portable documentation are complete.
+  capability matrix, and native-to-portable documentation are complete for the
+  release baseline
+- continuation families remain expressible without implying compiler claims
 
-### Exit rule
+### Exit gate
 
-This workstream is complete for a release when every first-party plugin that
-executes transformations has truthful, tested portable coverage for the
-release's declared baseline; all richer claims satisfy the per-family
-graduation rule; native fallback is explicit and policy-governed; and the
-canonical plugin guide and capability matrix match the shipped entry points
-and conformance evidence.
+0.17 ships when Gate A is complete; Gates B and C families are graduated under
+the two-compiler rule with matrix, conformance, differentials, examples, and
+guide alignment; continuation families remain authorable but unclaimed where
+not graduated; native fallback is explicit and policy-governed; and plans,
+fixtures, reports, and examples contain no secrets or source rows.
 
 ## 1.0 — Stable Foundation
 

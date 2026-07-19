@@ -20,6 +20,7 @@ KERNEL_ACTIONS = frozenset(
         "dtcs:with_fields",
         "dtcs:drop_fields",
         "dtcs:rename_fields",
+        "dtcs:explode",
     }
 )
 
@@ -85,12 +86,9 @@ def apply_action(
     if name == "dtcs:with_fields":
         out = frame
         for item in params.get("assignments") or []:
-            if item.get("window") is not None:
-                raise ValueError(
-                    "dtcs:with_fields window specs are not supported by the "
-                    "PySpark relational compiler"
-                )
             expr = lower_expr(item["expression"], parameters=parameters)
+            if item.get("window") is not None:
+                expr = expr.over(_lower_window(item["window"], parameters=parameters))
             out = out.withColumn(str(item["name"]), expr)
         return out
     if name == "dtcs:drop_fields":
@@ -110,6 +108,11 @@ def apply_action(
         for src, dst in rename.items():
             out = out.withColumnRenamed(src, dst)
         return out
+    if name == "dtcs:explode":
+        field = params.get("field")
+        if not isinstance(field, str) or not field:
+            raise ValueError("dtcs:explode requires a field name")
+        return frame.withColumn(field, F.explode(F.col(field)))
     if name == "dtcs:join":
         return _apply_join(frame, params, frames=frames or {}, parameters=parameters)
     if name == "dtcs:union":
@@ -306,7 +309,7 @@ def _apply_aggregate(
     parameters: dict[str, Any],
 ) -> Any:
     group_by = [str(k) for k in (params.get("groupBy") or [])]
-    aggregates = params.get("aggregates") or []
+    aggregates = params.get("aggregates") or params.get("aggregations") or []
     aggs = [
         lower_agg_expr(item["expression"], parameters=parameters).alias(
             str(item["name"])
@@ -316,6 +319,59 @@ def _apply_aggregate(
     if not group_by:
         return frame.agg(*aggs)
     return frame.groupBy(*group_by).agg(*aggs)
+
+
+def _lower_window(spec: Any, *, parameters: dict[str, Any]) -> Any:
+    """Lower a portable partition/order window specification."""
+    if not isinstance(spec, dict):
+        raise ValueError("window specification must be an object")
+
+    try:
+        from pyspark.sql import Window
+    except ImportError:  # sparkless test backend does not re-export Window
+        from importlib import import_module
+
+        Window = import_module("sparkless.sql.window").Window
+
+    F = _F()
+    partition_cols = []
+    for item in spec.get("partitionBy") or []:
+        if isinstance(item, str):
+            partition_cols.append(F.col(item))
+        elif isinstance(item, dict):
+            partition_cols.append(lower_expr(item, parameters=parameters))
+        else:
+            raise ValueError(f"Unsupported window partition expression {item!r}")
+
+    order_cols = []
+    for item in spec.get("orderBy") or []:
+        if isinstance(item, str):
+            order_cols.append(F.col(item).asc())
+            continue
+        if not isinstance(item, dict):
+            raise ValueError(f"Unsupported window order expression {item!r}")
+        raw_expr = item.get("expression")
+        if raw_expr is None:
+            name = item.get("column") or item.get("name") or item.get("field")
+            if name is None:
+                raise ValueError(f"Unsupported window order expression {item!r}")
+            col = F.col(str(name))
+        else:
+            col = lower_expr(raw_expr, parameters=parameters)
+        direction = str(item.get("direction") or "asc").lower()
+        nulls = str(item.get("nulls") or item.get("nullPlacement") or "last").lower()
+        if direction in {"desc", "descending"}:
+            col = col.desc_nulls_first() if nulls == "first" else col.desc_nulls_last()
+        else:
+            col = col.asc_nulls_first() if nulls == "first" else col.asc_nulls_last()
+        order_cols.append(col)
+
+    if partition_cols:
+        window = Window.partitionBy(*partition_cols)
+        return window.orderBy(*order_cols) if order_cols else window
+    if order_cols:
+        return Window.orderBy(*order_cols)
+    raise ValueError("window specification requires partitionBy or orderBy")
 
 
 def _apply_sort(frame: Any, params: dict[str, Any]) -> Any:

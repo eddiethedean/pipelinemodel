@@ -5,7 +5,7 @@
     `dtcs.transform-plan/2` IR. Polars, PySpark, and Pandas execute kernel +
     `portable-relational/1` plans in 0.12–0.14; safe SQL lowering for that
     claim set shipped in **0.15**; richer profiles need native
-    implementations until they graduate under the 0.15 continuation backlog.
+    implementations until they graduate under the 0.17 roadmap.
 
 A portable transformation expresses dataframe logic once and lets ETLantic
 plugins compile it for Polars, Pandas, SQL, PySpark, and future engines.

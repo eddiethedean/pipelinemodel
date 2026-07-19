@@ -364,40 +364,40 @@ def at_iana_timezone(value: Any, tz: Any) -> ColumnExpr:
 
 
 # window analytics
-def _window_fn(callee: str, *args: Any) -> ColumnExpr:
-    return _call(callee, *args, profiles={PROFILE_WINDOW_V1, PROFILE_WINDOW_V2})
+def _window_fn_v1(callee: str, *args: Any) -> ColumnExpr:
+    return _call(callee, *args, profiles={PROFILE_WINDOW_V1})
 
 
 def row_number() -> ColumnExpr:
-    return _window_fn("dtcs:row_number")
+    return _window_fn_v1("dtcs:row_number")
 
 
 def rank() -> ColumnExpr:
-    return _window_fn("dtcs:rank")
+    return _window_fn_v1("dtcs:rank")
 
 
 def dense_rank() -> ColumnExpr:
-    return _window_fn("dtcs:dense_rank")
+    return _window_fn_v1("dtcs:dense_rank")
 
 
 def lag(value: Any, offset: Any = 1, default: Any | None = None) -> ColumnExpr:
     if default is None:
-        return _window_fn("dtcs:lag", value, offset)
-    return _window_fn("dtcs:lag", value, offset, default)
+        return _window_fn_v1("dtcs:lag", value, offset)
+    return _window_fn_v1("dtcs:lag", value, offset, default)
 
 
 def lead(value: Any, offset: Any = 1, default: Any | None = None) -> ColumnExpr:
     if default is None:
-        return _window_fn("dtcs:lead", value, offset)
-    return _window_fn("dtcs:lead", value, offset, default)
+        return _window_fn_v1("dtcs:lead", value, offset)
+    return _window_fn_v1("dtcs:lead", value, offset, default)
 
 
 def first_value(value: Any) -> ColumnExpr:
-    return _window_fn("dtcs:first_value", value)
+    return _window_fn_v1("dtcs:first_value", value)
 
 
 def last_value(value: Any) -> ColumnExpr:
-    return _window_fn("dtcs:last_value", value)
+    return _window_fn_v1("dtcs:last_value", value)
 
 
 def ntile(n: Any) -> ColumnExpr:
@@ -414,7 +414,7 @@ def element_at(value: Any, key: Any) -> ColumnExpr:
         "dtcs:element_at",
         value,
         key,
-        profiles={PROFILE_COMPLEX_VALUES, PROFILE_COMPLEX_TYPES},
+        profiles={PROFILE_COMPLEX_TYPES},
     )
 
 

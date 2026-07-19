@@ -1,6 +1,6 @@
 # Portable vs Native Implementations
 
-> **Status: Available in ETLantic 0.16.0.**
+> **Status: Available in ETLantic 0.17.0.**
 
 ## Decision guide
 
@@ -47,7 +47,7 @@ Safe portable SQL lowering for kernel + `portable-relational/1` shipped in
 **0.15**. Keep native `@implementation("sql")` when you need dialect-specific
 control or profiles outside the advertised claim set; `prefer` may select an
 explicit native SQL implementation only — never silent portable emulation.
-Advanced families graduate later under the 0.15 continuation backlog (see the
+Advanced families graduate under the 0.17 roadmap (see the
 [portable compiler matrix](../10_REFERENCE/PORTABLE_COMPILER_MATRIX.md)).
 
 ## Related

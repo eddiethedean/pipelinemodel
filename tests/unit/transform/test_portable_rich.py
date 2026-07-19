@@ -13,7 +13,7 @@ from etlantic.transform.protocol import (
     PROFILE_COMPLEX_VALUES,
     PROFILE_NONDETERMINISTIC,
     PROFILE_STRING_ADVANCED,
-    PROFILE_WINDOW_V2,
+    PROFILE_WINDOW_V1,
 )
 
 
@@ -51,9 +51,12 @@ def test_rich_profiles_emitted() -> None:
     assert defn is not None
     profiles = set(defn.requirements["profiles"])
     assert PROFILE_STRING_ADVANCED in profiles
-    assert PROFILE_WINDOW_V2 in profiles or "dtcs:profile/portable-window/1" in profiles
+    assert PROFILE_WINDOW_V1 in profiles
+    assert "dtcs:profile/portable-window/2" not in profiles
     assert PROFILE_NONDETERMINISTIC in profiles
     assert "dtcs:trim" in defn.requirements["functions"]
+    assert "dtcs:row_number" in defn.requirements["functions"]
+    assert "dtcs:ntile" not in defn.requirements["functions"]
 
 
 def test_lambda_and_complex() -> None:

@@ -119,6 +119,12 @@ def _lower_call(node: dict[str, Any], *, parameters: dict[str, Any]) -> Any:
         return _F().lower(args[0])
     if callee == "dtcs:upper":
         return _F().upper(args[0])
+    if callee == "dtcs:trim":
+        return _F().trim(args[0])
+    if callee == "dtcs:regex_replace":
+        pattern = constant_python(raw_args[1], parameters=parameters)
+        replacement = constant_python(raw_args[2], parameters=parameters)
+        return _F().regexp_replace(args[0], str(pattern), str(replacement))
     if callee == "dtcs:concat":
         return _F().concat(*args)
     if callee == "dtcs:concat_ws":
@@ -160,6 +166,8 @@ def _lower_call(node: dict[str, Any], *, parameters: dict[str, Any]) -> Any:
         return _F().when(args[0] == args[1], _F().lit(None)).otherwise(args[0])
     if callee == "dtcs:is_null":
         return args[0].isNull()
+    if callee == "dtcs:to_string":
+        return args[0].cast("string")
     if callee == "dtcs:abs":
         return _F().abs(args[0])
     if callee == "dtcs:round":
@@ -177,6 +185,29 @@ def _lower_call(node: dict[str, Any], *, parameters: dict[str, Any]) -> Any:
         return _F().least(*args)
     if callee == "dtcs:greatest":
         return _F().greatest(*args)
+    if callee == "dtcs:row_number":
+        if args:
+            raise ValueError("dtcs:row_number does not accept arguments")
+        return _F().row_number()
+    if callee == "dtcs:array":
+        return _F().array(*args)
+    if callee == "dtcs:size":
+        return _F().size(args[0])
+    if callee == "dtcs:object":
+        if len(raw_args) % 2:
+            raise ValueError("dtcs:object requires alternating key/value arguments")
+        fields = []
+        for index in range(0, len(raw_args), 2):
+            key = constant_python(raw_args[index], parameters=parameters)
+            if not isinstance(key, str):
+                raise ValueError("dtcs:object keys must be string constants")
+            fields.append(args[index + 1].alias(key))
+        return _F().struct(*fields)
+    if callee == "dtcs:field":
+        field = constant_python(raw_args[1], parameters=parameters)
+        if not isinstance(field, str):
+            raise ValueError("dtcs:field name must be a string constant")
+        return args[0].getField(field)
     if callee == "dtcs:case_when":
         return _lower_case_when(node, parameters=parameters)
     if callee in {
@@ -187,6 +218,7 @@ def _lower_call(node: dict[str, Any], *, parameters: dict[str, Any]) -> Any:
         "dtcs:count",
         "dtcs:count_all",
         "dtcs:count_distinct",
+        "dtcs:variance",
     }:
         raise ValueError(
             f"Aggregate function {callee!r} is only valid inside dtcs:aggregate"
@@ -217,6 +249,8 @@ def lower_agg_expr(node: Any, *, parameters: dict[str, Any]) -> Any:
         return _F().count(args[0])
     if callee == "dtcs:count_distinct":
         return _F().countDistinct(args[0])
+    if callee == "dtcs:variance":
+        return _F().variance(args[0])
     raise ValueError(f"Unsupported aggregate function {callee!r}")
 
 

@@ -7,7 +7,7 @@
   the eager Pandas compiler (joins, aggregates, unions, sort/dedupe/limit).
   Safe SQL portable lowering for that claim set shipped in **0.15**;
   richer profiles (windows, complex values, …) remain native-or-later until
-  they graduate under the 0.15 continuation backlog.
+  they graduate under the 0.17 roadmap.
 - The planned PySpark-inspired syntax will intentionally support a closed
   subset; actions, arbitrary Python tracing, raw SQL expressions, and silent
   UDF fallback are excluded.

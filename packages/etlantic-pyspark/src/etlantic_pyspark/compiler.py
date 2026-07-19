@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Any
 
-from etlantic.transform.capabilities import match_requirements
+from etlantic.transform.capabilities import match_requirements, three_state_findings
 from etlantic.transform.compiler import (
     COMPILER_PROTOCOL,
     CompiledTransform,
@@ -18,7 +18,17 @@ from etlantic.transform.compiler import (
     TransformSupportFinding,
     TransformSupportReport,
 )
-from etlantic.transform.protocol import KERNEL_PROFILE_V1, RELATIONAL_PROFILE_V1
+from etlantic.transform.protocol import (
+    KERNEL_PROFILE_V1,
+    PROFILE_COMPLEX_TYPES,
+    PROFILE_COMPLEX_VALUES,
+    PROFILE_CONVERSION,
+    PROFILE_RESHAPE,
+    PROFILE_STATISTICS,
+    PROFILE_STRING_ADVANCED,
+    PROFILE_WINDOW_V1,
+    RELATIONAL_PROFILE_V1,
+)
 from etlantic_pyspark.lowering.actions import (
     CLAIMED_ACTIONS,
     KERNEL_ACTIONS,
@@ -26,7 +36,7 @@ from etlantic_pyspark.lowering.actions import (
     apply_action,
 )
 
-__version__ = "0.16.0"
+__version__ = "0.17.0"
 
 KERNEL_FUNCTIONS = frozenset(
     {
@@ -53,6 +63,14 @@ KERNEL_FUNCTIONS = frozenset(
         "dtcs:sqrt",
         "dtcs:least",
         "dtcs:greatest",
+        "dtcs:trim",
+        "dtcs:regex_replace",
+        "dtcs:to_string",
+        "dtcs:row_number",
+        "dtcs:array",
+        "dtcs:size",
+        "dtcs:object",
+        "dtcs:field",
     }
 )
 
@@ -65,6 +83,7 @@ RELATIONAL_FUNCTIONS = frozenset(
         "dtcs:count",
         "dtcs:count_all",
         "dtcs:count_distinct",
+        "dtcs:variance",
     }
 )
 
@@ -87,7 +106,19 @@ class PySparkTransformCompiler:
 
     def __init__(self) -> None:
         caps = TransformCapabilities(
-            profiles=frozenset({KERNEL_PROFILE_V1, RELATIONAL_PROFILE_V1}),
+            profiles=frozenset(
+                {
+                    KERNEL_PROFILE_V1,
+                    RELATIONAL_PROFILE_V1,
+                    PROFILE_STRING_ADVANCED,
+                    PROFILE_CONVERSION,
+                    PROFILE_STATISTICS,
+                    PROFILE_WINDOW_V1,
+                    PROFILE_COMPLEX_VALUES,
+                    PROFILE_COMPLEX_TYPES,
+                    PROFILE_RESHAPE,
+                }
+            ),
             actions=CLAIMED_ACTIONS,
             functions=CLAIMED_FUNCTIONS,
             lazy=True,
@@ -121,6 +152,7 @@ class PySparkTransformCompiler:
         report = match_requirements(req, self._info.capabilities)
         findings = list(report.findings)
         findings.extend(_analyze_modes(definition))
+        findings.extend(three_state_findings(definition, self._info.capabilities))
         return TransformSupportReport(
             supported=not findings,
             findings=tuple(findings),
@@ -316,18 +348,6 @@ def _analyze_modes(definition: Mapping[str, Any]) -> list[TransformSupportFindin
                         expression_path=path,
                     )
                 )
-        elif name == "dtcs:with_fields":
-            for item in params.get("assignments") or []:
-                if isinstance(item, dict) and item.get("window") is not None:
-                    findings.append(
-                        TransformSupportFinding(
-                            code="PMXFORM301",
-                            requirement="action:dtcs:with_fields:window",
-                            reason="with_fields window specs are not implemented",
-                            expression_path=path,
-                        )
-                    )
-                    break
         elif name in RELATIONAL_ACTIONS | KERNEL_ACTIONS:
             continue
         elif name is not None:

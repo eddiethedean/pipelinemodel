@@ -72,18 +72,35 @@ def requirements_from_plan(plan: dict[str, Any]) -> dict[str, list[str]]:
         _collect_call_callees(item, functions)
         if _plan_has_window(item):
             profiles.add(PROFILE_WINDOW_V1)
-            profiles.add(PROFILE_WINDOW_V2)
+            # V2 is only required when V2-only functions appear.
+            if _plan_requires_window_v2(item):
+                profiles.add(PROFILE_WINDOW_V2)
     for output in (plan.get("outputs") or {}).values():
         if isinstance(output, dict):
             _collect_call_callees(output, functions)
             if _plan_has_window(output):
                 profiles.add(PROFILE_WINDOW_V1)
-                profiles.add(PROFILE_WINDOW_V2)
+                if _plan_requires_window_v2(output):
+                    profiles.add(PROFILE_WINDOW_V2)
+    # Infer V2 from function callees when present.
+    v2_only = {"dtcs:ntile", "dtcs:percent_rank"}
+    if functions & v2_only:
+        profiles.add(PROFILE_WINDOW_V2)
+        profiles.add(PROFILE_WINDOW_V1)
     return extract_requirements(
         actions=actions,
         functions=functions,
         profiles=profiles,
     )
+
+
+_WINDOW_V2_CALLEES = frozenset({"dtcs:ntile", "dtcs:percent_rank"})
+
+
+def _plan_requires_window_v2(node: Any) -> bool:
+    found: set[str] = set()
+    _collect_call_callees(node, found)
+    return bool(found & _WINDOW_V2_CALLEES)
 
 
 def _plan_has_window(node: Any) -> bool:
@@ -200,7 +217,100 @@ def match_requirements(
                 )
             )
 
+    for operator in req.get("operators") or ():
+        if operator not in capabilities.operators:
+            findings.append(
+                TransformSupportFinding(
+                    code="PMXFORM301",
+                    requirement=f"operator:{operator}",
+                    reason="operator is not implemented",
+                    expression_path=None,
+                )
+            )
+
+    for type_id in req.get("types") or ():
+        if type_id not in capabilities.types:
+            findings.append(
+                TransformSupportFinding(
+                    code="PMXFORM301",
+                    requirement=f"type:{type_id}",
+                    reason="type is not claimed by the compiler",
+                    expression_path=None,
+                )
+            )
+
+    for mode in req.get("semantic_modes") or ():
+        if mode not in capabilities.semantic_modes:
+            findings.append(
+                TransformSupportFinding(
+                    code="PMXFORM301",
+                    requirement=f"semantic_mode:{mode}",
+                    reason="semantic mode is not claimed by the compiler",
+                    expression_path=None,
+                )
+            )
+
+    if req.get("lazy") is True and not capabilities.lazy:
+        findings.append(
+            TransformSupportFinding(
+                code="PMXFORM301",
+                requirement="mode:lazy",
+                reason="lazy execution is not claimed by the compiler",
+                expression_path=None,
+            )
+        )
+    if req.get("eager") is False and not capabilities.lazy:
+        findings.append(
+            TransformSupportFinding(
+                code="PMXFORM301",
+                requirement="mode:lazy",
+                reason="eager-only compilers cannot satisfy lazy=false requirements",
+                expression_path=None,
+            )
+        )
+
     return TransformSupportReport(
         supported=not findings,
         findings=tuple(findings),
     )
+
+
+def plan_requires_distinct_three_state(plan: Mapping[str, Any] | None) -> bool:
+    """Return True when the plan uses distinct missing/invalid literals."""
+
+    def _walk(node: Any) -> bool:
+        if isinstance(node, dict):
+            if node.get("kind") == "literal":
+                value = node.get("value")
+                if isinstance(value, dict):
+                    lit_type = str(value.get("type") or "")
+                    if lit_type in {"missing", "invalid"}:
+                        return True
+            return any(_walk(v) for v in node.values())
+        if isinstance(node, list):
+            return any(_walk(item) for item in node)
+        return False
+
+    return _walk(plan or {})
+
+
+def three_state_findings(
+    definition: Mapping[str, Any],
+    capabilities: TransformCapabilities,
+) -> list[TransformSupportFinding]:
+    """Fail closed when distinct three-state is required but not claimed."""
+    if not plan_requires_distinct_three_state(definition):
+        return []
+    if "three_state_distinct" in capabilities.semantic_modes:
+        return []
+    return [
+        TransformSupportFinding(
+            code="PMXFORM301",
+            requirement="semantic_mode:three_state_distinct",
+            reason=(
+                "plan uses missing/invalid literals but the compiler does not "
+                "claim distinct three-state preservation"
+            ),
+            expression_path=None,
+        )
+    ]

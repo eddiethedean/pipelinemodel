@@ -80,7 +80,7 @@ Policy when portable SQL cannot claim the needed profile:
 - `native` prefers a registered SQL implementation.
 
 Advanced families (window, complex types/values, reshape, …) remain under the
-**0.15 continuation** backlog.
+**0.17** roadmap.
 
 ## SQL→SQL without Python fetch
 

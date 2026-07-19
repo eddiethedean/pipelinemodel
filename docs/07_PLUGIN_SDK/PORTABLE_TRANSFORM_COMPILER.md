@@ -1,11 +1,11 @@
 # Portable Transformation Compiler Protocol
 
-!!! success "Available in ETLantic 0.16"
+!!! success "Available in ETLantic 0.17"
     `etlantic.transform-compiler/1` is importable. Polars, PySpark, Pandas, and
     SQL claim `portable-relational-kernel/1` and `portable-relational/1`. Third
     parties must pass `run_portable_transform_conformance_suite` for every
-    advertised claim. Rich Portable Analytics / advanced family claims remain
-    0.15 continuation work.
+    advertised claim. Rich Portable Analytics / advanced family claims are
+    planned under **0.17** (Wave 1 / Wave 2 / continuation).
 
 A portable transformation compiler translates a validated
 `dtcs.transform-plan/2` (and readable v1) into backend-native expressions without changing its
@@ -112,8 +112,8 @@ and pass the public conformance fixtures for:
 | Outside claim set | Fail closed in `analyze()` / planning (`PMXFORM3xx`) with action/expression paths |
 
 They **must not** claim Rich Portable Analytics, windows, complex-values,
-reshape, relational-extended, or conversion profiles. Those graduate under the
-0.15 continuation backlog (not the 0.15 SQL exit gate).
+reshape, relational-extended, or conversion profiles. Those graduate under
+**0.17** (not the 0.15 SQL exit gate).
 
 ## Support reports
 

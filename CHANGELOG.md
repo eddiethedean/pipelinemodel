@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-07-19
+
+### Added
+- Graduated portable families on Polars and PySpark: string-advanced,
+  conversion, statistics, window/1, complex-types, complex-values, reshape
+- Executable rich-family public conformance fixtures and coverage enforcement
+- `etlantic plugin list --kind transform_compiler` capability inventory
+- `scripts/check_transform_compiler_drift.py` packaging/guide drift gate
+- What's New 0.17 and Migration 0.16 → 0.17
+- Example `examples/portable_wave17.py`
+
+### Changed
+- Window V1 authoring emits `portable-window/1` only (V2 functions stay V2)
+- Complex-type accessors no longer force complex-values requirements
+- Transform-compiler discovery uses entry-point names as stable keys and no
+  longer bypasses profile allowlists on the plan/run path
+- Distinct missing/invalid literals fail closed without `three_state_distinct`
+- Package versions aligned at 0.17.0; plugins require `etlantic>=0.17.0,<0.18`
+
+### Fixed
+- Planner/runtime unfiltered transform-compiler discovery fallback after
+  allowlist filtering
+
 ## [0.16.0] - 2026-07-19
 
 ### Added
@@ -639,6 +662,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - uv + ruff toolchain, MkDocs documentation site, shared GitHub Actions
   checks, and tag-triggered PyPI release
 
+[0.17.0]: https://github.com/eddiethedean/etlantic/releases/tag/v0.17.0
 [0.16.0]: https://github.com/eddiethedean/etlantic/releases/tag/v0.16.0
 [0.15.0]: https://github.com/eddiethedean/etlantic/releases/tag/v0.15.0
 [0.14.0]: https://github.com/eddiethedean/etlantic/releases/tag/v0.14.0

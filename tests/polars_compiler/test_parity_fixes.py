@@ -62,7 +62,7 @@ def test_semi_join_allows_non_key_name_overlap() -> None:
 
 
 @pytest.mark.polars
-def test_analyze_rejects_suffix_collision_and_windows() -> None:
+def test_analyze_rejects_suffix_collision_and_accepts_windows() -> None:
     compiler = create_transform_compiler()
     ctx = TransformPlanningContext(
         pipeline_id="p",
@@ -115,10 +115,22 @@ def test_analyze_rejects_suffix_collision_and_windows() -> None:
                             {
                                 "name": "rn",
                                 "expression": {
-                                    "kind": "literal",
-                                    "value": {"type": "integer", "value": 1},
+                                    "kind": "call",
+                                    "callee": "dtcs:row_number",
+                                    "args": [],
                                 },
-                                "window": {"partitionBy": ["id"]},
+                                "window": {
+                                    "partitionBy": ["id"],
+                                    "orderBy": [
+                                        {
+                                            "expression": {
+                                                "kind": "fieldRef",
+                                                "scope": "field",
+                                                "target": "id",
+                                            }
+                                        }
+                                    ],
+                                },
                             }
                         ]
                     },
@@ -131,13 +143,15 @@ def test_analyze_rejects_suffix_collision_and_windows() -> None:
         window_plan,
         context=ctx,
         requirements={
-            "profiles": ["dtcs:profile/portable-relational-kernel/1"],
+            "profiles": [
+                "dtcs:profile/portable-relational-kernel/1",
+                "dtcs:profile/portable-window/1",
+            ],
             "actions": ["dtcs:with_fields"],
-            "functions": [],
+            "functions": ["dtcs:row_number"],
         },
     )
-    assert window_report.supported is False
-    assert any("window" in f.requirement for f in window_report.findings)
+    assert window_report.supported is True
 
 
 @pytest.mark.polars

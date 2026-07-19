@@ -126,8 +126,8 @@ does not execute through compilers.
 
 Candidate and Experimental profiles are authorable and fingerprintable in 0.11;
 they are not graduated to Standard until **two independent compilers** pass
-shared conformance (0.13+ for relational; 0.15 continuation for advanced
-families after the SQL exit gate).
+shared conformance (0.13+ for relational; 0.17 for advanced families after the
+SQL exit gate).
 
 ### Tests
 
@@ -271,18 +271,20 @@ family graduation is **not** required to close 0.15.
 
 See [Roadmap summary](ROADMAP_SUMMARY.md) §0.15.
 
-## 0.15 continuation: graduating advanced families
+## 0.15 continuation → 0.17: graduating advanced families
 
-Compiler claims for windows, arrays, maps, structs, and advanced functions ship
-**after** the SQL vertical slice, one semantic family at a time. Each
-graduation requires two compilers, shared fixtures, capability identifiers,
-explain rendering, and a migration note. Authoring for these families already
-exists in 0.11; this work is execution and conformance only.
+Compiler claims for windows, arrays, maps, structs, and advanced functions were
+historically tracked as **0.15 continuation**. Active sequencing now lives under
+**0.17**: Gate A (platform), Gate B Wave 1, Gate C Wave 2, then 0.17
+continuation. Each graduation still requires two compilers, shared fixtures,
+capability identifiers, explain rendering, and a migration note. Authoring for
+these families already exists in 0.11; this work is execution and conformance
+only.
 
-This continuation is **not** part of the 0.15 exit gate and is not a separate
-0.16 minor. Suggested order (adjust if DTCS readiness blocks): window →
-string-advanced → conversion → complex-types/values → statistics → reshape →
-relational-extended → temporal-IANA → nondeterministic.
+This work is **not** part of the 0.15 or 0.16 exit gates. 0.17 Wave 1 order:
+window → string-advanced → conversion → statistics. Wave 2: complex-types →
+complex-values → reshape. Continuation: relational-extended → temporal-IANA →
+nondeterministic → window/2.
 
 Starting standards remain the experimental
 `dtcs:profile/portable-window/1` /

@@ -142,31 +142,62 @@ def run_portable_transform_conformance_suite(
         functions=claimed_functions,
     )
     if enforce_fixture_coverage:
+        from etlantic.transform.protocol import (
+            PROFILE_COMPLEX_TYPES,
+            PROFILE_COMPLEX_VALUES,
+            PROFILE_CONVERSION,
+            PROFILE_RESHAPE,
+            PROFILE_STATISTICS,
+            PROFILE_STRING_ADVANCED,
+            PROFILE_WINDOW_V1,
+        )
+
+        covered_profiles = {
+            KERNEL_PROFILE_V1,
+            RELATIONAL_PROFILE_V1,
+            PROFILE_STRING_ADVANCED,
+            PROFILE_CONVERSION,
+            PROFILE_STATISTICS,
+            PROFILE_WINDOW_V1,
+            PROFILE_COMPLEX_VALUES,
+            PROFILE_COMPLEX_TYPES,
+            PROFILE_RESHAPE,
+        }
+        covered_actions = frozenset(
+            {
+                "dtcs:filter",
+                "dtcs:project",
+                "dtcs:with_fields",
+                "dtcs:join",
+                "dtcs:aggregate",
+                "dtcs:sort",
+                "dtcs:limit",
+                "dtcs:explode",
+            }
+        )
+        covered_functions = frozenset(
+            {
+                "dtcs:lower",
+                "dtcs:substr",
+                "dtcs:replace",
+                "dtcs:coalesce",
+                "dtcs:sum",
+                "dtcs:count_all",
+                "dtcs:trim",
+                "dtcs:regex_replace",
+                "dtcs:to_string",
+                "dtcs:variance",
+                "dtcs:row_number",
+                "dtcs:array",
+                "dtcs:size",
+                "dtcs:object",
+                "dtcs:field",
+            }
+        )
         required = mandatory_capability_keys(
-            profiles=claimed_profiles & {KERNEL_PROFILE_V1, RELATIONAL_PROFILE_V1},
-            actions=claimed_actions
-            & frozenset(
-                {
-                    "dtcs:filter",
-                    "dtcs:project",
-                    "dtcs:with_fields",
-                    "dtcs:join",
-                    "dtcs:aggregate",
-                    "dtcs:sort",
-                    "dtcs:limit",
-                }
-            ),
-            functions=claimed_functions
-            & frozenset(
-                {
-                    "dtcs:lower",
-                    "dtcs:substr",
-                    "dtcs:replace",
-                    "dtcs:coalesce",
-                    "dtcs:sum",
-                    "dtcs:count_all",
-                }
-            ),
+            profiles=claimed_profiles & covered_profiles,
+            actions=claimed_actions & covered_actions,
+            functions=claimed_functions & covered_functions,
         )
         covered = covered_capability_keys(selected)
         missing = sorted(required - covered)

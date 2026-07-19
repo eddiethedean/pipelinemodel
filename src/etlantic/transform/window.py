@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from etlantic.transform.column import ColumnExpr, coerce_column
-from etlantic.transform.protocol import PROFILE_WINDOW_V1, PROFILE_WINDOW_V2
+from etlantic.transform.protocol import PROFILE_WINDOW_V1
 
 
 def _field_ref_column(name: str) -> ColumnExpr:
@@ -36,7 +36,7 @@ class WindowSpec:
     start: Any | None = None
     end: Any | None = None
     profiles: frozenset[str] = field(
-        default_factory=lambda: frozenset({PROFILE_WINDOW_V1, PROFILE_WINDOW_V2})
+        default_factory=lambda: frozenset({PROFILE_WINDOW_V1})
     )
 
     def partitionBy(self, *cols: Any) -> WindowSpec:

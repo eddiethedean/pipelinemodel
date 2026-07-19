@@ -30,7 +30,9 @@ RELATIONAL_ACTIONS = frozenset(
     }
 )
 
-CLAIMED_ACTIONS = KERNEL_ACTIONS | RELATIONAL_ACTIONS
+RESHAPE_ACTIONS = frozenset({"dtcs:explode"})
+
+CLAIMED_ACTIONS = KERNEL_ACTIONS | RELATIONAL_ACTIONS | RESHAPE_ACTIONS
 
 _JOIN_TYPES = frozenset(
     {"inner", "left", "right", "full", "semi", "anti", "cross", "outer"}
@@ -80,12 +82,15 @@ def apply_action(
     if name == "dtcs:with_fields":
         assignments = []
         for item in params.get("assignments") or []:
-            if item.get("window") is not None:
-                raise ValueError(
-                    "dtcs:with_fields window specs are not supported by the "
-                    "Polars relational compiler"
+            window = item.get("window")
+            if window is not None:
+                expr = _lower_window_expr(
+                    item["expression"],
+                    window,
+                    parameters=parameters,
                 )
-            expr = lower_expr(item["expression"], parameters=parameters)
+            else:
+                expr = lower_expr(item["expression"], parameters=parameters)
             assignments.append(expr.alias(str(item["name"])))
         return frame.with_columns(assignments)
     if name == "dtcs:drop_fields":
@@ -120,7 +125,62 @@ def apply_action(
     if name == "dtcs:limit":
         n = int(params.get("count") if "count" in params else params.get("n", 0))
         return frame.head(n)
+    if name == "dtcs:explode":
+        field = params.get("field")
+        if field is None:
+            raise ValueError("dtcs:explode requires a field")
+        return frame.explode(str(field), empty_as_null=True)
     raise ValueError(f"Unsupported action {name!r}")
+
+
+def _lower_window_expr(
+    node: dict[str, Any],
+    window: dict[str, Any],
+    *,
+    parameters: dict[str, Any],
+) -> pl.Expr:
+    """Lower a Window V1 expression and attach its Polars window context."""
+    partition_by: list[pl.Expr | str] = []
+    for item in window.get("partitionBy") or []:
+        if isinstance(item, str):
+            partition_by.append(item)
+        else:
+            partition_by.append(lower_expr(item, parameters=parameters))
+
+    order_by: list[pl.Expr] = []
+    descending: list[bool] = []
+    for item in window.get("orderBy") or []:
+        if isinstance(item, str):
+            order_by.append(pl.col(item))
+            descending.append(False)
+            continue
+        expression = item.get("expression", item)
+        order_by.append(lower_expr(expression, parameters=parameters))
+        direction = str(item.get("direction") or "asc").lower()
+        descending.append(direction in {"desc", "descending"})
+
+    callee = str(node.get("callee") or "") if node.get("kind") == "call" else ""
+    if callee in {"dtcs:rank", "dtcs:dense_rank"}:
+        if not order_by:
+            raise ValueError(f"{callee} requires window orderBy")
+        method = "dense" if callee == "dtcs:dense_rank" else "min"
+        rank_expr = order_by[0].rank(method=method, descending=descending[0])
+        return rank_expr.over(partition_by) if partition_by else rank_expr
+
+    expr = lower_expr(node, parameters=parameters)
+    over_kwargs: dict[str, Any] = {}
+    if order_by:
+        if len(set(descending)) > 1:
+            raise ValueError(
+                "Polars window lowering requires one direction across orderBy keys"
+            )
+        over_kwargs["order_by"] = order_by
+        over_kwargs["descending"] = descending[0]
+    # Polars rejects empty partition_by with order_by; use a constant partition
+    # for global windows.
+    if not partition_by:
+        partition_by = [pl.lit(1)]
+    return expr.over(partition_by, **over_kwargs)
 
 
 def _frame_columns(frame: pl.DataFrame | pl.LazyFrame) -> list[str]:
@@ -245,7 +305,7 @@ def _apply_aggregate(
     parameters: dict[str, Any],
 ) -> pl.DataFrame | pl.LazyFrame:
     group_by = [str(k) for k in (params.get("groupBy") or [])]
-    aggregates = params.get("aggregates") or []
+    aggregates = params.get("aggregates") or params.get("aggregations") or []
     aggs = [
         lower_agg_expr(item["expression"], parameters=parameters).alias(
             str(item["name"])

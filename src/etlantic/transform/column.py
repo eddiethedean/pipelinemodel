@@ -8,7 +8,6 @@ from typing import Any
 from etlantic.exceptions import ModelDefinitionError
 from etlantic.transform.protocol import (
     PROFILE_COMPLEX_TYPES,
-    PROFILE_COMPLEX_VALUES,
     PROFILE_CONVERSION,
 )
 
@@ -304,7 +303,7 @@ class ColumnExpr:
             },
             path=f"field({self.path},{name})",
             functions=self.functions | {"dtcs:field"},
-            profiles=self.profiles | {PROFILE_COMPLEX_VALUES, PROFILE_COMPLEX_TYPES},
+            profiles=self.profiles | {PROFILE_COMPLEX_TYPES},
         )
 
     def __getitem__(self, key: Any) -> ColumnExpr:
@@ -313,9 +312,7 @@ class ColumnExpr:
             node={"kind": "call", "callee": "dtcs:index", "args": [self.node, k.node]},
             path=f"index({self.path})",
             functions=self.functions | k.functions | {"dtcs:index"},
-            profiles=self.profiles
-            | k.profiles
-            | {PROFILE_COMPLEX_VALUES, PROFILE_COMPLEX_TYPES},
+            profiles=self.profiles | k.profiles | {PROFILE_COMPLEX_TYPES},
         )
 
     def over(self, window: Any) -> ColumnExpr:

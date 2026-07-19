@@ -44,6 +44,10 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
         run: uv run python scripts/check_agent_guidance.py
 
+      - name: Transform compiler drift check
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+        run: uv run --group polars --group pandas --group sql --group pyspark python scripts/check_transform_compiler_drift.py
+
       - name: Release readiness check
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
         run: uv run python scripts/check_release.py

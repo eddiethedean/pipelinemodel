@@ -70,6 +70,20 @@ def explain_plan(plan: PipelinePlan) -> dict[str, Any]:
                         "name": plan.implementations[node.name].compiler_name,
                         "version": plan.implementations[node.name].compiler_version,
                         "protocol": plan.implementations[node.name].compiler_protocol,
+                        "selection_reason": (
+                            plan.implementations[node.name].fallback_reason
+                            or "portable_compiled"
+                        ),
+                        "support_summary": plan.implementations[node.name].metadata.get(
+                            "support_summary"
+                        )
+                        if plan.implementations[node.name].metadata
+                        else None,
+                        "capabilities": plan.implementations[node.name].metadata.get(
+                            "compiler_capabilities"
+                        )
+                        if plan.implementations[node.name].metadata
+                        else None,
                     }
                     if node.name in plan.implementations
                     and plan.implementations[node.name].kind == "portable_compiled"

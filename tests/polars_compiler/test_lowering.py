@@ -89,22 +89,23 @@ def test_case_when_with_typed_literals() -> None:
     assert frame["label"].to_list() == ["minor", "adult"]
 
 
-def test_cast_is_rejected() -> None:
-    with pytest.raises(ValueError, match="Unsupported function"):
-        lower_expr(
-            {
-                "kind": "call",
-                "callee": "dtcs:cast",
-                "args": [
-                    {"kind": "fieldRef", "scope": "column", "target": "v"},
-                    {
-                        "kind": "literal",
-                        "value": {"type": "string", "value": "integer"},
-                    },
-                ],
-            },
-            parameters={},
-        )
+def test_cast_lowers_to_polars() -> None:
+    expr = lower_expr(
+        {
+            "kind": "call",
+            "callee": "dtcs:cast",
+            "args": [
+                {"kind": "fieldRef", "scope": "field", "target": "v"},
+                {
+                    "kind": "literal",
+                    "value": {"type": "string", "value": "integer"},
+                },
+            ],
+        },
+        parameters={},
+    )
+    frame = pl.DataFrame({"v": ["1", "2"]}).select(expr.alias("n"))
+    assert frame["n"].to_list() == [1, 2]
 
 
 def test_authored_ops_lower_to_polars() -> None:

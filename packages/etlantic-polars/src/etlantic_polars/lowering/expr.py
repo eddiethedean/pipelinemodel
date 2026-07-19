@@ -115,6 +115,27 @@ def _lower_call(node: dict[str, Any], *, parameters: dict[str, Any]) -> pl.Expr:
         return args[0].str.to_lowercase()
     if callee == "dtcs:upper":
         return args[0].str.to_uppercase()
+    if callee == "dtcs:trim":
+        return args[0].str.strip_chars()
+    if callee == "dtcs:ltrim":
+        return args[0].str.strip_chars_start()
+    if callee == "dtcs:rtrim":
+        return args[0].str.strip_chars_end()
+    if callee == "dtcs:split":
+        pattern = constant_python(raw_args[1], parameters=parameters)
+        return args[0].str.split(str(pattern))
+    if callee == "dtcs:regex_extract":
+        pattern = constant_python(raw_args[1], parameters=parameters)
+        group = (
+            constant_python(raw_args[2], parameters=parameters)
+            if len(raw_args) > 2
+            else 0
+        )
+        return args[0].str.extract(str(pattern), group_index=int(group))
+    if callee == "dtcs:regex_replace":
+        pattern = constant_python(raw_args[1], parameters=parameters)
+        replacement = constant_python(raw_args[2], parameters=parameters)
+        return args[0].str.replace_all(str(pattern), str(replacement), literal=False)
     if callee == "dtcs:concat":
         return pl.concat_str(args, separator="")
     if callee == "dtcs:concat_ws":
@@ -166,6 +187,52 @@ def _lower_call(node: dict[str, Any], *, parameters: dict[str, Any]) -> pl.Expr:
         return pl.min_horizontal(args)
     if callee == "dtcs:greatest":
         return pl.max_horizontal(args)
+    if callee == "dtcs:to_string":
+        return args[0].cast(pl.Utf8)
+    if callee == "dtcs:to_integer":
+        return args[0].cast(pl.Int64, strict=False)
+    if callee in {"dtcs:cast", "dtcs:try_cast"}:
+        data_type = constant_python(raw_args[1], parameters=parameters)
+        return args[0].cast(
+            _polars_dtype(str(data_type)),
+            strict=callee == "dtcs:cast",
+        )
+    if callee == "dtcs:array":
+        return pl.concat_list(args)
+    if callee in {"dtcs:map", "dtcs:object"}:
+        return _lower_struct(raw_args, parameters=parameters)
+    if callee == "dtcs:size":
+        return args[0].list.len()
+    if callee == "dtcs:field":
+        field = constant_python(raw_args[1], parameters=parameters)
+        return args[0].struct.field(str(field))
+    if callee in {"dtcs:index", "dtcs:element_at"}:
+        try:
+            key = constant_python(raw_args[1], parameters=parameters)
+        except (KeyError, ValueError):
+            key = None
+        if isinstance(key, str):
+            return args[0].struct.field(key)
+        return args[0].list.get(args[1], null_on_oob=True)
+    if callee == "dtcs:row_number":
+        return pl.int_range(1, pl.len() + 1, dtype=pl.UInt64)
+    if callee in {"dtcs:rank", "dtcs:dense_rank"}:
+        # The order expression and rank method are supplied by with_fields.
+        return pl.int_range(1, pl.len() + 1, dtype=pl.UInt64)
+    if callee in {"dtcs:lag", "dtcs:lead"}:
+        offset = (
+            int(constant_python(raw_args[1], parameters=parameters))
+            if len(raw_args) > 1
+            else 1
+        )
+        if callee == "dtcs:lead":
+            offset = -offset
+        fill_value = args[2] if len(args) > 2 else None
+        return args[0].shift(offset, fill_value=fill_value)
+    if callee == "dtcs:first_value":
+        return args[0].first()
+    if callee == "dtcs:last_value":
+        return args[0].last()
     if callee == "dtcs:case_when":
         return _lower_case_when(node, parameters=parameters)
     # Aggregate callees are only valid inside dtcs:aggregate (see lower_agg_expr).
@@ -177,11 +244,13 @@ def _lower_call(node: dict[str, Any], *, parameters: dict[str, Any]) -> pl.Expr:
         "dtcs:count",
         "dtcs:count_all",
         "dtcs:count_distinct",
+        "dtcs:variance",
+        "dtcs:stddev",
+        "dtcs:corr",
     }:
         raise ValueError(
             f"Aggregate function {callee!r} is only valid inside dtcs:aggregate"
         )
-    # dtcs:cast is conversion-profile only; do not silently no-op.
     raise ValueError(f"Unsupported function {callee!r}")
 
 
@@ -208,7 +277,60 @@ def lower_agg_expr(node: Any, *, parameters: dict[str, Any]) -> pl.Expr:
         return args[0].count()
     if callee == "dtcs:count_distinct":
         return args[0].n_unique()
+    if callee == "dtcs:variance":
+        return args[0].var(ddof=1)
+    if callee == "dtcs:stddev":
+        return args[0].std(ddof=1)
+    if callee == "dtcs:corr":
+        return pl.corr(args[0], args[1])
     raise ValueError(f"Unsupported aggregate function {callee!r}")
+
+
+def _polars_dtype(data_type: str) -> pl.DataType:
+    normalized = data_type.strip().lower()
+    aliases: dict[str, pl.DataType] = {
+        "string": pl.Utf8,
+        "str": pl.Utf8,
+        "utf8": pl.Utf8,
+        "integer": pl.Int64,
+        "int": pl.Int64,
+        "int64": pl.Int64,
+        "long": pl.Int64,
+        "float": pl.Float64,
+        "float64": pl.Float64,
+        "double": pl.Float64,
+        "boolean": pl.Boolean,
+        "bool": pl.Boolean,
+        "date": pl.Date,
+        "datetime": pl.Datetime,
+        "timestamp": pl.Datetime,
+    }
+    if normalized not in aliases:
+        raise ValueError(f"Unsupported cast data type {data_type!r}")
+    return aliases[normalized]
+
+
+def _lower_struct(
+    raw_args: list[Any],
+    *,
+    parameters: dict[str, Any],
+) -> pl.Expr:
+    """Lower alternating name/value pairs to a Polars struct."""
+    if len(raw_args) % 2 == 0:
+        fields: list[pl.Expr] = []
+        for index in range(0, len(raw_args), 2):
+            try:
+                name = constant_python(raw_args[index], parameters=parameters)
+            except (KeyError, ValueError):
+                break
+            if not isinstance(name, str):
+                break
+            fields.append(
+                lower_expr(raw_args[index + 1], parameters=parameters).alias(name)
+            )
+        else:
+            return pl.struct(fields)
+    return pl.struct([lower_expr(arg, parameters=parameters) for arg in raw_args])
 
 
 def _lower_case_when(node: dict[str, Any], *, parameters: dict[str, Any]) -> pl.Expr:
