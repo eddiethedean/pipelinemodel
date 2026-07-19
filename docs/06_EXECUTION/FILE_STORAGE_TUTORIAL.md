@@ -35,7 +35,7 @@ File locations are explicit planning bindings:
 ```python
 context.registry.register_binding(
     BindingDescriptor(
-        binding="file_source",
+        asset="file_source",
         provider="json",
         location="input.json",
         kind="source",
@@ -43,7 +43,7 @@ context.registry.register_binding(
 )
 context.registry.register_binding(
     BindingDescriptor(
-        binding="file_sink",
+        asset="file_sink",
         provider="json",
         location="output.json",
         kind="sink",

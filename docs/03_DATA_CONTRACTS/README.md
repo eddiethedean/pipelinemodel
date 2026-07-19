@@ -132,7 +132,7 @@ from etlantic import Extract, Load, Pipeline
 
 class CustomerPipeline(Pipeline):
     raw: Extract[RawCustomer] = Extract(
-        binding="customer_csv",
+        asset="customer_csv",
     )
 
     normalized = NormalizeCustomers.step(

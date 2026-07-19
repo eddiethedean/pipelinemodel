@@ -10,6 +10,7 @@ pytest.importorskip("sqlmodel")
 from etlantic_sqlmodel import (
     compare_metadata,
     contract_to_sqlmodel,
+    contract_to_sqlmodel_source,
     run_conformance_checks,
     sqlmodel_to_contract,
 )
@@ -35,6 +36,19 @@ def test_contract_to_sqlmodel_round_trip() -> None:
 
     report = compare_metadata(Customer, table)
     assert report.valid
+
+
+def test_contract_to_sqlmodel_source_emits_class() -> None:
+    source = contract_to_sqlmodel_source(
+        Customer,
+        table_name="customer",
+        primary_key=("customer_id",),
+    )
+    assert "class CustomerTable(SQLModel, table=True):" in source
+    assert '__tablename__ = "customer"' in source
+    assert "customer_id: int = Field(primary_key=True)" in source
+    assert "name: str" in source
+    assert "from sqlmodel import Field, SQLModel" in source
 
 
 def test_run_conformance_checks() -> None:

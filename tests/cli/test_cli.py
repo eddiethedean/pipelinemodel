@@ -61,6 +61,106 @@ def test_cli_plugin_list_transform_compiler() -> None:
         assert "compiler_protocol" in item
 
 
+def test_cli_plugin_list_scheduler() -> None:
+    result = runner.invoke(
+        app, ["plugin", "list", "--kind", "scheduler", "--format", "json"]
+    )
+    assert result.exit_code == 0, result.stdout + result.stderr
+    payload = json.loads(result.stdout)
+    engines = {p.get("engine") for p in payload["plugins"]}
+    assert "local" in engines
+
+
+def test_cli_plugin_info_scheduler_local() -> None:
+    result = runner.invoke(
+        app,
+        ["plugin", "info", "local", "--kind", "scheduler", "--format", "json"],
+    )
+    assert result.exit_code == 0, result.stdout + result.stderr
+    payload = json.loads(result.stdout)
+    assert payload.get("engine") == "local" or "local" in str(payload).lower()
+
+
+def test_cli_freshness_fails_closed_without_observed_age() -> None:
+    result = runner.invoke(
+        app,
+        [
+            "reliability",
+            "freshness",
+            "orders",
+            "--max-age",
+            "60",
+            "--format",
+            "json",
+        ],
+    )
+    assert result.exit_code == 1, result.stdout + result.stderr
+    payload = json.loads(result.stdout)
+    assert payload["ok"] is False
+
+
+def test_cli_freshness_ok_with_observed_age() -> None:
+    result = runner.invoke(
+        app,
+        [
+            "reliability",
+            "freshness",
+            "orders",
+            "--max-age",
+            "3600",
+            "--observed-age",
+            "10",
+            "--format",
+            "json",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout + result.stderr
+    payload = json.loads(result.stdout)
+    assert payload["ok"] is True
+
+
+def test_cli_partition_check_flags() -> None:
+    result = runner.invoke(
+        app,
+        [
+            "reliability",
+            "partition-check",
+            "orders",
+            "--keys",
+            "dt,region",
+            "--count",
+            "2",
+            "--minimum-count",
+            "2",
+            "--format",
+            "json",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout + result.stderr
+    payload = json.loads(result.stdout)
+    assert payload["ok"] is True
+    assert payload["expectation"]["partition_keys"] == ["dt", "region"]
+
+
+def test_cli_diff_load_failure_is_explicit() -> None:
+    result = runner.invoke(
+        app,
+        [
+            "diff",
+            "tests.fixtures.sample_pipeline:MissingPipeline",
+            _TARGET,
+            "--kind",
+            "pipeline",
+            "--format",
+            "json",
+        ],
+    )
+    assert result.exit_code == 1
+    payload = json.loads(result.stdout)
+    assert payload.get("ok") is False
+    assert "previous" in str(payload.get("error", "")).lower()
+
+
 def test_cli_generate(tmp_path: Path) -> None:
     out = tmp_path / "contracts"
     result = runner.invoke(
@@ -71,6 +171,35 @@ def test_cli_generate(tmp_path: Path) -> None:
     payload = json.loads(result.stdout)
     assert payload.get("ok") is True
     assert out.exists()
+
+
+@pytest.mark.sqlmodel
+def test_cli_generate_sqlmodel_writes_source(tmp_path: Path) -> None:
+    pytest.importorskip("sqlmodel")
+    pytest.importorskip("etlantic_sqlmodel")
+    out = tmp_path / "contracts"
+    result = runner.invoke(
+        app,
+        [
+            "generate",
+            _TARGET,
+            "--output",
+            str(out),
+            "--sqlmodel",
+            "--format",
+            "json",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout + result.stderr
+    payload = json.loads(result.stdout)
+    assert payload.get("ok") is True
+    sqlmodel_paths = payload.get("sqlmodel") or {}
+    assert sqlmodel_paths
+    for path_str in sqlmodel_paths.values():
+        text = Path(path_str).read_text(encoding="utf-8")
+        assert "class " in text
+        assert "SQLModel" in text
+        assert not text.strip().startswith("# Generated SQLModel")
 
 
 def test_cli_viz_lineage() -> None:

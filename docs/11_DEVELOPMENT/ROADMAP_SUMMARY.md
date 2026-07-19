@@ -11,7 +11,7 @@ ETLantic **0.15.0** closed Safe SQL Lowering and the LocalScheduler companion.
 ETLantic **0.16.0** shipped Gate A (authoring vocabulary cleanup) and Gate B
 (optional `etlantic-prefect` `ExecutionScheduler`).
 
-ETLantic **0.17.0** shipped portable coverage expansion:
+ETLantic **0.18.0** shipped portable coverage expansion:
 
 - Gate A — transform-compiler CLI inventory, exact capability matrix, drift
   checks, allowlist-safe discovery

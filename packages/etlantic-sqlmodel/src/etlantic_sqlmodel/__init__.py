@@ -27,6 +27,7 @@ __all__ = [
     "__version__",
     "compare_metadata",
     "contract_to_sqlmodel",
+    "contract_to_sqlmodel_source",
     "create_plugin",
     "run_conformance_checks",
     "sqlmodel_to_contract",
@@ -80,6 +81,99 @@ def contract_to_sqlmodel(
 
     model_name = f"{contract_cls.__name__}Table"
     return SQLModelMetaclass(model_name, (SQLModel,), attrs, table=True)
+
+
+def contract_to_sqlmodel_source(
+    contract_cls: type[Data],
+    *,
+    table_name: str | None = None,
+    primary_key: tuple[str, ...] | None = None,
+) -> str:
+    """Generate importable SQLModel source for a ``Data`` / ContractModel class."""
+    if not is_data_contract_type(contract_cls):
+        raise TypeError("Expected a Data / ContractModel subclass")
+
+    resolved_table = table_name or _default_table_name(contract_cls)
+    pk_fields = set(primary_key or ())
+    model_name = f"{contract_cls.__name__}Table"
+    imports: set[str] = set()
+    field_lines: list[str] = []
+
+    for name, field_info in contract_cls.model_fields.items():
+        python_type = _python_type_from_annotation(field_info.annotation)
+        type_name, extra_imports = _annotation_source(python_type, optional=False)
+        imports.update(extra_imports)
+        optional = not field_info.is_required()
+        if optional:
+            type_name = f"{type_name} | None"
+        if name in pk_fields:
+            field_lines.append(f"    {name}: {type_name} = Field(primary_key=True)")
+        elif field_info.default is not ...:
+            default_repr = _default_source(field_info.default, imports)
+            field_lines.append(
+                f"    {name}: {type_name} = Field(default={default_repr})"
+            )
+        elif optional:
+            field_lines.append(f"    {name}: {type_name} = Field(default=None)")
+        else:
+            field_lines.append(f"    {name}: {type_name}")
+
+    import_lines = ["from sqlmodel import Field, SQLModel"]
+    if "datetime" in imports:
+        import_lines.insert(0, "from datetime import datetime")
+    if "date" in imports:
+        import_lines.insert(0, "from datetime import date")
+    if "Decimal" in imports:
+        import_lines.insert(0, "from decimal import Decimal")
+    # De-duplicate datetime imports when both date and datetime needed
+    if "datetime" in imports and "date" in imports:
+        import_lines = [
+            line
+            for line in import_lines
+            if line
+            not in {"from datetime import date", "from datetime import datetime"}
+        ]
+        import_lines.insert(0, "from datetime import date, datetime")
+
+    body = "\n".join(field_lines) if field_lines else "    pass"
+    return (
+        "\n".join(import_lines)
+        + "\n\n\n"
+        + f"class {model_name}(SQLModel, table=True):\n"
+        + f'    __tablename__ = "{resolved_table}"\n'
+        + f"{body}\n"
+    )
+
+
+def _annotation_source(
+    python_type: type[Any], *, optional: bool
+) -> tuple[str, set[str]]:
+    _ = optional
+    mapping = {
+        str: ("str", set()),
+        int: ("int", set()),
+        float: ("float", set()),
+        bool: ("bool", set()),
+        datetime: ("datetime", {"datetime"}),
+        date: ("date", {"date"}),
+        Decimal: ("Decimal", {"Decimal"}),
+    }
+    if python_type in mapping:
+        return mapping[python_type]
+    return ("str", set())
+
+
+def _default_source(value: Any, imports: set[str]) -> str:
+    if isinstance(value, Decimal):
+        imports.add("Decimal")
+        return f"Decimal({str(value)!r})"
+    if isinstance(value, datetime):
+        imports.add("datetime")
+        return repr(value)
+    if isinstance(value, date):
+        imports.add("date")
+        return repr(value)
+    return repr(value)
 
 
 def sqlmodel_to_contract(model_cls: type[Any]) -> dict[str, Any]:

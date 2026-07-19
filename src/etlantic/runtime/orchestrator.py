@@ -1027,6 +1027,21 @@ class LocalOrchestrator:
                             node_name=node.name,
                         )
                     )
+                error_diags = [
+                    d
+                    for d in result.diagnostics
+                    if str(d.get("severity") or "").lower() == "error"
+                ]
+                if error_diags:
+                    first = error_diags[0]
+                    raise NodeExecutionError(
+                        redact_message(
+                            str(first.get("message") or "Spark write failed.")
+                        ),
+                        node_name=node.name,
+                        stage=FailureStage.WRITE.value,
+                        code=str(first.get("code") or "PMSPARK000"),
+                    )
                 state.records_in = (
                     result.metrics.rows_affected or result.metrics.rows_in
                 )
@@ -2130,6 +2145,7 @@ class LocalOrchestrator:
             current=current,
             policy=self.drift_policy,
             profile_name=self.plan.profile_name,
+            security_domain=self.plan.security_domain,
         )
         if declared is not None:
             schema_obs.append(

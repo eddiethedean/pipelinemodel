@@ -1,6 +1,6 @@
 # Code-First Pipeline
 
-!!! warning "Future design—not a ETLantic 0.16 API guide"
+!!! warning "Design study—not a runnable ETLantic 0.18 API guide. Prefer CAPABILITIES and examples/."
     This page is a design study. It may describe packages, commands, or
     interfaces beyond the shipped API surface. Prefer Current Capabilities,
     the runnable examples under `examples/`, the API reference, and the CLI
@@ -107,7 +107,7 @@ def normalize(customers: pl.LazyFrame,
 
 ```python
 class CustomerPipeline(Pipeline):
-    raw = Extract[RawCustomer](binding="customers_input")
+    raw = Extract[RawCustomer](asset="customers_input")
 
     normalized = NormalizeCustomers.step(
         customers=raw,
@@ -116,7 +116,7 @@ class CustomerPipeline(Pipeline):
 
     curated = Load[Customer](
         input=normalized.result,
-        binding="customers_output",
+        asset="customers_output",
     )
 ```
 

@@ -282,9 +282,10 @@ def test_pyspark_to_delta_pipeline(tmp_path) -> None:
     assert result.metrics.rows_affected == 1
     assert result.schema_observation is not None
     # Merge without delta fails closed when format isn't delta and delta disabled
+    merge_path = tmp_path / "x.json"
     merge = SparkWrite(
         source=df,
-        target=DatasetRef(name="customers", format="json", path=str(tmp_path / "x")),
+        target=DatasetRef(name="customers", format="json", path=str(merge_path)),
         mode=SparkWriteMode.MERGE,
         merge_keys=("customer_id",),
     )
@@ -296,6 +297,29 @@ def test_pyspark_to_delta_pipeline(tmp_path) -> None:
         ),
     )
     assert any(d["code"] == "PMSPARK331" for d in merge_result.diagnostics)
+    assert any(d["severity"] == "error" for d in merge_result.diagnostics)
+    assert merge_result.metrics.actions == ["no_write"]
+    assert not merge_path.exists()
+
+    # Missing merge_keys fails closed without writing
+    delta_path = tmp_path / "customers.delta"
+    no_keys = SparkWrite(
+        source=df,
+        target=DatasetRef(name="customers", format="delta", path=str(delta_path)),
+        mode=SparkWriteMode.MERGE,
+        merge_keys=(),
+    )
+    plugin._delta_enabled = True
+    no_keys_result = plugin.execute_write(
+        no_keys,
+        context=SparkExecutionContext(
+            run_id="r", pipeline_id="p", plan_id="pl", step_name="curated"
+        ),
+    )
+    assert any(d["code"] == "PMDELTA307" for d in no_keys_result.diagnostics)
+    assert any(d["severity"] == "error" for d in no_keys_result.diagnostics)
+    assert no_keys_result.metrics.actions == ["no_write"]
+    assert not delta_path.exists()
     provider.release(handle, ctx)
 
 

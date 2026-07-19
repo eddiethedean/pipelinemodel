@@ -255,7 +255,7 @@ class PySparkPlugin:
             if fmt != "delta" and not self._delta_enabled:
                 return SparkExecutionResult(
                     write=write,
-                    metrics=SparkMetrics(rows_affected=0),
+                    metrics=SparkMetrics(rows_affected=0, actions=["no_write"]),
                     diagnostics=[
                         {
                             "code": "PMSPARK331",
@@ -265,6 +265,12 @@ class PySparkPlugin:
                     ],
                 )
             diagnostics.extend(self._delta_merge(df, path, write.merge_keys))
+            if any(str(d.get("severity")) == "error" for d in diagnostics):
+                return SparkExecutionResult(
+                    write=write,
+                    metrics=SparkMetrics(rows_affected=0, actions=["no_write"]),
+                    diagnostics=diagnostics,
+                )
         elif mode is SparkWriteMode.OVERWRITE_PARTITION:
             writer = df.write.mode("overwrite")
             if write.partition_by:
@@ -386,14 +392,13 @@ class PySparkPlugin:
         try:
             from delta.tables import DeltaTable
         except ImportError:
-            # Fallback: overwrite for local demos without delta-spark installed.
-            df.write.mode("overwrite").format("parquet").save(path)
             return [
                 {
                     "code": "PMSPARK332",
-                    "severity": "warning",
+                    "severity": "error",
                     "message": (
-                        "delta-spark not installed; merge fell back to parquet overwrite."
+                        "delta-spark not installed; MERGE/UPSERT failing closed "
+                        "(no parquet overwrite fallback)."
                     ),
                 }
             ]

@@ -1609,7 +1609,7 @@ fixtures, reports, and examples contain no secrets or source rows.
 
 ## 0.18 — Versioned Tabular Interchange (Gate A)
 
-**Status: planned.** **0.18.0 ships Gate A only**: a public, versioned,
+**Status: shipped in 0.18.0.** **0.18.0 ships Gate A only**: a public, versioned,
 capability-driven tabular interchange contract. DataFusion is a **non-blocking
 Gate B / 0.19+ experiment** and does not gate 0.18.0.
 

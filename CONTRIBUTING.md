@@ -25,6 +25,8 @@ uv run pytest -q -m "not sparkforge and not polars and not pandas and not sql an
 uv run python scripts/check_docs.py
 uv run python scripts/check_agent_guidance.py
 uv run python scripts/check_release.py
+uv run python scripts/check_transform_compiler_drift.py
+uv run etlantic validate examples/quickstart.py:CustomerPipeline --format sarif > /tmp/etlantic.sarif
 uv run python examples/quickstart.py
 uv run python scripts/build_docs.py
 ```

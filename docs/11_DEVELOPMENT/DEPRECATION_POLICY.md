@@ -1,6 +1,6 @@
 # API Stability and Deprecation Policy
 
-ETLantic 0.17.0 is production/stable for documented single-tenant reference
+ETLantic 0.18.0 is production/stable for documented single-tenant reference
 deployments, while remaining pre-1.0. Breaking changes remain possible, but
 they must not be silent.
 

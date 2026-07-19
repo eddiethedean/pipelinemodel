@@ -1,7 +1,8 @@
 # Prefect Feasibility Spike (0.15)
 
-Status: notes only — **not** a release dependency  
-Package target: optional `etlantic-prefect` in **0.16** (Gate B)
+Status: **Shipped** as local MVP in `etlantic-prefect` (0.16+); these notes are historical.  
+See [PREFECT_RUN.md](../09_EXAMPLES/PREFECT_RUN.md) and the package README for current usage.
+Deploy/serve remain open follow-ups.
 
 ## Goal
 

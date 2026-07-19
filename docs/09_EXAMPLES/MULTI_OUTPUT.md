@@ -1,6 +1,6 @@
 # Multi-Output Pipeline
 
-!!! warning "Future design—not a ETLantic 0.16 API guide"
+!!! warning "Design study—not a runnable ETLantic 0.18 API guide. Prefer CAPABILITIES and examples/."
     This page is a design study. It may describe packages, commands, or
     interfaces beyond the shipped API surface. Prefer Current Capabilities,
     the runnable examples under `examples/`, the API reference, and the CLI

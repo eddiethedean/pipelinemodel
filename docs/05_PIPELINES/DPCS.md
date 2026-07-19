@@ -106,7 +106,7 @@ from etlantic import Extract, Load, Pipeline
 
 class CustomerPipeline(Pipeline):
     raw: Extract[RawCustomer] = Extract(
-        binding="raw.customers",
+        asset="raw.customers",
     )
 
     normalized = NormalizeCustomers.step(
@@ -219,7 +219,7 @@ ETLantic sources and sinks map naturally to pipeline boundaries.
 
 ```python
 raw: Extract[RawCustomer] = Extract(
-    binding="raw.customers",
+    asset="raw.customers",
 )
 ```
 

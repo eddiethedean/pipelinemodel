@@ -153,7 +153,9 @@ def register_commands(
         }
         if sqlmodel:
             try:
-                from etlantic_sqlmodel import contract_to_sqlmodel  # type: ignore
+                from etlantic_sqlmodel import (
+                    contract_to_sqlmodel_source,  # type: ignore
+                )
             except ImportError as exc:
                 emit_payload(
                     {
@@ -167,13 +169,9 @@ def register_commands(
             out = Path(output) / "sqlmodel"
             out.mkdir(parents=True, exist_ok=True)
             for name, contract in bundle.data_contracts.items():
-                model = contract_to_sqlmodel(contract, table_name=name)
+                source = contract_to_sqlmodel_source(contract, table_name=name)
                 path = out / f"{name}.py"
-                path.write_text(
-                    f"# Generated SQLModel for {name}\n"
-                    f"# class: {getattr(model, '__name__', name)}\n",
-                    encoding="utf-8",
-                )
+                path.write_text(source, encoding="utf-8")
                 stubs[name] = str(path)
             payload["sqlmodel"] = stubs
         emit_payload(payload, fmt=fmt)
@@ -192,15 +190,56 @@ def register_commands(
         fmt: str = typer.Option("json", "--format", help="human|json|sarif"),
     ) -> None:
         """Diff contracts or pipelines and emit diagnostics."""
-        prev_obj: Any
-        curr_obj: Any
+
+        def _load_side(target: str) -> Any:
+            path = Path(target)
+            if path.exists() and path.is_file():
+                return path
+            return load_target(target)
+
+        def _sniff_kind(path: Path) -> str:
+            name = path.name.lower()
+            if "odcs" in name:
+                return "data"
+            if "dtcs" in name or "transform" in name:
+                return "transformation"
+            if "dpcs" in name or "pipeline" in name:
+                return "pipeline"
+            try:
+                head = path.read_text(encoding="utf-8")[:800].lower()
+            except OSError:
+                return "pipeline"
+            if "odcs" in head or "datacontract" in head.replace(" ", ""):
+                return "data"
+            if "dtcs" in head or "transform-plan" in head:
+                return "transformation"
+            return "pipeline"
+
+        errors: list[str] = []
+        prev_obj: Any = None
+        curr_obj: Any = None
         try:
-            prev_obj = load_target(previous)
-            curr_obj = load_target(current)
-            resolved_kind = "pipeline" if kind == "auto" else kind
-        except Exception:
-            prev_obj, curr_obj = previous, current
-            resolved_kind = "pipeline" if kind == "auto" else kind
+            prev_obj = _load_side(previous)
+        except Exception as exc:
+            errors.append(f"previous ({previous}): {exc}")
+        try:
+            curr_obj = _load_side(current)
+        except Exception as exc:
+            errors.append(f"current ({current}): {exc}")
+        if errors:
+            emit_payload({"ok": False, "error": "; ".join(errors)}, fmt=fmt)
+            raise typer.Exit(1)
+
+        if kind == "auto":
+            if isinstance(prev_obj, Path):
+                resolved_kind = _sniff_kind(prev_obj)
+            elif isinstance(curr_obj, Path):
+                resolved_kind = _sniff_kind(curr_obj)
+            else:
+                resolved_kind = "pipeline"
+        else:
+            resolved_kind = kind
+
         if resolved_kind == "data":
             report = diff_data_contracts(prev_obj, curr_obj)
         elif resolved_kind == "transformation":
@@ -291,6 +330,7 @@ def register_commands(
     def plugin_info_cmd(
         engine: str = typer.Argument(..., help="Plugin engine name"),
         kind: str = typer.Option("dataframe", "--kind"),
+        profile: str = typer.Option("local", "--profile", "-p"),
         fmt: str = typer.Option("json", "--format"),
     ) -> None:
         """Show details for one discovered plugin."""
@@ -311,11 +351,52 @@ def register_commands(
             from etlantic.orchestration.discovery import discover_orchestrator_plugins
 
             plugins = discover_orchestrator_plugins()
+        elif kind == "scheduler":
+            from etlantic.runtime.scheduler_discovery import (
+                builtin_local_scheduler,
+                discover_scheduler_plugins,
+            )
+
+            plugins = dict(discover_scheduler_plugins())
+            plugins.setdefault("local", builtin_local_scheduler())
         elif kind == "transform_compiler":
             from etlantic.transform.discovery import discover_transform_compilers
 
             plugins = discover_transform_compilers()
-        plugin = plugins.get(engine)
+        else:
+            emit_payload(
+                {
+                    "ok": False,
+                    "error": (
+                        f"Unknown kind {kind!r}; expected dataframe|sql|spark|"
+                        "orchestrator|scheduler|transform_compiler"
+                    ),
+                },
+                fmt=fmt,
+            )
+            raise typer.Exit(1)
+
+        resolved = resolve_profile(profile)
+        kept, diags = filter_plugins_by_allowlist(plugins, resolved)
+        if any(d.severity.value == "error" for d in diags) and engine not in kept:
+            emit_payload(
+                {
+                    "ok": False,
+                    "error": f"Plugin {engine!r} blocked by profile allowlist",
+                    "diagnostics": [
+                        {
+                            "code": d.code,
+                            "severity": d.severity.value,
+                            "message": d.message,
+                        }
+                        for d in diags
+                    ],
+                },
+                fmt=fmt,
+            )
+            raise typer.Exit(1)
+
+        plugin = kept.get(engine)
         if plugin is None:
             emit_payload({"ok": False, "error": f"Unknown plugin {engine!r}"}, fmt=fmt)
             raise typer.Exit(1)
@@ -469,26 +550,31 @@ def register_commands(
         observed_age_seconds: float | None = typer.Option(None, "--observed-age"),
         fmt: str = typer.Option("json", "--format"),
     ) -> None:
+        from datetime import UTC, datetime, timedelta
+
         from etlantic.reliability import FreshnessExpectation
+        from etlantic.reliability_runtime import check_freshness
 
         expectation = FreshnessExpectation(
             subject_id=subject_id, max_age_seconds=max_age_seconds
         )
-        age = observed_age_seconds
-        ok = age is None or (
-            expectation.max_age_seconds is not None
-            and age <= expectation.max_age_seconds + expectation.grace_seconds
-        )
+        observed_at = None
+        if observed_age_seconds is not None:
+            observed_at = datetime.now(UTC) - timedelta(seconds=observed_age_seconds)
+        result = check_freshness(expectation, observed_at=observed_at)
         emit_payload(
             {
                 "subject_id": subject_id,
-                "ok": ok,
+                "ok": result.ok,
                 "expectation": expectation.to_dict(),
-                "observed_age_seconds": age,
+                "observed_age_seconds": result.age_seconds
+                if result.age_seconds is not None
+                else observed_age_seconds,
+                "message": result.message,
             },
             fmt=fmt,
         )
-        raise typer.Exit(0 if ok else 1)
+        raise typer.Exit(0 if result.ok else 1)
 
     @reliability_app.command("partition-check")
     def partition_check_cmd(

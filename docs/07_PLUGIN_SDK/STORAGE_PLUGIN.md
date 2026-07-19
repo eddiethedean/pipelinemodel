@@ -3,7 +3,7 @@
 A **Storage Plugin** implements the ETLantic Storage Plugin API for a
 persistent storage technology.
 
-Storage plugins translate the logical `Source` and `Sink` bindings contained in
+Storage plugins translate the logical Extract and Load assets contained in
 a validated **Pipeline Plan** into concrete read and write operations for a
 specific storage backend. They preserve the semantics defined by ODCS, DTCS,
 and DPCS while hiding storage-specific implementation details from pipeline
@@ -79,7 +79,7 @@ Pipelines reference logical bindings rather than physical locations.
 
 ```python
 customers = Extract[Customer](
-    binding="customers",
+    asset="customers",
 )
 ```
 

@@ -624,7 +624,7 @@ A SQL source plugin should support logical bindings such as:
 
 ```python
 Extract[Customer](
-    binding="customers_source",
+    asset="customers_source",
 )
 ```
 
@@ -647,7 +647,7 @@ A SQL sink plugin should write only data compatible with its declared contract.
 ```python
 Load[CustomerSummary](
     input=summary.result,
-    binding="customer_summary_sink",
+    asset="customer_summary_sink",
 )
 ```
 

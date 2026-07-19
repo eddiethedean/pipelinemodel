@@ -796,25 +796,37 @@ def main() -> None:
         ROOT / "docs/01_GETTING_STARTED/INSTALLATION.md",
         ROOT / "docs/01_GETTING_STARTED/QUICKSTART.md",
         ROOT / "docs/01_GETTING_STARTED/TROUBLESHOOTING.md",
+        ROOT / "docs/02_FOUNDATIONS/SECURITY.md",
         ROOT / "docs/06_EXECUTION/POLARS_TUTORIAL.md",
         ROOT / "docs/06_EXECUTION/PANDAS_TUTORIAL.md",
         ROOT / "docs/06_EXECUTION/SQL_TUTORIAL.md",
         ROOT / "docs/06_EXECUTION/PYSPARK_TUTORIAL.md",
         ROOT / "docs/06_EXECUTION/AIRFLOW_TUTORIAL.md",
         ROOT / "docs/06_EXECUTION/FILE_STORAGE_TUTORIAL.md",
+        ROOT / "docs/06_EXECUTION/DATAFRAME_PLUGINS.md",
+        ROOT / "docs/06_EXECUTION/PILOT_WALKTHROUGH.md",
         ROOT / "docs/06_EXECUTION/OPS_PILOT.md",
         ROOT / "docs/06_EXECUTION/PRODUCTION_READINESS.md",
         ROOT / "docs/06_EXECUTION/PRODUCTION_PROFILES.md",
+        ROOT / "docs/07_PLUGIN_SDK/THIRD_PARTY_COMPILER_TUTORIAL.md",
+        ROOT / "docs/07_PLUGIN_SDK/BUILDING_A_PLUGIN.md",
         ROOT / "docs/09_EXAMPLES/PORTABLE_TRANSFORMS.md",
         ROOT / "docs/09_EXAMPLES/PREFECT_RUN.md",
+        ROOT / "docs/10_REFERENCE/OPTIONAL_PACKAGES.md",
+        ROOT / "docs/10_REFERENCE/PORTABLE_COMPILER_MATRIX.md",
+        ROOT / "docs/10_REFERENCE/CLI.md",
         ROOT / "packages/etlantic-airflow/README.md",
         ROOT / "packages/etlantic-keyring/README.md",
         ROOT / "packages/etlantic-sqlmodel/README.md",
         ROOT / "packages/etlantic-sparkforge/README.md",
         ROOT / "packages/etlantic-prefect/README.md",
+        ROOT / "examples/portable_polars_kernel.py",
+        ROOT / "examples/portable_pandas_kernel.py",
     ]
     if prior_minor is not None:
         prior_pin = f"etlantic=={prior_minor}.0"
+        prior_range = f">={prior_minor}.0,<{major_minor}"
+        prior_range_short = f">={prior_minor},<{major_minor}"
         prior_tag = f"v{prior_minor}.0"
         for path in prior_pin_paths:
             if not path.exists():
@@ -822,11 +834,38 @@ def main() -> None:
             text = path.read_text(encoding="utf-8")
             if prior_pin in text:
                 raise SystemExit(f"{path} still pins {prior_pin}")
+            if prior_range in text or prior_range_short in text:
+                raise SystemExit(f"{path} still uses prior-minor range {prior_range}")
+            if f"etlantic-polars=={prior_minor}.0" in text:
+                raise SystemExit(f"{path} still pins etlantic-polars=={prior_minor}.0")
             if prior_tag in text and f"v{package_version}" not in text:
                 raise SystemExit(f"{path} still references checkout {prior_tag}")
             if "planned for 0.16" in text.lower() or "planned for **0.16" in text:
                 raise SystemExit(f"{path} still says Prefect/features planned for 0.16")
 
+    # Current authoring guides must not teach removed Extract/Load binding=.
+    binding_scan_roots = [
+        ROOT / "docs/03_DATA_CONTRACTS",
+        ROOT / "docs/05_PIPELINES",
+        ROOT / "docs/06_EXECUTION",
+        ROOT / "docs/07_PLUGIN_SDK",
+        ROOT / "docs/09_EXAMPLES",
+    ]
+    binding_pattern = re.compile(
+        r"(Extract|Load|Source|Sink)\[[^\]]*\]\([^\)]*\bbinding\s*="
+    )
+    for root in binding_scan_roots:
+        if not root.exists():
+            continue
+        for path in sorted(root.rglob("*.md")):
+            name_u = path.name.upper()
+            if "MIGRATION" in name_u or name_u.startswith("WHATS_NEW"):
+                continue
+            text = path.read_text(encoding="utf-8")
+            if binding_pattern.search(text):
+                raise SystemExit(
+                    f"{path} still shows Extract/Load binding= constructor usage"
+                )
     # Classifiers and plugin dependency ranges must match the stable posture.
     stable_classifier = "Development Status :: 5 - Production/Stable"
     alpha_classifier = "Development Status :: 3 - Alpha"

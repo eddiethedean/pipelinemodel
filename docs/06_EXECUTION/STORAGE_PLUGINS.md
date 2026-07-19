@@ -81,7 +81,7 @@ A source declares a logical binding.
 
 ```python
 customers = Extract[Customer](
-    binding="customers",
+    asset="customers",
 )
 ```
 
@@ -94,7 +94,7 @@ A sink publishes through the same abstraction.
 ```python
 warehouse = Load[Customer](
     input=normalized.result,
-    binding="warehouse.customers",
+    asset="warehouse.customers",
 )
 ```
 

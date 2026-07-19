@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any, Protocol
 
+from etlantic.plugin_trust import is_production_profile
 from etlantic.schema_drift import (
     NormalizedSchema,
     SchemaChangeSet,
@@ -41,6 +42,7 @@ class SchemaDriftPolicy:
         subject_id: str,
         change_set: SchemaChangeSet | None,
         profile_name: str = "development",
+        security_domain: str | None = None,
     ) -> DriftAction:
         if change_set is None or not change_set.changes:
             return DriftAction.RECORD
@@ -48,7 +50,9 @@ class SchemaDriftPolicy:
             return self.overrides[subject_id]
         if (
             self.production_fail_closed
-            and profile_name == "production"
+            and is_production_profile(
+                name=profile_name, security_domain=security_domain
+            )
             and any(c.impact.value == "breaking" for c in change_set.changes)
         ):
             return DriftAction.BLOCK
@@ -93,6 +97,9 @@ class InMemorySchemaHistory:
     _history: dict[str, list[SchemaObservation]] = field(default_factory=dict)
 
     def record(self, observation: SchemaObservation) -> None:
+        from etlantic.schema_history import assert_no_row_payload
+
+        assert_no_row_payload(observation)
         self._latest[observation.subject_id] = observation
         self._history.setdefault(observation.subject_id, []).append(observation)
 
@@ -128,6 +135,7 @@ def evaluate_drift(
     current: SchemaObservation | None,
     policy: SchemaDriftPolicy,
     profile_name: str,
+    security_domain: str | None = None,
 ) -> DriftDecision:
     change_set = None
     if previous is not None and current is not None:
@@ -135,7 +143,10 @@ def evaluate_drift(
     elif declared is not None and current is not None:
         change_set = diff_normalized_schemas(declared, current.schema)
     action = policy.decide(
-        subject_id=subject_id, change_set=change_set, profile_name=profile_name
+        subject_id=subject_id,
+        change_set=change_set,
+        profile_name=profile_name,
+        security_domain=security_domain,
     )
     return DriftDecision(
         subject_id=subject_id,

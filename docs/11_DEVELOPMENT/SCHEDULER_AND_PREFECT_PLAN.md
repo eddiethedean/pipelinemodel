@@ -1,9 +1,9 @@
 # Local Scheduler and Prefect Integration Plan
 
-Status: Accepted 0.15+ implementation plan  
+Status: **Shipped local MVP in 0.16+** (`etlantic-prefect`); remaining deploy/serve scope is open.  
 Applies to: ETLantic core, `etlantic.orchestration`, and optional orchestrator packages  
 Reference external compiler: `etlantic-airflow`  
-Planned Python-native plugin: `etlantic-prefect`
+Shipped Python-native scheduler plugin: `etlantic-prefect` (local MVP)
 
 ## Decision
 
@@ -19,8 +19,8 @@ ETLantic will:
    implementation selection, physical regions, validation boundaries,
    materialization, output normalization, lifecycle events, redaction, and
    `PipelineRunReport` production.
-3. Develop `etlantic-prefect` as the reference optional Python-native
-   orchestration plugin.
+3. Ship `etlantic-prefect` as the reference optional Python-native
+   direct-execution scheduler (local MVP; deploy/serve remain future work).
 4. Keep `etlantic-airflow` as the reference external artifact compiler.
 5. Require every scheduler/orchestrator integration to consume a resolved
    `PipelinePlan` without re-planning it or changing observable semantics.

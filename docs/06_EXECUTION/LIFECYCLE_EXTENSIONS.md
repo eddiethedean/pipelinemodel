@@ -1,6 +1,6 @@
 # Lifecycle Extension Mechanisms
 
-!!! warning "Future design—not a ETLantic 0.16 API guide"
+!!! warning "Design study—not a runnable ETLantic 0.18 API guide. Prefer CAPABILITIES and examples/."
     Parts of this chapter describe intended lifespan / middleware / resource
     injection surfaces that are not fully shipped. Prefer
     [Callbacks](../04_TRANSFORMATIONS/CALLBACKS.md), run reports, and the

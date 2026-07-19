@@ -34,7 +34,20 @@ def _observation_from_dict(data: dict[str, Any]) -> SchemaObservation:
     )
 
 
-_FORBIDDEN_ROW_KEYS = frozenset({"rows", "sample_rows", "source_rows", "records"})
+_FORBIDDEN_ROW_KEYS = frozenset(
+    {
+        "rows",
+        "sample_rows",
+        "source_rows",
+        "records",
+        "preview",
+        "data",
+        "samples",
+        "row_data",
+        "payload",
+        "payload_rows",
+    }
+)
 
 
 def _looks_like_row_payload(metadata: dict[str, Any] | None) -> bool:
@@ -47,14 +60,29 @@ def _looks_like_row_payload(metadata: dict[str, Any] | None) -> bool:
             return True
         if key_l.endswith("_rows") or key_l in {"row_sample", "row_samples"}:
             return True
+        if isinstance(value, dict) and _looks_like_row_payload(value):
+            return True
         if (
             isinstance(value, list)
             and value
             and isinstance(value[0], dict)
-            and (key_l.endswith("rows") or "sample" in key_l)
+            and (
+                key_l.endswith("rows")
+                or "sample" in key_l
+                or key_l in {"preview", "data", "payload"}
+            )
         ):
             return True
     return False
+
+
+def assert_no_row_payload(observation: SchemaObservation) -> None:
+    """Refuse observations that embed source-row-like payloads."""
+    schema_meta = getattr(observation.schema, "metadata", None) or {}
+    if _looks_like_row_payload(observation.metadata) or _looks_like_row_payload(
+        dict(schema_meta)
+    ):
+        raise ValueError("Schema history must not store source rows; failing closed.")
 
 
 @dataclass
@@ -78,18 +106,14 @@ class FileSchemaHistoryProvider:
 
     def _load(self) -> None:
         for path in sorted(self.root.glob("*.json")):
+            if path.name.endswith(".ack.json"):
+                continue
             data = json.loads(path.read_text(encoding="utf-8"))
             for item in data.get("history") or []:
                 if isinstance(item, dict):
-                    obs = _observation_from_dict(item)
-                    self._memory.record(obs)
+                    self._memory.record(_observation_from_dict(item))
 
     def record(self, observation: SchemaObservation) -> None:
-        # Refuse payloads that look like row samples (key-based, not substrings).
-        if _looks_like_row_payload(observation.metadata):
-            raise ValueError(
-                "Schema history must not store source rows; failing closed."
-            )
         self._memory.record(observation)
         path = self._subject_path(observation.subject_id)
         history = [

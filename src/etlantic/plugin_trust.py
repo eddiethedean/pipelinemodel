@@ -11,12 +11,32 @@ from etlantic.diagnostics import Diagnostic, Severity
 from etlantic.profile import Profile
 
 
-def _is_production_profile(profile: Profile) -> bool:
-    name = profile.name.lower()
-    if name in {"production", "prod", "staging"}:
+def is_production_profile(
+    profile: Profile | None = None,
+    *,
+    name: str | None = None,
+    security_domain: str | None = None,
+) -> bool:
+    """Return True for production-like profiles (fail-closed trust/drift).
+
+    Matches when the profile name is ``production``, ``prod``, or ``staging``
+    (case-insensitive), or when ``security_domain`` is ``production`` / ``prod``.
+    """
+    resolved_name = (
+        name if name is not None else (profile.name if profile else "")
+    ).lower()
+    if resolved_name in {"production", "prod", "staging"}:
         return True
-    domain = (profile.security_domain or "").lower()
-    return domain in {"production", "prod"}
+    domain = (
+        security_domain
+        if security_domain is not None
+        else (profile.security_domain if profile is not None else "")
+    )
+    return (domain or "").lower() in {"production", "prod"}
+
+
+def _is_production_profile(profile: Profile) -> bool:
+    return is_production_profile(profile)
 
 
 def _normalize_version_pin(pin: str) -> str:

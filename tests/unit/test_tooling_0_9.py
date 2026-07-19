@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from datetime import datetime
 from pathlib import Path
 
@@ -76,6 +77,58 @@ def test_bare_version_pin_accepted() -> None:
     )
 
 
+def test_is_production_profile_matches_aliases() -> None:
+    from etlantic.plugin_trust import is_production_profile
+
+    assert is_production_profile(Profile(name="production"))
+    assert is_production_profile(Profile(name="Prod"))
+    assert is_production_profile(Profile(name="staging"))
+    assert is_production_profile(Profile(name="app", security_domain="production"))
+    assert is_production_profile(name="prod", security_domain="default")
+    assert not is_production_profile(Profile(name="development"))
+    assert not is_production_profile(name="local", security_domain="default")
+
+
+def test_schema_drift_blocks_production_aliases() -> None:
+    from etlantic.schema_policy import DriftAction, SchemaDriftPolicy
+
+    left = NormalizedSchema(
+        identity="s",
+        fields=(NormalizedField(name="id", logical_type="integer"),),
+    )
+    right = NormalizedSchema(
+        identity="s",
+        fields=(NormalizedField(name="id", logical_type="string"),),
+    )
+    change_set = diff_normalized_schemas(left, right)
+    policy = SchemaDriftPolicy()
+    assert (
+        policy.decide(
+            subject_id="orders",
+            change_set=change_set,
+            profile_name="prod",
+        )
+        is DriftAction.BLOCK
+    )
+    assert (
+        policy.decide(
+            subject_id="orders",
+            change_set=change_set,
+            profile_name="app",
+            security_domain="production",
+        )
+        is DriftAction.BLOCK
+    )
+    assert (
+        policy.decide(
+            subject_id="orders",
+            change_set=change_set,
+            profile_name="development",
+        )
+        is DriftAction.RECORD
+    )
+
+
 def test_production_validate_requires_allowlist() -> None:
     from etlantic.profile import production_profile
     from tests.fixtures.sample_pipeline import SamplePipeline
@@ -133,6 +186,69 @@ def test_file_schema_history(tmp_path: Path) -> None:
                 schema=schema,
                 inspector="test",
                 metadata={"sample_rows": [{"id": 1}]},
+            )
+        )
+
+    with pytest.raises(ValueError, match="source rows"):
+        provider.record(
+            SchemaObservation(
+                subject_id="bad_preview",
+                schema=schema,
+                inspector="test",
+                metadata={"preview": [{"id": 1}]},
+            )
+        )
+
+    with pytest.raises(ValueError, match="source rows"):
+        provider.record(
+            SchemaObservation(
+                subject_id="bad_schema_meta",
+                schema=NormalizedSchema(
+                    identity="s",
+                    fields=(NormalizedField(name="id", logical_type="integer"),),
+                    metadata={"data": [{"id": 1}]},
+                ),
+                inspector="test",
+            )
+        )
+
+    # Poisoned on-disk history must fail closed on load.
+    poison = tmp_path / "poisoned.json"
+    poison.write_text(
+        json.dumps(
+            {
+                "subject_id": "poisoned",
+                "history": [
+                    {
+                        "subject_id": "poisoned",
+                        "inspector": "test",
+                        "metadata": {"sample_rows": [{"id": 1}]},
+                        "schema": schema.to_dict(),
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="source rows"):
+        FileSchemaHistoryProvider(tmp_path)
+
+
+def test_in_memory_schema_history_rejects_rows() -> None:
+    from etlantic.schema_policy import InMemorySchemaHistory
+
+    schema = NormalizedSchema(
+        identity="s",
+        fields=(NormalizedField(name="id", logical_type="integer"),),
+    )
+    mem = InMemorySchemaHistory()
+    with pytest.raises(ValueError, match="source rows"):
+        mem.record(
+            SchemaObservation(
+                subject_id="bad",
+                schema=schema,
+                inspector="test",
+                metadata={"records": [{"id": 1}]},
             )
         )
 

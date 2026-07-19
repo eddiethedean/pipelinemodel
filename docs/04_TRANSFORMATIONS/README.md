@@ -41,11 +41,14 @@ This declaration answers:
 
 It intentionally does **not** answer how the work is performed.
 
-An Available 0.11 surface adds a PySpark-inspired, implementation-agnostic
-definition that serializes as a DTCS 3.0 Transformation Plan. Plugins that
-**compile** those plans are sequenced for 0.12–0.15. See
-[Portable Transformations](PORTABLE_TRANSFORMATIONS.md). Authoring is available
-in ETLantic 0.11; use `@implementation(...)` for runtime until compilers ship.
+An Available surface adds a PySpark-inspired, implementation-agnostic
+definition that serializes as a DTCS 3.0 Transformation Plan. Official plugins
+compile those plans for Polars, PySpark, Pandas, and SQL (kernel + relational
+baseline; advanced families where documented). See
+[Portable Transformations](PORTABLE_TRANSFORMATIONS.md) and the
+[portable compiler matrix](../10_REFERENCE/PORTABLE_COMPILER_MATRIX.md).
+Author with `@Transformation.portable` or keep `@implementation(...)` for
+native backends.
 
 ## Separating Interface from Implementation
 

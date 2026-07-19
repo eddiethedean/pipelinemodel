@@ -148,7 +148,8 @@ Local execution is one orchestration backend among many.
 The same Pipeline Plan may also execute using:
 
 - Airflow (`etlantic-airflow` compile target)
-- Future orchestration plugins (Dagster, Prefect)
+- Prefect (`etlantic-prefect` direct-execution scheduler; local MVP)
+- Future orchestration compilers (Dagster, Prefect compile targets)
 
 Observable pipeline semantics should remain identical.
 
