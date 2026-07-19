@@ -1,5 +1,11 @@
 # Subpipelines
 
+> **Status split (0.14.0):** Nested pipeline composition as typed steps is
+> **Available** where examples and tests cover it. Treat deep nesting, separate
+> versioning productization, and advanced lineage claims as **pilot-bounded**
+> unless CAPABILITIES.md lists them as shipped.
+
+
 A **subpipeline** is a reusable pipeline embedded inside another pipeline.
 
 Subpipelines allow complex workflows to be composed from smaller, independently

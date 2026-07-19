@@ -35,4 +35,4 @@ Third-party and reference compilers must pass
 ## Example
 
 See [Pandas Tutorial](PANDAS_TUTORIAL.md) and
-[Portable Transformation](../09_EXAMPLES/PORTABLE_TRANSFORMATION.md).
+[Portable Transformation](../09_EXAMPLES/PORTABLE_TRANSFORMS.md).

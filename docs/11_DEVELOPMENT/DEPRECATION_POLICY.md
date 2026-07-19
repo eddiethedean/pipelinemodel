@@ -7,7 +7,7 @@ silent.
 
 | Surface | Current promise |
 |---|---|
-| Documented 0.10 public imports | Supported for the 0.10 line |
+| Documented 0.14 public imports | Supported for the 0.14 line |
 | Versioned plugin protocols | Compatible within their documented protocol version |
 | Pipeline Plan schema | Governed by its schema version |
 | Experimental APIs | May change in any 0.x release |

@@ -49,16 +49,28 @@ via `ETLANTIC_SQL_URL` when not using the SQLite demo path.
 
 ## CI-equivalent checks
 
+Baseline (core + docs):
+
 ```bash
+uv sync --locked
 uv run ruff check .
 uv run ruff format --check .
-uv run pytest -q -m "not sparkforge"
+uv run pytest -q -m "not sparkforge and not polars and not pandas and not sql and not spark and not airflow"
 uv run python scripts/check_docs.py
 uv run python scripts/check_agent_guidance.py
 uv run python scripts/check_release.py
 uv run python examples/quickstart.py
-uv run python examples/portable_polars_kernel.py   # needs dataframes group
 uv run python scripts/build_docs.py
+```
+
+Optional plugins / portable examples:
+
+```bash
+uv sync --locked --group dataframes
+uv run python examples/portable_polars_kernel.py
+uv run python examples/portable_pandas_kernel.py
+uv run pytest -q -m "polars or pandas"
+uv sync --locked --group sparkforge
 uv run pytest -q tests/sparkforge -m sparkforge
 ```
 
@@ -133,11 +145,17 @@ Python package entry points.
 - `scripts/check_docs.py` + runnable companions + strict MkDocs build
 - Optional dataframe / SparkForge matrix jobs
 
+### Currently enforced for portable compilers
+
+- Public `run_portable_transform_conformance_suite` for Polars / Pandas / PySpark
+- Hypothesis property tests for capability matching and fingerprint stability
+- Compiler e2e / differential suites in CI dependency-group jobs
+
 ### Not yet enforced (aspirational)
 
-Coverage gates, property tests, pyright, dependency audit, and secret scanning
-are goals—not CI requirements. See [Testing](TESTING.md) and
-[Dependency Strategy](DEPENDENCY_STRATEGY.md) for future policy.
+Coverage thresholds, pyright, dependency audit, and secret scanning are
+goals—not CI requirements. See [Testing](TESTING.md) and
+[Dependency Strategy](DEPENDENCY_STRATEGY.md).
 
 Run the narrowest relevant tests during development:
 

@@ -18,7 +18,7 @@ shipped.
 - [PySpark](../06_EXECUTION/PYSPARK_TUTORIAL.md)
 - [Airflow](../06_EXECUTION/AIRFLOW_TUTORIAL.md)
 - [Airflow Compile](AIRFLOW_COMPILE.md) — `examples/airflow_compile.py`
-- [Portable Polars Kernel](PORTABLE_TRANSFORMATION.md) — `examples/portable_polars_kernel.py`
+- [Portable Polars Kernel](PORTABLE_TRANSFORMS.md) — `examples/portable_polars_kernel.py`
 - [SparkForge Adapter](SPARKFORGE_ADAPTER.md) — `tests/sparkforge/`
 
 ## Runnable scripts (repository `examples/`)
@@ -96,7 +96,7 @@ commands that go beyond the shipped surface — prefer the runnable guides and
 | Graphviz DOT / HTML lineage | `etlantic.viz` / `etlantic viz` |
 | SparkForge migration adapter | [SparkForge Adapter](SPARKFORGE_ADAPTER.md) |
 | Structured Streaming | Experimental foundation only |
-| Portable PySpark-style transformations | [Portable Transformation](PORTABLE_TRANSFORMATION.md) |
+| Portable PySpark-style transformations | [Portable Transformation](PORTABLE_TRANSFORMS.md) |
 
 Do not use a design study as an installation or API reference. The
 [capabilities page](../01_GETTING_STARTED/CAPABILITIES.md) and

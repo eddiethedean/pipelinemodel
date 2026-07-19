@@ -234,7 +234,10 @@ json = true
 Run-scoped overrides may increase verbosity:
 
 ```bash
-etlantic run customer.py:CustomerPipeline --log-level DEBUG
+# The CLI has no --log-level flag. Configure Python logging in your process,
+# or use your orchestrator's log settings. Proposed ETLANTIC_LOG_LEVEL env
+# vars are not a 0.14 CLI feature.
+etlantic run customer.py:CustomerPipeline --profile development
 ```
 
 Changing log verbosity must not change pipeline semantics or plan identity.

@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     !path.endsWith("/09_EXAMPLES/") &&
     !path.includes("/09_EXAMPLES/AIRFLOW_COMPILE/") &&
     !path.includes("/09_EXAMPLES/SPARKFORGE_ADAPTER/") &&
-    !path.includes("/09_EXAMPLES/PORTABLE_TRANSFORMATION/");
+    !path.includes("/09_EXAMPLES/PORTABLE_TRANSFORMS/");
   const isFutureVisualization =
     path.includes("/08_VISUALIZATION/") &&
     !path.endsWith("/08_VISUALIZATION/") &&
@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
     '<p class="admonition-title">Future design—not an ETLantic 0.14 API guide</p>' +
     "<p>This page may contain unshipped packages, commands, or interfaces. " +
     "Use Current Capabilities, the API reference, and the CLI reference for shipped behavior. " +
-    "Polars + PySpark portable-relational compilers ship in 0.13; " +
-    "Pandas / SQL compilers remain 0.14–0.15.</p>";
+    "Polars + PySpark portable-relational compilers shipped in 0.13, and Pandas shipped in 0.14. " +
+    "Safe SQL portable lowering remains planned for 0.15+.</p>";
   article.prepend(banner);
 });

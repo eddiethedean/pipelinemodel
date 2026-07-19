@@ -104,7 +104,7 @@ How to read status labels in deeper chapters:
 | SBOM / signed provenance | Gap — not yet emitted by release automation |
 | Audit system of record | Gap — process-local reports are operational evidence only |
 | Tested scale | Local/pilot workloads; no published capacity guarantees |
-| Upgrade / rollback | Pin exact versions; see [Migration 0.11 → 0.12](../11_DEVELOPMENT/MIGRATION_0_11_TO_0_12.md) |
+| Upgrade / rollback | Pin exact versions; see [Migration 0.13 → 0.14](../11_DEVELOPMENT/MIGRATION_0_13_TO_0_14.md) |
 
 ## Recommended evaluation path
 
@@ -118,9 +118,9 @@ How to read status labels in deeper chapters:
 7. Optional: `examples/pyspark_local.py` with `etlantic-pyspark`
 8. Optional: `examples/airflow_compile.py` with `etlantic-airflow`
 9. Optional: SparkForge adapter via `uv sync --group sparkforge`
-10. [Migration 0.11 → 0.12](../11_DEVELOPMENT/MIGRATION_0_11_TO_0_12.md) if
-    upgrading from 0.11
-11. [Roadmap](https://github.com/eddiethedean/etlantic/blob/main/ROADMAP.md) for sequencing
+10. [Migration 0.13 → 0.14](../11_DEVELOPMENT/MIGRATION_0_13_TO_0_14.md) (and
+    [0.12 → 0.13](../11_DEVELOPMENT/MIGRATION_0_12_TO_0_13.md) when needed)
+11. [Roadmap summary](../11_DEVELOPMENT/ROADMAP_SUMMARY.md) for sequencing
 
 ## Support channel
 

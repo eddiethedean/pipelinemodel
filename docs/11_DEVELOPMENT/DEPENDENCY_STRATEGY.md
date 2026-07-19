@@ -28,7 +28,8 @@ Every dependency must have:
 - a documented reason for use;
 - an allowed import boundary;
 - a compatible-version range;
-- lockfile coverage and vulnerability scanning;
+- lockfile coverage; automated vulnerability scanning is a **target policy**
+  (not yet a CI requirement—see CONTRIBUTING);
 - a removal or replacement strategy.
 
 ## Recommended Hard Dependencies

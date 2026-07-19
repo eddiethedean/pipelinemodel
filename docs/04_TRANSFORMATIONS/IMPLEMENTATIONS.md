@@ -30,7 +30,7 @@ def normalize(customers, minimum_age):
 
 ETLantic exposes one closed, PySpark-inspired relational definition that
 normalizes to the published DTCS 3.0 `dtcs.transform-plan/2` protocol
-(v1 readable). Engine plugins that **compile** those plans remain 0.12+
+(v1 readable). Engine plugins that **compile** those plans shipped from 0.12
 (0.12 = Polars kernel; **0.13 = relational + PySpark**; **0.14 = Pandas**):
 
 ```python

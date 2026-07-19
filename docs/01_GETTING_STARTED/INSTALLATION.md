@@ -43,6 +43,7 @@ python -c "import etlantic; print(etlantic.__version__)"
 py -3.11 -m pip install --upgrade pip
 py -3.11 -m pip install 'etlantic==0.14.0'
 py -3.11 -m etlantic --version
+# equivalent: etlantic --version
 ```
 
 ### Optional engine plugins

@@ -2,11 +2,11 @@
 
 - The project is alpha and does not promise 1.0 API stability.
 - Portable `@Transformation.portable` definitions and
-  `etlantic.transform/1` authoring are available since 0.11. **0.13–0.14**
-  add Polars, PySpark, and Pandas compilers for `portable-relational/1`
-  (joins, aggregates, unions, sort/dedupe/limit). Richer profiles (windows,
-  complex values) and safe SQL portable lowering remain native-or-later until
-  0.15+.
+  `etlantic.transform/1` authoring are available since 0.11. **0.13** shipped
+  Polars and PySpark compilers for `portable-relational/1`; **0.14** shipped
+  the eager Pandas compiler (joins, aggregates, unions, sort/dedupe/limit).
+  Richer profiles (windows, complex values) and safe SQL portable lowering
+  remain native-or-later until 0.15+.
 - The planned PySpark-inspired syntax will intentionally support a closed
   subset; actions, arbitrary Python tracing, raw SQL expressions, and silent
   UDF fallback are excluded.

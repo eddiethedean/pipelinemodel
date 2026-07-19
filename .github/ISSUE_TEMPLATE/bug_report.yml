@@ -7,6 +7,8 @@ body:
     attributes:
       value: |
         Never include credentials, production data, or private plans.
+        Usage questions that are not bugs may use a blank discussion or a
+        clearly labeled question issue.
   - type: input
     id: version
     attributes:
@@ -21,11 +23,39 @@ body:
       placeholder: "3.11.x"
     validations:
       required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: "macOS 15 / Ubuntu 22.04 / Windows 11"
+    validations:
+      required: true
+  - type: input
+    id: plugins
+    attributes:
+      label: Installed optional plugins (with versions)
+      placeholder: "etlantic-polars==0.14.0, none, …"
+    validations:
+      required: true
+  - type: input
+    id: command
+    attributes:
+      label: Exact command or API call
+      placeholder: "etlantic validate path.py:MyPipeline --profile development --format json"
+    validations:
+      required: true
+  - type: input
+    id: diagnostic
+    attributes:
+      label: Diagnostic code (if any)
+      placeholder: "PMPLUG401"
+    validations:
+      required: false
   - type: textarea
     id: repro
     attributes:
       label: Minimal reproduction
-      description: Prefer a public example or short script.
+      description: Prefer a public example or short script with no secrets.
     validations:
       required: true
   - type: textarea

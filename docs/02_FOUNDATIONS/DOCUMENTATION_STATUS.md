@@ -10,9 +10,10 @@ optional `etlantic-keyring` / `etlantic-sqlmodel`, the SparkForge migration
 adapter (`etlantic-sparkforge`), `@Transformation.portable` /
 `etlantic.transform` authoring to `dtcs.transform-plan/2`, and Polars +
 PySpark portable compilers for kernel + `portable-relational/1`. Structured
-Streaming APIs are experimental. Pandas and SQL portable compilers remain
-0.14–0.15—keep `@implementation(...)` for those engines and for profiles
-outside the advertised claim set.
+Streaming APIs are experimental. Pandas eager portable compilation ships in
+0.14; safe SQL portable lowering remains planned for 0.15+. Keep
+`@implementation(...)` for SQL and for profiles outside the advertised claim
+set.
 
 Prefer pages marked **Available in 0.14** and the Green path on the docs home.
 Design Proposals and **Future design** chapters describe intended 1.0 surfaces

@@ -110,38 +110,29 @@ Each logical step receives its own report even when several steps are fused
 into one SQL statement or Spark execution region.
 
 ```python
+from etlantic.reports import StepRunReport
+from etlantic.runtime.state import StepStatus
+
 StepRunReport(
-    step_id="normalize_customers",
-    transformation_id="normalize_customers",
-    status="succeeded",
-    attempt_count=1,
+    step_id="step:normalize_customers",
+    step_name="normalize_customers",
+    status=StepStatus.SUCCEEDED,
+    attempts=1,
     started_at=...,
     ended_at=...,
-    duration=...,
+    duration_seconds=0.12,
     implementation="polars",
-    plugin="etlantic-polars",
-    physical_unit_id="polars-region-2",
-    inputs=(...),
-    outputs=(...),
-    validations=(...),
-    diagnostics=(),
+    records_in=2,
+    records_out=2,
+    metadata={},
 )
 ```
 
-Step reports should include:
-
-- logical and physical identities
-- status and timing
-- attempt and retry history
-- selected implementation and plugin
-- resolved upstream result references
-- input and output artifact summaries
-- record counts when measured
-- validation outcomes
-- callback actions
-- materialization and cache decisions
-- backend metadata and links
-- errors and diagnostics
+Shipped `StepRunReport` fields include step identity/name, status, attempts,
+timing (`started_at`, `ended_at`, `duration_seconds`), optional record counts,
+`implementation`, `failure_stage` / `error_message`, and secret-free
+`metadata`. Additional physical-unit or plugin fields may appear in metadata
+when the runtime records them.
 
 ## Previous-Step Results
 
@@ -272,21 +263,34 @@ report.to_html()
 CLI examples:
 
 ```bash
-etlantic run customer.py:CustomerPipeline
-etlantic run customer.py:CustomerPipeline --output json
-etlantic report show RUN_ID
-etlantic report export RUN_ID --format html
+etlantic run customer.py:CustomerPipeline --profile development
+etlantic run customer.py:CustomerPipeline --profile development --format json
 ```
+
+`etlantic report show` / `report export` read the **process-local** report
+store for that CLI invocation. A new process does not see earlier runs unless
+you persist reports yourself.
 
 HTML reports may add diagrams and styling, but they consume the same canonical
 report model.
 
 ## Durable Run History
 
-An observability provider may persist reports or reconstruct them from
-lifecycle events.
+Use `FileReportStore` when reports must survive process boundaries:
 
-The core should support:
+```python
+from pathlib import Path
+
+from etlantic.reports.file_store import FileReportStore
+
+store = FileReportStore(Path("reports"))
+# After Pipeline.run(...):
+# store.put(run_report)
+# later:
+# store.get(run_report.run_id)
+```
+
+The in-process store remains available:
 
 ```python
 runtime.reports.get(run_id)

@@ -1,13 +1,13 @@
 # etlantic-pyspark
 
 PySpark reference execution plugin **and** portable transform compiler for
-[ETLantic](https://github.com/eddiethedean/etlantic) 0.13.
+[ETLantic](https://github.com/eddiethedean/etlantic) 0.14.
 
 ```bash
-pip install 'etlantic==0.13.0' 'etlantic-pyspark==0.13.0'
+pip install 'etlantic==0.14.0' 'etlantic-pyspark==0.14.0'
 # or: pip install 'etlantic[pyspark]'
 # optional Delta Lake support:
-pip install 'etlantic-pyspark[delta]'
+pip install 'etlantic-pyspark[delta]==0.14.0'
 ```
 
 ## Native Spark plugin
@@ -31,7 +31,7 @@ Spark DataFrames (or lists of contract models) and return Spark DataFrames.
 - Delta-compatible write intents (append/overwrite/merge) when Delta is enabled
 - Structured Streaming foundation (**experimental**)
 
-## Portable transform compiler (0.13)
+## Portable transform compiler (0.14)
 
 Entry point: `etlantic.transform_compilers` →
 `etlantic_pyspark:create_transform_compiler`.

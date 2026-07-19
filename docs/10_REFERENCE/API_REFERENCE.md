@@ -32,12 +32,14 @@ from etlantic import (
 
 ## Authoring
 
-!!! note "Portable authoring (0.11) and Polars kernel compiler (0.12)"
+!!! note "Portable authoring and compilers (0.11–0.14)"
     `etlantic.transform`, `@Transformation.portable`, symbolic DataFrame and
     Column objects, and `functions as F` normalize to published DTCS 3.0
     `dtcs.transform-plan/2` models. `etlantic.transform.compiler` defines the
-    `etlantic.transform-compiler/1` protocol; `etlantic-polars` provides
-    `create_transform_compiler()` for kernel execution. See
+    `etlantic.transform-compiler/1` protocol. Official compilers ship in
+    `etlantic-polars`, `etlantic-pyspark`, and `etlantic-pandas` (eager). See
+    package READMEs under `packages/` for optional-package APIs (MkDocs scans
+    `src/` only). Also see
     [Portable Transformations](../04_TRANSFORMATIONS/PORTABLE_TRANSFORMATIONS.md)
     and [Portable Transform Compiler](../07_PLUGIN_SDK/PORTABLE_TRANSFORM_COMPILER.md).
 
@@ -108,8 +110,8 @@ configured.
       filters: ["!^_"]
 
 Symbolic only: `FrameExpr` / `ColumnExpr` trees lower to DTCS plans. They are
-not Polars/Pandas/Spark objects. Polars + PySpark + Pandas relational
-compilation ships in 0.13–0.14.
+not Polars/Pandas/Spark objects. Polars and PySpark relational compilation
+shipped in 0.13; eager Pandas relational compilation shipped in 0.14.
 
 ### Portable transform compiler protocol (`etlantic.transform.compiler`)
 

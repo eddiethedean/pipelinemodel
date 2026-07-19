@@ -1,5 +1,12 @@
 # Planning
 
+> **Status: Available in ETLantic 0.14.0** for deterministic
+> `PipelinePlan` production via `etlantic plan` / the planner APIs. Plans are
+> secret-free and do not execute transforms. Some advanced analysis surfaces
+> described later on this page may still be design-forward—prefer CLI JSON
+> output and CAPABILITIES.md when unsure.
+
+
 Planning converts a validated logical pipeline and selected profile into an
 immutable, resolved `PipelinePlan`.
 

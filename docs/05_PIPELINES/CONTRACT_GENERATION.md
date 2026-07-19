@@ -1,5 +1,12 @@
 # Contract Generation
 
+> **Status split (0.14.0):** `write_contracts` / deterministic ODCS+DTCS+DPCS
+> emission from typed Python is **Available**. Broader registry publication,
+> multi-format interchange productization, and some proposed generation
+> workflows remain **Future design**. Prefer runnable helpers over aspirational
+> prose below.
+
+
 The proposed 0.11 DTCS generation path may include canonical
 `dtcs.transform-plan/2` content and its fingerprint (v1 readable). Generated
 artifacts remain data-only, deterministic, bounded, and free of native compiled

@@ -4,8 +4,34 @@ ETLantic coordinates contracts, Python code, plugins, credentials, data
 artifacts, and external execution systems. Security is therefore a
 cross-cutting architectural constraint, not a feature delegated to one plugin.
 
-This chapter defines the proposed ETLantic 1.0 threat model, trust
-boundaries, required controls, and production-readiness gates.
+This chapter covers both **implemented 0.14 controls** and the broader
+**proposed 1.0 threat model**. Read the status labels carefully: alpha 0.14.0
+is a published release suitable for controlled pilots, not a claim of
+enterprise production readiness.
+
+## Implemented in 0.14
+
+- Secret-free plans and reports (`SecretRef` metadata only; resolve at runtime)
+- Production `Profile.plugin_allowlist` fail-closed selection of discovered plugins
+- Multi-phase validation before planning/execution
+- Schema history observations/fingerprints without source rows
+- Parameterized SQL reference paths and trusted-SQL gates
+- SARIF/JSON diagnostics for CI
+- Central redaction expectations for logs/reports (see run-report guidance)
+
+## Required before treating 1.0 as production-ready
+
+- Plugin provenance / supply-chain attestation
+- Artifact and cache isolation across tenants/security domains
+- Outbound destination controls
+- Complete unsafe-serialization policy enforcement
+- Denial-of-service budgets
+- Immutable audit evidence suitable for compliance programs
+
+The sections below describe the full threat model. Where a control is only
+partially implemented, the evaluation table marks **Partial** or **Gap**.
+Illustrative `PMSEC*` diagnostic codes in later sections are **proposed**
+unless they appear in shipped diagnostics.
 
 ## Principles
 

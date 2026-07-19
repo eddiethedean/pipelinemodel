@@ -6,10 +6,11 @@ marked **Experimental**.
 
 ## Start here
 
-1. [Install core](INSTALLATION.md) — Python 3.11+ and `pip install etlantic`
-2. [Run the five-minute quickstart](QUICKSTART.md)
-3. [Build your first pipeline](FIRST_PIPELINE.md)
-4. [Check current capabilities](CAPABILITIES.md)
+1. [What's new in 0.14](WHATS_NEW_0_14.md)
+2. [Install core](INSTALLATION.md) — Python 3.11+ and `pip install etlantic==0.14.0`
+3. [Run the five-minute quickstart](QUICKSTART.md)
+4. [Build your first pipeline](FIRST_PIPELINE.md)
+5. [Check current capabilities](CAPABILITIES.md)
 
 ## Choose your next task
 
@@ -22,11 +23,14 @@ marked **Experimental**.
 | Run a local Spark batch | [PySpark tutorial](../06_EXECUTION/PYSPARK_TUTORIAL.md) |
 | Compile a DAG | [Airflow tutorial](../06_EXECUTION/AIRFLOW_TUTORIAL.md) |
 | Author portable transforms | [Portable transformations](../04_TRANSFORMATIONS/PORTABLE_TRANSFORMATIONS.md) |
-| Run Polars/PySpark portable relational (no native impl) | [Portable example](../09_EXAMPLES/PORTABLE_TRANSFORMATION.md) / `examples/portable_polars_kernel.py` |
-| Upgrade from 0.11 | [Migration 0.11 → 0.12](../11_DEVELOPMENT/MIGRATION_0_11_TO_0_12.md) |
-| Integrate validation into CI | [CI integration](../06_EXECUTION/CI_INTEGRATION.md) |
+| Run Polars portable (no native impl) | [Portable transforms example](../09_EXAMPLES/PORTABLE_TRANSFORMS.md) / `examples/portable_polars_kernel.py` |
+| Run Pandas portable (no native impl) | `examples/portable_pandas_kernel.py` |
+| Controlled pilot | [Pilot walkthrough](../06_EXECUTION/PILOT_WALKTHROUGH.md) |
+| Upgrade from 0.13 | [Migration 0.13 → 0.14](../11_DEVELOPMENT/MIGRATION_0_13_TO_0_14.md) |
+| Upgrade from 0.12 | [Migration 0.12 → 0.13](../11_DEVELOPMENT/MIGRATION_0_12_TO_0_13.md) |
+| Integrate validation into CI | [CI integration](../06_EXECUTION/CI_INTEGRATION.md) / [Production profiles](../06_EXECUTION/PRODUCTION_PROFILES.md) |
 | Evaluate operational boundaries | [Production readiness](../06_EXECUTION/PRODUCTION_READINESS.md) |
-| Build a shipped plugin protocol | [Dataframe](../07_PLUGIN_SDK/DATAFRAME_PLUGIN.md), [SQL](../07_PLUGIN_SDK/SQL_PLUGIN.md), [PySpark](../07_PLUGIN_SDK/PYSPARK_PLUGIN.md), [Orchestrator](../07_PLUGIN_SDK/ORCHESTRATOR_PLUGIN.md), [Transform compiler](../07_PLUGIN_SDK/PORTABLE_TRANSFORM_COMPILER.md) |
+| Build a shipped plugin protocol | [Dataframe](../07_PLUGIN_SDK/DATAFRAME_PLUGIN.md), [SQL](../07_PLUGIN_SDK/SQL_PLUGIN.md), [PySpark](../07_PLUGIN_SDK/PYSPARK_PLUGIN.md), [Orchestrator](../07_PLUGIN_SDK/ORCHESTRATOR_PLUGIN.md), [Transform compiler](../07_PLUGIN_SDK/PORTABLE_TRANSFORM_COMPILER.md), [Third-party tutorial](../07_PLUGIN_SDK/THIRD_PARTY_COMPILER_TUTORIAL.md) |
 
 ## Current authority
 
@@ -34,6 +38,7 @@ marked **Experimental**.
 - [Python API](../10_REFERENCE/API_REFERENCE.md) documents public imports.
 - [CLI reference](../10_REFERENCE/CLI.md) documents installed commands.
 - [Known limitations](../10_REFERENCE/KNOWN_ISSUES.md) documents hard boundaries.
+- [Portable compiler matrix](../10_REFERENCE/PORTABLE_COMPILER_MATRIX.md) documents claim boundaries.
 - Pages under **Design Proposals** / marked **Future design** are not 0.14 APIs
   even when linked from older navigation.
 

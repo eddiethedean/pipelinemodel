@@ -2,11 +2,15 @@
 
 Requires:
 
-    pip install etlantic==0.13.0 etlantic-polars==0.13.0
+    uv sync --group dataframes
+
+Or from published packages:
+
+    pip install etlantic==0.14.0 etlantic-polars==0.14.0
 
 Run with:
 
-    uv run --with polars python examples/portable_polars_kernel.py
+    uv run python examples/portable_polars_kernel.py
 """
 
 from __future__ import annotations

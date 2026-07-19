@@ -1,11 +1,11 @@
 # etlantic-keyring
 
-Local workstation secret provider for [ETLantic](https://github.com/eddiethedean/etlantic)
-using the Python [`keyring`](https://keyring.readthedocs.io/) library and OS credential
-stores.
+Local workstation secret provider for
+[ETLantic](https://github.com/eddiethedean/etlantic) 0.14 using the Python
+[`keyring`](https://keyring.readthedocs.io/) library and OS credential stores.
 
 ```bash
-pip install etlantic-keyring
+pip install 'etlantic==0.14.0' 'etlantic-keyring==0.14.0'
 # or: pip install 'etlantic[keyring]'
 ```
 
@@ -18,6 +18,11 @@ from etlantic_keyring import create_provider
 provider = create_provider(service="etlantic.customer-platform")
 runtime.register_secret_provider("keyring", provider)
 ```
+
+Registration is explicit: create the provider and register it on the runtime
+under the same name referenced by the profile. Production profiles must also
+allowlist trusted plugins. Secret values remain in the OS credential store and
+are resolved only at runtime.
 
 `SecretRef` resolution uses:
 

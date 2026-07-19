@@ -120,22 +120,32 @@ class CustomerPipeline(Pipeline):
     )
 
 
-# Validation and planning do not execute transformation code.
-CustomerPipeline.validate(profile="development").raise_for_errors()
-plan = CustomerPipeline.plan(profile="development")
-print(plan.fingerprint)
+def main() -> None:
+    # Validation and planning do not execute transformation code.
+    CustomerPipeline.validate(profile="development").raise_for_errors()
+    plan = CustomerPipeline.plan(profile="development")
+    print(plan.fingerprint)
 
-runtime = PipelineRuntime()
-runtime.memory.seed(
-    "customer_source",
-    [RawCustomer(customer_id=1, first_name="Ada", last_name="Lovelace")],
-)
-report = CustomerPipeline.run(profile="development", runtime=runtime)
+    runtime = PipelineRuntime()
+    runtime.memory.seed(
+        "customer_source",
+        [RawCustomer(customer_id=1, first_name="Ada", last_name="Lovelace")],
+    )
+    report = CustomerPipeline.run(profile="development", runtime=runtime)
 
-print(report.status)  # succeeded
-print(runtime.memory.get("customer_sink")[0].model_dump())
-# {"customer_id": 1, "full_name": "Ada Lovelace"}
+    print(report.status)  # succeeded
+    print(runtime.memory.get("customer_sink")[0].model_dump())
+    # {"customer_id": 1, "full_name": "Ada Lovelace"}
+
+
+if __name__ == "__main__":
+    main()
 ```
+
+Keep contracts, the transformation registration, and `CustomerPipeline` at
+module scope so the CLI can import them. Put validate/seed/run under
+`if __name__ == "__main__"` so `etlantic validate` / `plan` do not execute the
+pipeline during import.
 
 Change the sink contract to an incompatible type and `validate()` returns a
 structured diagnostic before any transformation or write is attempted.
@@ -145,22 +155,24 @@ The complete tested example is
 
 ## CLI workflow
 
-The CLI follows the same validate-first lifecycle:
+The CLI follows the same validate-first lifecycle. Validation and planning do
+not require seeded data; in-memory execution does, so run the seeded example
+with Python:
 
 ```bash
-# Inspect and validate a pipeline
+# Inspect and validate a pipeline (import-safe when side effects are guarded)
 etlantic inspect pipeline.py:CustomerPipeline --format json
-etlantic validate pipeline.py:CustomerPipeline --format json
+etlantic validate pipeline.py:CustomerPipeline --profile development --format json
 
 # Build and explain a deterministic execution plan
-etlantic plan pipeline.py:CustomerPipeline --format json
-etlantic plan explain pipeline.py:CustomerPipeline --format json
+etlantic plan pipeline.py:CustomerPipeline --profile development --format json
+etlantic plan explain pipeline.py:CustomerPipeline --profile development --format json
 
-# Execute locally
-etlantic run pipeline.py:CustomerPipeline --profile development
+# Execute the seeded in-memory example
+python pipeline.py
 
 # Emit CI diagnostics
-etlantic validate pipeline.py:CustomerPipeline --format sarif
+etlantic validate pipeline.py:CustomerPipeline --profile development --format sarif
 ```
 
 Airflow compilation requires the optional `etlantic-airflow` package:

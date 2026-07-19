@@ -59,19 +59,20 @@ Tag `vX.Y.Z` publishes nine distributions:
    uv run pytest -q tests/sparkforge -m sparkforge
    ```
 
-7. Review `scripts/check_release.py` output for **brand-new** PyPI names.
-   PyPI has no empty-project UI — the first upload creates each name and
-   counts against the new-project quota (`429 Too many new projects created`;
-   defaults ~20 creates/hour). Release CI waits **10 minutes only between
-   brand-new project creates**; existing projects upload immediately and
-   already-published filenames are skipped. If the account is already
-   rate-limited, wait for the rolling hour window before tagging/re-running.
-8. Confirm repository secret `PYPI_API_TOKEN` is a **user-scoped** token
-   (project-scoped tokens cannot create brand-new projects).
+7. **Normal path (all nine projects already on PyPI):** publish uploads to
+   existing projects. Prefer Trusted Publishing / OIDC when configured;
+   otherwise use the least-privilege token documented for this repository.
+   Treat long-lived user tokens and first-project bootstrap as exceptional.
+8. **New distribution bootstrap only:** if introducing a brand-new PyPI name,
+   review `scripts/check_release.py` output and PyPI new-project rate limits
+   (`429 Too many new projects created`). Release CI waits between brand-new
+   creates; existing projects upload immediately.
 9. Prefer tagging only the current release (do not `git push --tags`).
-10. If a prior tag’s publish job was cancelled mid-way, either re-run that
-    release job until remaining packages land, or proceed to the next tag
-    (new names will be created at the newer version).
+   Treat published tags as immutable. If a publish fails after the tag is
+   public, prefer a new patch version rather than moving the tag.
+10. If a prior tag’s publish job was cancelled mid-way before any public
+    consumers rely on it, re-run that job until remaining packages land, or
+    cut a new patch version.
 
 ## Tag and publish (0.14.0 example)
 

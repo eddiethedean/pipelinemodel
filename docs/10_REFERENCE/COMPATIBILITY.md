@@ -28,6 +28,46 @@ This table describes the declared compatibility of ETLantic 0.14.0.
 | Package stability | Alpha |
 | Plugin SDK stability | Protocol stable within 0.8; third-party SDK still evolving |
 
+## Tested versus declared
+
+The core CI matrix runs linting and the core test suite on Ubuntu, Windows, and
+macOS with Python 3.11, 3.12, and 3.13. This is the broadest tested platform
+surface for 0.14.0.
+
+Optional plugin jobs run primarily on Ubuntu with Python 3.11. Polars and
+Pandas each have dedicated dataframe/compiler/conformance jobs. SQL runs
+against SQLite and PostgreSQL 16. PySpark compiler and differential coverage
+uses the sparkless compatibility backend by default; real JVM PySpark checks
+are a separate opt-in path. Airflow, keyring, SQLModel, and SparkForge also
+have dedicated Ubuntu/3.11 jobs.
+
+Package metadata declares these backend dependency ranges:
+
+| Package or extra | Declared backend range |
+|---|---|
+| `etlantic-polars` | `polars>=1.0,<2`; optional `pyarrow>=14` |
+| `etlantic-pandas` | `pandas>=2.0,<3`; optional `pyarrow>=14` |
+| `etlantic-pyspark` | `pyspark>=3.5,<4`; optional `delta-spark>=3.0,<4` |
+| `etlantic-sql` | `sqlalchemy>=2.0,<3`, `psycopg[binary]>=3.1,<4` |
+| `etlantic-sqlmodel` | `sqlmodel>=0.0.22,<1` |
+| `etlantic-keyring` | `keyring` (no narrower range declared) |
+| `etlantic-airflow` | No Apache Airflow runtime dependency; it compiles DAG source |
+| `etlantic[otel]` / `[observability]` | `opentelemetry-api>=1.36,<2` |
+| `etlantic[arrow]` | `pyarrow>=14` |
+
+A declared range means the resolver may install that version; it does not mean
+every backend version and operating system combination is exercised in CI.
+For a controlled deployment, test the exact resolved environment and pin
+`etlantic==0.14.0` plus every official plugin to `==0.14.0`.
+
+Core extras already enforce exact official plugin versions, for example
+`etlantic[polars]==0.14.0` depends on `etlantic-polars==0.14.0`. The 0.14.0
+official plugin source metadata accepts core `etlantic>=0.14.0,<0.15`, which is
+minor-matched but less exact. Published, older, or third-party plugin metadata
+may use a broader bound such as `etlantic>=0.14,<1.0`; do not treat that broad
+specifier as evidence of tested cross-minor compatibility. Match the core and
+official plugin minor versions, and prefer exact pins for reproducibility.
+
 ## Portable transformation profiles
 
 DTCS publication does not mean the ETLantic facade or plugin compilers are

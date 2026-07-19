@@ -1,207 +1,87 @@
 # Callbacks
 
-Callbacks allow applications to respond to important events in a pipeline's lifecycle
-without embedding operational logic inside transformation implementations.
+> **Status: Available in ETLantic 0.14.0** for the shipped lifecycle callback
+> surface. Broader invalid-data quarantine APIs remain future design.
 
-ETLantic coordinates callback invocation. Execution plugins perform the
-underlying work.
+Callbacks let applications respond to pipeline lifecycle outcomes without
+embedding operational logic inside transformation implementations.
 
-Callbacks are one of several lifecycle extension mechanisms. They are distinct
-from runtime lifespan, execution middleware, and resource injection. See
+Callbacks are distinct from runtime lifespan, execution middleware, and
+resource injection. See
 [Lifecycle Extension Mechanisms](../06_EXECUTION/LIFECYCLE_EXTENSIONS.md).
 
-## Goals
-
-Callbacks should:
-
-- Separate business logic from operational behavior.
-- Support synchronous and asynchronous functions.
-- Be strongly typed.
-- Be execution-engine independent.
-- Produce predictable, inspectable behavior.
-
-## Callback Types
-
-Typical callback categories include:
-
-- Invalid input data
-- Invalid output data
-- Transformation failure
-- Retry decisions
-- Transformation completion
-- Pipeline completion
-- Pipeline failure
-
-## Invalid Data
+## Shipped surface
 
 ```python
-from etlantic import (
-    InvalidDataAction,
-    InvalidDataContext,
-    on_invalid_data,
+from etlantic import FailureAction, PipelineRuntime, StepFailureContext
+from etlantic.lifecycle import CallbackRegistry
+
+runtime = PipelineRuntime()
+callbacks = CallbackRegistry()
+
+
+@callbacks.on_step_failed
+def on_step_failed(context: StepFailureContext) -> FailureAction:
+    # context.run_id, pipeline_id, step_name, attempt, error, stage
+    return FailureAction.FAIL
+
+
+@callbacks.on_failure
+def on_run_failed(context: object) -> None:
+    ...
+
+
+@callbacks.on_complete
+def on_run_completed(context: object) -> None:
+    ...
+
+
+runtime.callbacks = callbacks
+```
+
+`FailureAction` values:
+
+| Action | Meaning |
+|---|---|
+| `CONTINUE` | Proceed despite the failure (use carefully) |
+| `RETRY` | Retry the step according to run/profile retry settings |
+| `FAIL` | Fail the run |
+| `SKIP` | Skip the failed step when the runtime allows it |
+
+Register handlers on a `CallbackRegistry`, then attach it to
+`PipelineRuntime` before `Pipeline.run(...)`.
+
+## Retry policy
+
+Prefer declarative retry settings on the profile or run request rather than
+inventing callback-only retry APIs:
+
+```python
+from etlantic import Profile
+
+profile = Profile(
+    name="pilot",
+    retry_max_attempts=3,
+    plugin_allowlist={"local": None},
 )
-
-@on_invalid_data
-def quarantine(context: InvalidDataContext[Customer]) -> InvalidDataAction:
-    return InvalidDataAction.quarantine(
-        destination="invalid-customers",
-        continue_with_valid=True,
-    )
 ```
 
-ETLantic interprets the returned action while the execution plugin performs
-the quarantine or filtering.
+Orchestrator plugins (for example Airflow compile) map schedule/retry intents
+from the plan; they do not require unshipped callback helpers.
 
-## Failure Callbacks
+## Future design — invalid-data quarantine
 
-```python
-from etlantic import FailureContext, on_failure
-
-@on_failure
-def notify(context: FailureContext):
-    ...
-```
-
-Failure callbacks may:
-
-- Log diagnostics
-- Send notifications
-- Trigger incident workflows
-- Decide retry behavior
-
-## Completion Callbacks
-
-```python
-from etlantic import CompletionContext, on_complete
-
-@on_complete
-async def publish_metrics(context: CompletionContext):
-    ...
-```
-
-Completion hooks are useful for metrics, auditing, and downstream automation.
+!!! warning "Future design—not an ETLantic 0.14 API guide"
+    Dedicated `on_invalid_data` / quarantine action helpers are not shipped.
+    Use contract validation boundaries, invalid-output ports, and sinks for
+    quarantine-style flows today.
 
 ## Sync and Async
 
-Callbacks may use either style.
+Handlers may be sync or async. The runtime awaits coroutine handlers.
 
-```python
-@on_failure
-def handler(context):
-    ...
-```
+## Related
 
-```python
-@on_failure
-async def handler(context):
-    ...
-```
-
-ETLantic normalizes invocation internally.
-
-## Typed Context Objects
-
-Callbacks receive strongly typed context objects rather than unstructured
-dictionaries.
-
-Typical context information includes:
-
-- Pipeline identifier
-- Transformation identifier
-- Contract identity
-- Execution profile
-- Run identifier
-- Diagnostics
-- Exception information (when applicable)
-
-## Callback Actions
-
-Some callbacks return an action object.
-
-Conceptually:
-
-```python
-return InvalidDataAction.fail()
-return FailureAction.retry()
-return InvalidDataAction.quarantine(...)
-return InvalidDataAction.continue_with_valid()
-```
-
-The action remains declarative. Plugins execute the requested behavior.
-
-## Ordering
-
-When multiple callbacks are registered, ETLantic should execute them in a
-deterministic order documented by the framework.
-
-Callbacks associated with a wrapped operation run inside run or step middleware
-unless the callback explicitly represents final provider shutdown. Yield-based
-resource cleanup occurs after the callback has finished using the injected
-resource.
-
-## Callbacks Versus Middleware
-
-Use middleware when behavior must surround every matching invocation:
-
-- timing
-- tracing
-- structured logging
-- context propagation
-
-Use callbacks when behavior responds to a specific outcome:
-
-- validation failed
-- step completed
-- retry exhausted
-- pipeline completed
-
-Callbacks should not implement a general `call_next` wrapper.
-
-## Outbound Events
-
-A callback may return an `Emit` action targeting a typed outbound event:
-
-```python
-@CustomerPipeline.on_complete
-def publish_completion(context):
-    return Emit(
-        CustomerPipeline.pipeline_completed,
-        PipelineCompleted(
-            pipeline_id=context.pipeline_id,
-            run_id=context.run_id,
-        ),
-    )
-```
-
-The outbound event declares what may be sent. A notification provider handles
-HTTP, Kafka, queue, or other delivery mechanics.
-
-## Best Practices
-
-- Keep callbacks focused on operational concerns.
-- Use typed context objects.
-- Avoid modifying pipeline topology from callbacks.
-- Prefer declarative action objects over side effects.
-- Keep callbacks idempotent where practical.
-
-## Anti-Patterns
-
-Avoid:
-
-- Embedding business transformations inside callbacks.
-- Depending on runtime-specific objects.
-- Mutating contracts.
-- Swallowing failures silently.
-- Using callbacks as unbounded middleware.
-- Sending undocumented transport-specific payloads directly from portable
-  pipeline definitions.
-
-## Key Principle
-
-> Callbacks describe **how the framework should respond** to lifecycle events.
-> They do not change the logical transformation contract.
-
-## Next Step
-
-Continue with [Error Handling](ERROR_HANDLING.md) to learn how callback actions,
-runtime failures, and validation failures interact.
+- [Lifecycle Extensions](../06_EXECUTION/LIFECYCLE_EXTENSIONS.md)
+- [Error Handling](ERROR_HANDLING.md)
+- [API Reference](../10_REFERENCE/API_REFERENCE.md)

@@ -45,6 +45,13 @@ def main() -> None:
         raise SystemExit("Examples index still claims all design examples are runnable")
 
     banned_phrases = [
+        "etlantic==0.13.0",
+        "etlantic-polars==0.13.0",
+        "etlantic-pyspark==0.13.0",
+        "Pandas / SQL compilers remain 0.14–0.15",
+        "Pandas and SQL portable compilers remain",
+        "complete CLI-runnable example",
+        "CLI-runnable continuation",
         "does not ship Pandas or Polars",
         "Pandas, Polars, SQL, Spark, and Airflow plugins are not published as part of\nETLantic 0.4",
         "Future plugins may add Pandas, Polars",
@@ -227,12 +234,33 @@ def main() -> None:
         raise SystemExit("Development README missing Migration 0.11 → 0.12")
     if not (ROOT / "docs/11_DEVELOPMENT/MIGRATION_0_11_TO_0_12.md").exists():
         raise SystemExit("Missing docs/11_DEVELOPMENT/MIGRATION_0_11_TO_0_12.md")
+    if not (ROOT / "docs/11_DEVELOPMENT/MIGRATION_0_12_TO_0_13.md").exists():
+        raise SystemExit("Missing docs/11_DEVELOPMENT/MIGRATION_0_12_TO_0_13.md")
+    if not (ROOT / "docs/11_DEVELOPMENT/MIGRATION_0_13_TO_0_14.md").exists():
+        raise SystemExit("Missing docs/11_DEVELOPMENT/MIGRATION_0_13_TO_0_14.md")
+    if not (ROOT / "docs/01_GETTING_STARTED/WHATS_NEW_0_14.md").exists():
+        raise SystemExit("Missing docs/01_GETTING_STARTED/WHATS_NEW_0_14.md")
     if not (ROOT / "examples/portable_polars_kernel.py").exists():
         raise SystemExit("Missing examples/portable_polars_kernel.py")
-    if "MIGRATION_0_11_TO_0_12.md" not in (ROOT / "mkdocs.yml").read_text(
-        encoding="utf-8"
+    if not (ROOT / "examples/portable_pandas_kernel.py").exists():
+        raise SystemExit("Missing examples/portable_pandas_kernel.py")
+    if not (ROOT / "src/etlantic/__main__.py").exists():
+        raise SystemExit("Missing src/etlantic/__main__.py for python -m etlantic")
+    if not (ROOT / "src/etlantic/py.typed").exists():
+        raise SystemExit("Missing src/etlantic/py.typed")
+    mkdocs_text = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
+    for migration in (
+        "MIGRATION_0_11_TO_0_12.md",
+        "MIGRATION_0_12_TO_0_13.md",
+        "MIGRATION_0_13_TO_0_14.md",
     ):
-        raise SystemExit("mkdocs.yml missing Migration 0.11 → 0.12 nav entry")
+        if migration not in mkdocs_text:
+            raise SystemExit(f"mkdocs.yml missing {migration} nav entry")
+    if "Design Proposals:" in mkdocs_text:
+        if mkdocs_text.find("Design Proposals:") < mkdocs_text.find("  - Reference:"):
+            raise SystemExit(
+                "mkdocs.yml must place Design Proposals after current Reference/Project sections"
+            )
     if (
         "Portable Transform Compiler: 07_PLUGIN_SDK/PORTABLE_TRANSFORM_COMPILER.md"
         not in (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
@@ -266,13 +294,24 @@ def main() -> None:
         if required not in capabilities:
             raise SystemExit(f"CAPABILITIES.md missing shipped surface {required!r}")
     security = (ROOT / "SECURITY.md").read_text(encoding="utf-8")
-    if f"| {package_version.rsplit('.', 1)[0]}.x | Current alpha line" not in security:
-        # e.g. 0.10.0 → 0.10.x
-        major_minor = ".".join(package_version.split(".")[:2])
-        if f"| {major_minor}.x | Current alpha line" not in security:
-            raise SystemExit(
-                f"SECURITY.md support table must list {major_minor}.x as current alpha"
-            )
+    # e.g. 0.14.0 → 0.14.x
+    major_minor = ".".join(package_version.split(".")[:2])
+    security_ok = any(
+        f"| {major_minor}.x | {label}" in security
+        for label in (
+            "Current alpha line",
+            "Current published alpha line",
+            "Current published alpha",
+        )
+    )
+    if not security_ok and f"| {major_minor}.x |" not in security:
+        raise SystemExit(
+            f"SECURITY.md support table must list {major_minor}.x as current alpha"
+        )
+    if f"| {major_minor}.x |" in security and "alpha" not in security.lower():
+        raise SystemExit(
+            f"SECURITY.md support table must list {major_minor}.x as current alpha"
+        )
 
     scrub_paths = [
         ROOT / "README.md",
@@ -314,6 +353,11 @@ def main() -> None:
         ROOT / "docs/11_DEVELOPMENT/CONTRIBUTING.md",
         ROOT / "SECURITY.md",
         ROOT / "packages/etlantic-airflow/README.md",
+        ROOT / "packages/etlantic-polars/README.md",
+        ROOT / "packages/etlantic-pandas/README.md",
+        ROOT / "packages/etlantic-pyspark/README.md",
+        ROOT / "packages/etlantic-sql/README.md",
+        ROOT / "packages/etlantic-sparkforge/README.md",
         ROOT / "docs/theme/javascripts/status-banner.js",
         ROOT / "mkdocs.yml",
     ]
@@ -329,7 +373,8 @@ def main() -> None:
     runnable_guides = {
         "AIRFLOW_COMPILE.md",
         "SPARKFORGE_ADAPTER.md",
-        "PORTABLE_TRANSFORMATION.md",
+        "PORTABLE_TRANSFORMS.md",
+        "CONTRACT_FIRST_TUTORIAL.md",
         "README.md",
     }
     for path in (ROOT / "docs/09_EXAMPLES").glob("*.md"):
@@ -438,9 +483,9 @@ def main() -> None:
         raise SystemExit(
             "status-banner.js must exclude PORTABLE_TRANSFORM_COMPILER from future SDK banner"
         )
-    if "PORTABLE_TRANSFORMATION/" not in banner_js:
+    if "PORTABLE_TRANSFORMS/" not in banner_js:
         raise SystemExit(
-            "status-banner.js must exclude PORTABLE_TRANSFORMATION from design-example banner"
+            "status-banner.js must exclude PORTABLE_TRANSFORMS from design-example banner"
         )
     if "/08_VISUALIZATION/GRAPHVIZ/" not in banner_js:
         raise SystemExit(

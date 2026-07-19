@@ -3,6 +3,12 @@
 > **Status: Available in ETLantic 0.14.0.** ETLantic compiles a plan; it does
 > not install or operate an Airflow scheduler.
 
+
+!!! note "Repository examples"
+    Companion scripts under `examples/` are not installed with the PyPI
+    wheel. Clone a matching checkout (prefer the `v0.14.0` tag) and use
+    `uv sync` / the documented dependency group before running them.
+
 ## Install and compile
 
 ```bash
@@ -22,10 +28,12 @@ Complete source:
 For CI compilation without running the example:
 
 ```bash
-etlantic validate module.py:Pipeline --profile production --format json
-etlantic compile module.py:Pipeline --target airflow --profile production -o dags/
+etlantic validate module.py:Pipeline --profile ./profiles/prod.json --format json
+etlantic compile module.py:Pipeline --target airflow --profile ./profiles/prod.json -o dags/
 ```
 
-Production profiles require an explicit plugin allowlist. Inspect the generated
+Production profiles require an explicit plugin allowlist in a Profile JSON
+file (the built-in `production` name is empty and fail-closed). See
+[Production profiles](PRODUCTION_PROFILES.md). Inspect the generated
 artifact and Airflow import errors before deployment. See
 [Airflow compilation details](AIRFLOW.md).

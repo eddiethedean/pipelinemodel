@@ -1,6 +1,6 @@
 # etlantic-sparkforge
 
-SparkForge → ETLantic **migration adapter** (ETLantic 0.10 Migration Preview).
+SparkForge → ETLantic migration adapter for ETLantic 0.14.
 
 SparkForge remains the medallion-facing facade (bronze / silver / gold).
 This package maps those conventions onto ordinary ETLantic `Source` / `Step` /
@@ -10,14 +10,20 @@ surfaces. **ETLantic core never gains medallion types.**
 ## Install
 
 ```bash
-pip install etlantic-sparkforge
+pip install 'etlantic==0.14.0' 'etlantic-sparkforge==0.14.0'
 # or
 pip install 'etlantic[sparkforge]'
 ```
 
-0.10 ships an **IR-only** adapter: feed `SparkForgePipelineSpec` (JSON/YAML
+0.14 ships an **IR-only** adapter: feed `SparkForgePipelineSpec` (JSON/YAML
 fixtures or hand-built dataclasses). There is **no** live
 `pipeline_builder` / SparkForge Python API bridge in this release.
+
+The adapter is registered explicitly by importing `etlantic_sparkforge` and
+calling its conversion helpers. The adapted result supplies an ordinary
+ETLantic pipeline and profile; select execution plugins such as
+`Profile.spark_engine="pyspark"` separately. Production profiles must
+allowlist every trusted execution plugin.
 
 ## Quick start (IR → Pipeline)
 

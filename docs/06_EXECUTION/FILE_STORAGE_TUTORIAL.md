@@ -3,15 +3,24 @@
 > **Status: Available in ETLantic 0.14.0.** The companion script is exercised
 > by CI.
 
-Use file storage when a pipeline must run in a fresh process, including from
-the CLI. Unlike in-memory storage, JSON and CSV inputs survive process
-boundaries.
+Use file storage when a pipeline must survive process boundaries. Unlike
+in-memory storage, JSON and CSV inputs persist on disk.
 
-## Run the tested example
+This companion demonstrates durable JSON/CSV storage through the **Python
+API**. It is not directly runnable with `etlantic run` because its binding
+registry is constructed inside `run_files()`. Use `python examples/file_storage.py`
+for execution, and use the CLI for `inspect` / `validate` / `plan` against
+import-safe pipeline modules.
+
+## Prerequisites
+
+Repository examples are not installed with the PyPI wheel. Clone a matching
+release checkout (prefer the `v0.14.0` tag) and use `uv`:
 
 ```bash
 git clone https://github.com/eddiethedean/etlantic.git
 cd etlantic
+git checkout v0.14.0
 uv sync
 uv run python examples/file_storage.py
 ```
@@ -53,4 +62,5 @@ The binding names must match the `Source` and `Sink` declarations. Use
 - Records are validated against the declared `Data` model.
 - Never point examples at production files; use a temporary working directory.
 
-Next: [runtime configuration](../10_REFERENCE/RUNTIME_CONFIGURATION.md).
+Next: [runtime configuration](../10_REFERENCE/RUNTIME_CONFIGURATION.md) or the
+[pilot walkthrough](PILOT_WALKTHROUGH.md).

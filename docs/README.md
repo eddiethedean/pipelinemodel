@@ -25,7 +25,7 @@ as executable interface declarations—to data engineering.
 
 ## Project Status
 
-**0.14.0** ships validation, profiles, an immutable secret-free
+The published **0.14.0 alpha** ships validation, profiles, an immutable secret-free
 `PipelinePlan`, local Python execution, runtime secret resolution, run reports,
 memory/callable/JSON/CSV storage, a versioned dataframe protocol with Polars
 and Pandas plugins, a versioned SQL protocol with the `etlantic-sql`
@@ -33,14 +33,16 @@ PostgreSQL reference plugin, a versioned Spark protocol with the
 `etlantic-pyspark` reference plugin (local provider + portable compiler), and a
 versioned orchestration protocol with the `etlantic-airflow` reference
 compiler. Portable Polars and PySpark compilers claim kernel +
-`portable-relational/1`. Structured Streaming APIs are experimental.
+`portable-relational/1`; the Pandas eager compiler ships with the same claims
+in 0.14. Structured Streaming APIs are experimental.
 
 !!! tip "Green path (start here only)"
-    1. [Current 0.14 guide](01_GETTING_STARTED/CURRENT_VERSION.md) — task-based map
-    2. [Installation](01_GETTING_STARTED/INSTALLATION.md) — `pip install etlantic`
+    1. [What's new in 0.14](01_GETTING_STARTED/WHATS_NEW_0_14.md) — adopter delta
+    2. [Installation](01_GETTING_STARTED/INSTALLATION.md) — `pip install etlantic==0.14.0`
     3. [Quickstart](01_GETTING_STARTED/QUICKSTART.md) — five-minute success
     4. [Capabilities](01_GETTING_STARTED/CAPABILITIES.md) — shipped vs not
     5. [Evaluator brief](01_GETTING_STARTED/EVALUATOR.md) — for decision-makers
+    6. [Pilot walkthrough](06_EXECUTION/PILOT_WALKTHROUGH.md) — controlled pilot
 
     Pages marked **Future design** are not APIs. [Capabilities](01_GETTING_STARTED/CAPABILITIES.md)
     is the single source of truth. Prefer the Green path above; persona paths
@@ -53,9 +55,10 @@ every illustrated surface is installable.
 
 Portable PySpark-inspired authoring ships in 0.11 via `@Transformation.portable`
 and `etlantic.transform`, emitting `dtcs.transform-plan/2`. **0.12** added
-planning integration and Polars **kernel** portable execution. **0.13–0.14**
-add Polars, PySpark, and Pandas `portable-relational/1` compilers plus the
-public conformance SDK. Safe SQL portable lowering remains 0.15+. Start with
+planning integration and Polars **kernel** portable execution. **0.13** shipped
+Polars and PySpark `portable-relational/1` compilers; **0.14** shipped the
+Pandas eager compiler and public conformance SDK. Safe SQL portable lowering
+remains planned for 0.15+. Start with
 [Portable Transformations](04_TRANSFORMATIONS/PORTABLE_TRANSFORMATIONS.md).
 
 ## Minimal working example
@@ -109,14 +112,19 @@ class CustomerPipeline(Pipeline):
     )
 
 
-CustomerPipeline.validate(profile="development").raise_for_errors()
-runtime = PipelineRuntime()
-runtime.memory.seed(
-    "customer_source",
-    [RawCustomer(customer_id=1, first_name="Ada", last_name="Lovelace")],
-)
-CustomerPipeline.run(profile="development", runtime=runtime)
-print(runtime.memory.get("customer_sink"))
+def main() -> None:
+    CustomerPipeline.validate(profile="development").raise_for_errors()
+    runtime = PipelineRuntime()
+    runtime.memory.seed(
+        "customer_source",
+        [RawCustomer(customer_id=1, first_name="Ada", last_name="Lovelace")],
+    )
+    CustomerPipeline.run(profile="development", runtime=runtime)
+    print(runtime.memory.get("customer_sink"))
+
+
+if __name__ == "__main__":
+    main()
 ```
 
 Copy into a file and run with Python after `pip install etlantic`, or use

@@ -16,7 +16,8 @@ ecosystem.
 - [Portable Transformation IR](PORTABLE_TRANSFORM_IR_SPEC.md) records
   ETLantic's authoring and compiler requirements on top of published DTCS
   plan/profile semantics. The canonical models live in `dtcs>=0.13`; the
-  ETLantic authoring API is not implemented in ETLantic 0.10.
+  ETLantic authoring API has shipped since 0.11, with portable compiler
+  capabilities added through 0.14.
 
 ODCS is an external standard and is not copied into this repository. See the
 [ODCS Integration Guide](../03_DATA_CONTRACTS/ODCS.md) for ETLantic's

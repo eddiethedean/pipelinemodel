@@ -39,3 +39,16 @@ def test_secret_ref_identity() -> None:
     ref = SecretRef(provider="vault", name="db", key="password", version="v1")
     assert "vault" in ref.identity()
     assert ref.to_dict()["key"] == "password"
+
+
+def test_resolve_profile_loads_json_path(tmp_path: Path) -> None:
+    path = write_profile(
+        production_profile(
+            name="ci-production",
+            plugin_allowlist={"local": None},
+        ),
+        tmp_path / "ci-production.json",
+    )
+    loaded = resolve_profile(str(path))
+    assert loaded.name == "ci-production"
+    assert loaded.plugin_allowlist == {"local": None}

@@ -112,11 +112,11 @@ ETLantic ships `@Transformation.portable` / `etlantic.transform` authoring
 (0.11+) that emits `dtcs.transform-plan/2`. **0.12** executes Polars
 **kernel** plans without a native `@implementation("polars")` when
 `portable_transform_policy` is `prefer` or `require` and `etlantic-polars` is
-installed. **0.13–0.14** add Polars, PySpark, and Pandas
-`portable-relational/1` compilers. Safe SQL portable lowering remains planned
-for 0.15+—register native `@implementation()` for SQL and for profiles outside
-the advertised claim set. Native implementations remain the escape hatch
-outside the portable claim.
+installed. **0.13** shipped Polars and PySpark `portable-relational/1`
+compilers; **0.14** shipped the eager Pandas compiler. Safe SQL portable
+lowering remains planned for 0.15+—register native `@implementation()` for SQL
+and for profiles outside the advertised claim set. Native implementations
+remain the escape hatch outside the portable claim.
 
 ------------------------------------------------------------------------
 
@@ -144,7 +144,8 @@ Examples include:
 - Airflow (`etlantic-airflow`) and other orchestrator plugins
 - Optional SQLModel / keyring packages in 0.9+
 
-Business logic remains unchanged.
+The transformation contract and pipeline wiring remain unchanged; native
+implementation bodies may still differ by engine.
 
 ------------------------------------------------------------------------
 

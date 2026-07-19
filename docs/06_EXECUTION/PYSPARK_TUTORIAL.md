@@ -3,6 +3,12 @@
 > **Status: Available in ETLantic 0.14.0.** Structured Streaming remains
 > experimental.
 
+
+!!! note "Repository examples"
+    Companion scripts under `examples/` are not installed with the PyPI
+    wheel. Clone a matching checkout (prefer the `v0.14.0` tag) and use
+    `uv sync` / the documented dependency group before running them.
+
 ## Prerequisites
 
 - Python 3.11+

@@ -9,24 +9,22 @@ documentation, or repository automation are welcome.
 
 | Version | Support |
 |---|---|
-| 0.14.x | Current alpha line; best-effort security fixes |
-| 0.13.x | Critical fixes only when practical |
-| 0.12.x | Critical fixes only when practical |
-| 0.11.x | Critical fixes only when practical |
-| 0.10.x | Critical fixes only when practical |
-| 0.9.x | Critical fixes only when practical |
-| 0.8.x and earlier | Not supported |
+| 0.14.x | Current alpha line (published); best-effort security fixes |
+| 0.13.x and earlier | Not actively maintained; upgrade to 0.14.x |
 
-Upgrade to the latest patch release before reporting an issue.
+Alpha releases do not guarantee backports across minor lines. Prefer upgrading
+to the current published minor rather than requesting multi-line critical
+fixes. Upgrade to the latest 0.14.x patch before reporting an issue.
 
 ## Reporting a Vulnerability
 
 Do not open a public issue for a suspected vulnerability.
 
-Use GitHub private vulnerability reporting when it is enabled for the
-repository. If it is unavailable, contact the repository owner privately
-through the verified contact listed in the package metadata and request a
-secure reporting channel before sending sensitive details.
+**Use GitHub private vulnerability reporting** for this repository
+([Security advisories](https://github.com/eddiethedean/etlantic/security/advisories)).
+If private reporting is temporarily unavailable, contact the maintainer listed
+in [MAINTAINERS.md](MAINTAINERS.md) and request a secure channel before sending
+sensitive details.
 
 Include:
 

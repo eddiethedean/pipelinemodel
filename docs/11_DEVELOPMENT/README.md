@@ -22,7 +22,10 @@ released.
 - [Migration 0.9 → 0.10](MIGRATION_0_9_TO_0_10.md)
 - [Migration 0.10 → 0.11](MIGRATION_0_10_TO_0_11.md)
 - [Migration 0.11 → 0.12](MIGRATION_0_11_TO_0_12.md)
-- [Roadmap](https://github.com/eddiethedean/etlantic/blob/main/ROADMAP.md)
+- [Migration 0.12 → 0.13](MIGRATION_0_12_TO_0_13.md)
+- [Migration 0.13 → 0.14](MIGRATION_0_13_TO_0_14.md)
+- [Roadmap summary](ROADMAP_SUMMARY.md)
+- [Full roadmap](https://github.com/eddiethedean/etlantic/blob/main/ROADMAP.md)
 - [Dependency Strategy](DEPENDENCY_STRATEGY.md)
 
 ## Decisions

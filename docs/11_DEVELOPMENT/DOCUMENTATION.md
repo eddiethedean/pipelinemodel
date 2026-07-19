@@ -6,7 +6,7 @@ Documentation is part of the public API.
 
 Every page describing product behavior must be one of:
 
-- **Available in 0.10** (or the first shipped milestone when still current)
+- **Available in 0.14** (or the first shipped milestone when still current)
 - **Experimental**
 - **Partially available**
 - **Future design**
@@ -35,8 +35,10 @@ the runnable examples index.
 Pages labeled **Status: Available** and presented as runnable must identify a
 companion source file in `examples/`. Register the page/source pair in
 `scripts/check_runnable_docs.py`; the docs gate verifies that the file exists
-and compiles. Core examples execute in CI. Optional-backend companions execute
-in their dependency-group jobs.
+and **syntax-compiles** (`py_compile`). Core examples such as
+`examples/quickstart.py` also **execute** in CI. Optional-backend companions
+are executed in their dependency-group jobs when marked as such—do not claim
+every companion is executed by the syntax gate alone.
 
 ## Writing Rules
 

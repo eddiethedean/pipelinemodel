@@ -45,7 +45,11 @@ PMTRNxxx   Transformation definitions and implementations
 PMXFORMxxx Portable transformation authoring, IR, compilers, and execution
 PMPIPExxx  Pipeline topology and wiring
 PMPLANxxx  Planning and capability resolution
-PMPLGxxx   Plugin discovery and compatibility
+PMPLUGxxx  Plugin trust / allowlist (e.g. PMPLUG401, PMPLUG402)
+PMORCHxxx  Orchestration / compile diagnostics
+PMSPARKxxx Spark capability and runtime diagnostics
+PMDFxxx    Dataframe plugin diagnostics
+PMXFORMxxx Portable transform authoring / compiler diagnostics
 PMEXECxxx  Execution lifecycle
 PMCFGxxx   Configuration and profiles
 PMGENxxx   Contract and documentation generation
@@ -211,8 +215,8 @@ Suppressing errors that protect required semantics should not be allowed.
 ## Machine-Readable Output
 
 ```bash
-etlantic validate . --format json
-etlantic validate . --format sarif
+etlantic validate path/to/pipeline.py:CustomerPipeline --format json
+etlantic validate path/to/pipeline.py:CustomerPipeline --format sarif
 ```
 
 Machine output should use stable field names and diagnostic codes even when

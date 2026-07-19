@@ -1,5 +1,11 @@
 # Contract Loading
 
+> **Status split (0.14.0):** `load_bundle`, `Pipeline.from_dpcs`, and
+> `Transformation.from_dtcs` are **Available** for contract-first reconstruction.
+> Unknown portable IR nodes fail closed. Broader registry sync and multi-vendor
+> interchange guarantees remain **Future design**.
+
+
 From 0.11, a DTCS artifact may carry a portable Transformation Plan profile.
 Loading reconstructs bounded data-only IR and never imports the original Python
 definition or executes a compiler. Unknown protocol majors and expression

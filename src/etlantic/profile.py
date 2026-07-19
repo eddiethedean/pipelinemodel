@@ -172,12 +172,21 @@ PROFILE_TEMPLATES: dict[str, Profile] = {
 
 
 def resolve_profile(profile: str | Profile | None) -> Profile:
-    """Resolve a profile name or object to a concrete Profile."""
+    """Resolve a profile name, JSON path, or object to a concrete Profile.
+
+    When ``profile`` is a string ending in ``.json`` that exists as a file,
+    the profile is loaded with :func:`load_profile`. Built-in template names
+    (``development``, ``production``, …) resolve to templates. Other bare
+    names create an empty :class:`Profile` with that name.
+    """
     if profile is None:
         return development_profile(name="local")
     if isinstance(profile, Profile):
         return profile
     key = str(profile)
+    path = Path(key)
+    if path.suffix == ".json" and path.is_file():
+        return load_profile(path)
     if key in PROFILE_TEMPLATES:
         template = PROFILE_TEMPLATES[key]
         if key in {"local", "dev", "prod"}:

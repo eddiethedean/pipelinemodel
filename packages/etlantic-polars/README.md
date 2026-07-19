@@ -1,12 +1,12 @@
 # etlantic-polars
 
 Polars dataframe plugin **and** Polars portable transform compiler for
-[ETLantic](https://github.com/eddiethedean/etlantic) 0.13.
+[ETLantic](https://github.com/eddiethedean/etlantic) 0.14.
 
 ```bash
-pip install 'etlantic==0.13.0' 'etlantic-polars==0.13.0'
+pip install 'etlantic==0.14.0' 'etlantic-polars==0.14.0'
 # optional Arrow interchange
-pip install 'etlantic-polars[arrow]'
+pip install 'etlantic-polars[arrow]==0.14.0'
 ```
 
 ## Dataframe plugin
@@ -16,7 +16,7 @@ explicit collection boundary declared in the `PipelinePlan`.
 
 Entry point: `etlantic.dataframe_plugins` → `etlantic_polars:create_plugin`.
 
-## Portable transform compiler (0.13)
+## Portable transform compiler (0.14)
 
 Claims `dtcs:profile/portable-relational-kernel/1` and
 `dtcs:profile/portable-relational/1`. Executes kernel actions plus join, union,

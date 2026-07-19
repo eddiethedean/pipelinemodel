@@ -1,10 +1,10 @@
 # etlantic-sqlmodel
 
 Optional bridge between ETLantic `Data` contracts and
-[SQLModel](https://sqlmodel.tiangolo.com/) table models.
+[SQLModel](https://sqlmodel.tiangolo.com/) table models for ETLantic 0.14.
 
 ```bash
-pip install etlantic-sqlmodel
+pip install 'etlantic==0.14.0' 'etlantic-sqlmodel==0.14.0'
 # or: pip install 'etlantic[sqlmodel]'
 ```
 
@@ -40,6 +40,10 @@ assert report.valid
 
 plugin = create_plugin()
 ```
+
+This bridge is used explicitly through its public conversion helpers; it does
+not require a profile engine setting. Register `create_plugin()` only with
+tooling that consumes the schema-mapping plugin object.
 
 Generated SQLModel classes are reviewable starting points — relational choices
 such as primary keys and table names must be supplied explicitly.

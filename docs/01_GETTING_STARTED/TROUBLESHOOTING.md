@@ -17,15 +17,41 @@ These docs describe ETLantic **0.14.0**. Confirm what you installed:
 ```bash
 python -c "import etlantic; print(etlantic.__version__)"
 etlantic --version
+# Interpreter-specific (avoids PATH mismatches):
+python -m etlantic --version
 ```
 
-Upgrade from PyPI:
+Upgrade from PyPI (pin the published alpha minor unless you intend patches):
 
 ```bash
-python -m pip install --upgrade 'etlantic>=0.14.0'
+python -m pip install --upgrade 'etlantic==0.14.0'
+# or accept 0.14 patches only:
+python -m pip install --upgrade 'etlantic>=0.14.0,<0.15'
 ```
 
 From a checkout, prefer `uv sync` / `git pull`.
+
+## `etlantic: command not found`
+
+The console script is on PATH only for the environment where you installed
+ETLantic. Prefer the module form tied to the active interpreter:
+
+```bash
+python -m etlantic --version
+# Windows:
+py -3.11 -m etlantic --version
+```
+
+If that fails with `No module named etlantic`, reinstall into the intended
+virtualenv. If `import etlantic` works but `etlantic` on PATH does not, you
+are mixing environments.
+
+## CLI validate/plan unexpectedly runs my pipeline
+
+`etlantic` loads `path.py:Class` by importing the module. Keep contracts and
+pipeline classes at module scope, but put seed/run side effects under
+`if __name__ == "__main__"` so import is safe. See
+[Quickstart](QUICKSTART.md).
 
 ## Plugin install fails (`etlantic-polars`, `etlantic-pyspark`, …)
 
@@ -65,10 +91,11 @@ def run_locally(rows):
     return rows
 ```
 
-…or, for Polars/PySpark/Pandas portable relational plans in 0.13–0.14, author with
-`@MyTransformation.portable`, install `etlantic-polars`, and set
-`Profile(dataframe_engine="polars", portable_transform_policy="require")`.
-See `examples/portable_polars_kernel.py`.
+…or use a shipped portable relational compiler: Polars and PySpark shipped in
+0.13, and eager Pandas shipped in 0.14. Author with
+`@MyTransformation.portable`, install the matching engine plugin, and select
+that engine with `portable_transform_policy="require"`. See
+`examples/portable_polars_kernel.py` for the Polars path.
 
 ## Portable compiler not discovered / `PMXFORM302`
 

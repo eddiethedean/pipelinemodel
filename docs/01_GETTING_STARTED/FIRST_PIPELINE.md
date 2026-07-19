@@ -133,6 +133,7 @@ print(customers[0].full_name)
 Expected output:
 
 ```text
+succeeded
 Ada Lovelace
 ```
 

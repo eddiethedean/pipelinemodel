@@ -36,7 +36,7 @@ then run one failing node with `-vv -x`. Never depend on plugin discovery order,
 ambient environment variables, production credentials, or shared mutable
 runtime state.
 
-## Future requirement: portable transformation conformance (0.14+)
+## Portable transformation conformance (shipped in 0.14)
 
 Every compiler runs capability-selected fixtures from
 `etlantic.testing.portable_transform_conformance`. Shared fixtures cover IR
@@ -44,6 +44,14 @@ canonicalization, null/type/error semantics, deterministic compilation,
 multiple outputs, lazy/eager behavior, ownership, hostile bounded input,
 redaction, and cross-engine normalized results. Advertising an operation or
 function makes its fixture mandatory.
+
+Plugin authors can run the public suite directly:
+
+```python
+from etlantic.testing import run_portable_transform_conformance_suite
+
+run_portable_transform_conformance_suite(create_transform_compiler())
+```
 
 ETLantic testing must prove that typed models, portable contracts,
 planning, and backend execution preserve the same semantics.
@@ -142,7 +150,16 @@ Equivalent input must produce equivalent canonical plans.
 
 ## Plugin Conformance
 
-The future portable SDK is expected to provide reusable suites:
+The public portable transform SDK provides a reusable compiler suite:
+
+```python
+from etlantic.testing import run_portable_transform_conformance_suite
+
+run_portable_transform_conformance_suite(create_transform_compiler())
+```
+
+Broader reusable suites for other plugin families remain aspirational. Their
+intended shape is:
 
 ```python
 def test_plugin_conformance():

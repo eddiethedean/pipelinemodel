@@ -1,10 +1,10 @@
 # Error Handling
 
-!!! warning "Partially available in ETLantic 0.12"
-    Structured diagnostics, validation failures, and runtime
-    `NodeExecutionError` paths are shipped. Snippets that import
-    `RetryAction` or other unshipped helpers are design studies—use Profile
-    retry/schedule intents and orchestrator plugins for production retries.
+!!! success "Available in ETLantic 0.14"
+    Structured diagnostics, validation failures, runtime
+    `NodeExecutionError` paths, callback `FailureAction` results, and
+    `Profile.retry_max_attempts` retry intent are shipped. Retry execution is
+    gated by the runtime or orchestrator's safety checks.
 
 Error handling in ETLantic is designed to make failures predictable,
 typed, and portable across execution backends.
@@ -108,15 +108,33 @@ Plugin Executes Action
 
 Retry decisions should be declarative.
 
-Conceptually:
+Shipped callbacks return `FailureAction`, while profiles declare the retry
+limit:
 
 ```python
-from etlantic import RetryAction
+from etlantic import FailureAction, Profile
 
-return RetryAction.retry(max_attempts=3)
+
+def on_step_failed(context):
+    return FailureAction.RETRY
+
+
+profile = Profile(name="local", retry_max_attempts=3)
 ```
 
-The execution backend performs the retry according to the active profile.
+The execution backend performs the retry according to the active profile and
+its retry-safety checks. `FailureAction.FAIL`, `.SKIP`, and `.CONTINUE` are
+also available for step-failure callbacks.
+
+!!! warning "Future design—not a shipped API"
+    `RetryAction` is not part of ETLantic 0.14. The following conceptual
+    snippet must not be copied into current code:
+
+    ```python
+    from etlantic import RetryAction
+
+    return RetryAction.retry(max_attempts=3)
+    ```
 
 ## Diagnostics
 

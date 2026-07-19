@@ -1,9 +1,23 @@
 # Current Capabilities and Limitations
 
-ETLantic 0.14.0 is an alpha release. This page is the shortest answer to
-"What can I use today?"
+ETLantic **0.14.0** is a **published alpha** release on PyPI. This page is the
+shortest answer to "What can I use today?"
+
+## Recommended first production-like pilot
+
+Controlled pilot only (see [Evaluator](EVALUATOR.md) and
+[Production readiness](../06_EXECUTION/PRODUCTION_READINESS.md)):
+
+1. Core + local/file storage (`examples/quickstart.py`, `examples/file_storage.py`)
+2. Optional one engine: Polars **or** Pandas **or** SQL **or** local PySpark
+3. Explicit production `Profile` JSON with `plugin_allowlist`
+4. CI `validate --format sarif` + reviewed `plan` JSON
+5. No multi-tenant sharing of a process; no unresolved security Gaps from the
+   [Security](../02_FOUNDATIONS/SECURITY.md) chapter
 
 ## Available in 0.14
+
+### Core authoring and validation
 
 | Capability | Status |
 |---|---|
@@ -11,46 +25,55 @@ ETLantic 0.14.0 is an alpha release. This page is the shortest answer to
 | Structural and semantic validation | Available |
 | ODCS, DTCS, and DPCS generation and loading | Available |
 | Profiles and deterministic, secret-free pipeline plans | Available |
+| `@Transformation.portable` / `etlantic.transform` → `dtcs.transform-plan/2` | Available |
+| `Profile.portable_transform_policy` (`prefer` / `require` / `native`) | Available |
+| DTCS 3.0 plan models / Rich Portable Analytics profiles | Available (`dtcs>=0.13`) |
+
+### Local execution and storage
+
+| Capability | Status |
+|---|---|
 | Local synchronous and asynchronous execution | Available |
 | Python transformation implementations | Available |
 | Memory, callable, JSON, CSV, and no-write storage | Available |
 | Run reports, structured logging, and local debugging | Available |
 | Runtime secret references and env/file providers | Available |
-| Dataframe execution protocol (`etlantic.dataframe/1`) | Available |
-| Polars plugin (eager + lazy preservation) | Available (`etlantic-polars`) |
-| Pandas plugin (eager compatibility) | Available (`etlantic-pandas`) |
-| Portable Pandas compiler (kernel + relational `/1`, eager-only) | Available (`etlantic-pandas`) |
-| Public `etlantic.testing.portable_transform_conformance` | Available |
+
+### Optional engines and portable compilers
+
+| Capability | Status |
+|---|---|
+| Dataframe protocol + Polars plugin (eager/lazy) | Available (`etlantic-polars`) |
+| Pandas plugin (eager) | Available (`etlantic-pandas`) |
+| Portable Polars compiler (kernel + relational `/1`) | Available |
+| Portable PySpark compiler (kernel + relational `/1`) | Available |
+| Portable Pandas compiler (kernel + relational `/1`, eager) | Available |
+| Public portable transform conformance suite | Available |
 | Optional Arrow interchange | Available when PyArrow is installed |
-| SQL execution protocol (`etlantic.sql/1`) | Available |
-| SQL plugin (PostgreSQL reference) | Available (`etlantic-sql`) |
-| Spark execution protocol (`etlantic.spark/1`) | Available |
-| PySpark plugin + local Spark provider (native `@implementation`) | Available (`etlantic-pyspark`) |
-| Portable PySpark transform compiler (kernel + relational `/1`) | Available (`etlantic-pyspark`) |
-| Lazy Spark region fusion (native Spark path) | Available |
+| SQL protocol + PostgreSQL reference plugin | Available (`etlantic-sql`) |
+| Spark protocol + local provider + native impl path | Available (`etlantic-pyspark`) |
+| Lazy Spark region fusion (native path) | Available |
 | Delta-compatible write intents | Available (fail-closed without Delta) |
-| Structured Streaming foundation | **Experimental** |
-| Orchestration protocol (`etlantic.orchestration/1`) | Available |
 | Airflow reference compiler | Available (`etlantic-airflow`) |
-| Schedule / retry / artifact-ref mapping | Available |
+
+### Operations and security tooling
+
+| Capability | Status |
+|---|---|
 | CLI compile / generate / diff / plugin / schema / reliability / viz | Available |
 | Plugin allowlists and version pins | Available |
 | SARIF diagnostics and file schema history | Available |
 | File-backed report store and report compare | Available |
 | Mermaid, Graphviz DOT, HTML lineage, JSON lineage | Available |
 | IDE command/result JSON schemas | Available |
-| Optional keyring secret provider | Available (`etlantic-keyring`) |
-| Optional SQLModel bridge | Available (`etlantic-sqlmodel`) |
-| Optional OpenTelemetry adapter | Available (`etlantic[otel]`) |
+| Optional keyring / SQLModel / OpenTelemetry / SparkForge | Available |
 | Agent guidance generators | Available |
-| SparkForge migration adapter | Available (`etlantic-sparkforge`) |
-| DTCS 3.0 Transformation Plan models and Rich Portable Analytics profiles | Available through `dtcs>=0.13` |
-| `@Transformation.portable` / `etlantic.transform` authoring → `dtcs.transform-plan/2` | Available |
-| `Profile.portable_transform_policy` (`prefer` / `require` / `native`) | Available |
-| Portable Polars compiler (kernel + `portable-relational/1`) | Available (`etlantic-polars`) |
-| Portable PySpark compiler (kernel + `portable-relational/1`) | Available (`etlantic-pyspark`) |
-| Portable Pandas compiler (kernel + `portable-relational/1`, eager) | Available (`etlantic-pandas`) |
-| Public portable transform conformance suite | Available (`etlantic.testing.run_portable_transform_conformance_suite`) |
+
+### Experimental
+
+| Capability | Status |
+|---|---|
+| Structured Streaming foundation | **Experimental** |
 
 ## Not included in 0.14
 
@@ -70,12 +93,14 @@ ETLantic 0.14.0 is an alpha release. This page is the shortest answer to
 ## CI starter
 
 ```bash
-etlantic validate path/to/pipeline.py:MyPipeline --profile production --format sarif
-etlantic plan path/to/pipeline.py:MyPipeline --profile production --format json
+etlantic validate path/to/pipeline.py:MyPipeline --profile ./profiles/prod.json --format sarif
+etlantic plan path/to/pipeline.py:MyPipeline --profile ./profiles/prod.json --format json
 ```
 
-Production profiles require a non-empty `Profile.plugin_allowlist`. Never put
-secrets in plans, reports, or CI logs. See
+Production profiles require a non-empty `Profile.plugin_allowlist` in an
+explicit Profile JSON file (the built-in `production` name is empty and
+fail-closed). Never put secrets in plans, reports, or CI logs. See
+[Production profiles](../06_EXECUTION/PRODUCTION_PROFILES.md),
 [Runtime configuration](../10_REFERENCE/RUNTIME_CONFIGURATION.md),
 [Ops Pilot](../06_EXECUTION/OPS_PILOT.md), and the
 [Evaluator brief](EVALUATOR.md).

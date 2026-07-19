@@ -2,10 +2,21 @@
 
 > **Status: Available in ETLantic 0.14.0.**
 
-## When to use `@Transformation.portable`
+## Decision guide
 
-Use portable authoring when you want one closed relational definition that
-emits `dtcs.transform-plan/2` for compilers:
+| Situation | Prefer |
+|---|---|
+| One closed relational definition for Polars / PySpark / Pandas within kernel + `portable-relational/1` | `@Transformation.portable` |
+| Local Python / memory demos | `@Transformation.implementation("local")` |
+| SQL execution today | Native `@implementation("sql")` (portable SQL lowering is planned for **0.15+**) |
+| Ops outside advertised claims (UDFs, unclaimed profiles, Pandas index semantics) | Native `@implementation(...)` |
+| Force native only | `Profile(portable_transform_policy="native")` |
+| Fail if portable cannot compile | `Profile(portable_transform_policy="require")` |
+
+The transformation **contract** and pipeline wiring stay the same across
+engines. Native implementation **bodies** may differ by engine.
+
+## When to use `@Transformation.portable`
 
 ```python
 from etlantic.transform import functions as F
@@ -16,33 +27,30 @@ def normalize(rows):
 ```
 
 Inspect with `Normalize.to_transform_plan()` / `portable_fingerprint()`.
-In **0.12**, Polars can execute kernel-shaped plans without a native
-`@implementation("polars")` when `portable_transform_policy` is `prefer` or
-`require`.
+With `portable_transform_policy` of `prefer` or `require`, Polars, PySpark, and
+Pandas can execute fitting plans without a matching native implementation
+(Pandas is eager-only and index-neutral).
 
 ## When to use `@Transformation.implementation`
-
-Use native implementations for engines without a shipped compiler, for
-behavior outside the portable claim set, or when
-`portable_transform_policy="native"`:
 
 ```python
 @Normalize.implementation("local")
 def normalize_local(rows):
     ...
 
-@Normalize.implementation("pandas")
-def normalize_pandas(rows):
+@Normalize.implementation("sql")
+def normalize_sql(rows):
     ...
 ```
 
-Common pattern: keep portable authoring for the plan artifact, use
-Polars/PySpark/Pandas portable relational execution when the claim set fits,
-and keep native callables for SQL (0.15+) or profiles outside advertised
-claims.
+Keep native SQL implementations **today**; safe portable SQL lowering is
+planned for 0.15+. Keep native callables for profiles outside the advertised
+claim set (see the
+[portable compiler matrix](../10_REFERENCE/PORTABLE_COMPILER_MATRIX.md)).
 
 ## Related
 
 - [Portable Transformations](../04_TRANSFORMATIONS/PORTABLE_TRANSFORMATIONS.md)
+- [Portable compiler matrix](../10_REFERENCE/PORTABLE_COMPILER_MATRIX.md)
 - [`examples/portable_polars_kernel.py`](https://github.com/eddiethedean/etlantic/blob/main/examples/portable_polars_kernel.py)
-- [Migration 0.11 → 0.12](../11_DEVELOPMENT/MIGRATION_0_11_TO_0_12.md)
+- [Migration 0.13 → 0.14](../11_DEVELOPMENT/MIGRATION_0_13_TO_0_14.md)

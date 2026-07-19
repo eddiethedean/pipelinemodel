@@ -1,8 +1,8 @@
 # Runnable Examples
 
-These examples use APIs and dependencies shipped in ETLantic **0.13.0**. Install
-with `pip install etlantic==0.13.0` (plus optional engine packages), or from a
-checkout with `uv sync` and `uv run python …`.
+These examples use APIs and dependencies shipped in ETLantic **0.14.0**. Install
+with `pip install etlantic==0.14.0` (plus matching `==0.14.0` optional engine
+packages), or from a checkout with `uv sync` and `uv run python …`.
 
 ## Quickstart
 
@@ -16,16 +16,18 @@ The example defines contracts, registers a local Python implementation, runs
 the pipeline with in-memory storage, prints the run report, and prints the
 curated records.
 
-## Portable Polars kernel (no native implementation)
+## Portable Polars / Pandas (no native implementation)
 
 ```bash
-# requires etlantic-polars
-python examples/portable_polars_kernel.py
+# requires etlantic-polars / etlantic-pandas
+uv sync --group dataframes
+uv run python examples/portable_polars_kernel.py
+uv run python examples/portable_pandas_kernel.py
 ```
 
 Authors with `@Transformation.portable`, plans with
-`portable_transform_policy="require"`, and executes on Polars through the
-shipped kernel compiler.
+`portable_transform_policy="require"`, and executes through the shipped Polars
+or Pandas compilers (Pandas is eager-only / index-neutral).
 
 ## JSON and CSV storage
 

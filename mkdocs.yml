@@ -104,12 +104,14 @@ nav:
   - Home: README.md
   - Learn:
       - Overview: 01_GETTING_STARTED/README.md
+      - What's new in 0.14: 01_GETTING_STARTED/WHATS_NEW_0_14.md
       - Current 0.14 Guide: 01_GETTING_STARTED/CURRENT_VERSION.md
       - Installation: 01_GETTING_STARTED/INSTALLATION.md
       - Quickstart: 01_GETTING_STARTED/QUICKSTART.md
       - First Pipeline: 01_GETTING_STARTED/FIRST_PIPELINE.md
       - Capabilities and Limitations: 01_GETTING_STARTED/CAPABILITIES.md
       - Evaluator Brief: 01_GETTING_STARTED/EVALUATOR.md
+      - Pilot walkthrough: 06_EXECUTION/PILOT_WALKTHROUGH.md
       - Troubleshooting: 01_GETTING_STARTED/TROUBLESHOOTING.md
       - FAQ: 01_GETTING_STARTED/FAQ.md
       - Portable vs Native: 01_GETTING_STARTED/PORTABLE_VS_NATIVE.md
@@ -172,6 +174,8 @@ nav:
           - PySpark: 06_EXECUTION/PYSPARK_TUTORIAL.md
           - Airflow: 06_EXECUTION/AIRFLOW_TUTORIAL.md
           - CI integration: 06_EXECUTION/CI_INTEGRATION.md
+          - Production profiles: 06_EXECUTION/PRODUCTION_PROFILES.md
+          - Controlled pilot: 06_EXECUTION/PILOT_WALKTHROUGH.md
           - Production readiness: 06_EXECUTION/PRODUCTION_READINESS.md
           - Ops pilot: 06_EXECUTION/OPS_PILOT.md
       - Execution Model: 06_EXECUTION/EXECUTION_MODEL.md
@@ -180,12 +184,14 @@ nav:
       - Logging: 06_EXECUTION/LOGGING.md
       - Secrets Management: 06_EXECUTION/SECRETS_MANAGEMENT.md
       - Run Reports: 06_EXECUTION/RUN_REPORTS.md
+      - Durable Reports: 06_EXECUTION/DURABLE_REPORTS.md
       - Local Python: 06_EXECUTION/LOCAL_PYTHON.md
       - Dataframe Plugins: 06_EXECUTION/DATAFRAME_PLUGINS.md
       - Polars: 06_EXECUTION/POLARS.md
       - Pandas: 06_EXECUTION/PANDAS.md
       - Dataframe Plugin Protocol: 07_PLUGIN_SDK/DATAFRAME_PLUGIN.md
       - Portable Transform Compiler: 07_PLUGIN_SDK/PORTABLE_TRANSFORM_COMPILER.md
+      - Third-Party Compiler Tutorial: 07_PLUGIN_SDK/THIRD_PARTY_COMPILER_TUTORIAL.md
       - SQL: 06_EXECUTION/SQL.md
       - SQL Execution: 06_EXECUTION/SQL_EXECUTION.md
       - SQL Pushdown: 06_EXECUTION/SQL_PUSHDOWN.md
@@ -203,6 +209,78 @@ nav:
       - Orchestrator Plugin Protocol: 07_PLUGIN_SDK/ORCHESTRATOR_PLUGIN.md
       - Secret Provider Protocol: 07_PLUGIN_SDK/SECRET_PROVIDER.md
       - Testing Plugins: 07_PLUGIN_SDK/TESTING_PLUGINS.md
+  - Visualization:
+      - Overview: 08_VISUALIZATION/README.md
+      - Mermaid: 08_VISUALIZATION/MERMAID.md
+      - Graphviz: 08_VISUALIZATION/GRAPHVIZ.md
+      - HTML: 08_VISUALIZATION/HTML.md
+      - Lineage: 08_VISUALIZATION/LINEAGE.md
+  - Examples:
+      - Overview: 09_EXAMPLES/README.md
+      - Runnable Guides:
+          - Airflow Compile: 09_EXAMPLES/AIRFLOW_COMPILE.md
+          - SparkForge Adapter: 09_EXAMPLES/SPARKFORGE_ADAPTER.md
+          - Portable Polars Kernel: 09_EXAMPLES/PORTABLE_TRANSFORMS.md
+          - Contract-First Round Trip: 09_EXAMPLES/CONTRACT_FIRST_TUTORIAL.md
+      - Design Studies:
+          - CSV to CSV: 09_EXAMPLES/CSV_TO_CSV.md
+          - CSV to SQL: 09_EXAMPLES/CSV_TO_SQL.md
+          - SQL to SQL: 09_EXAMPLES/SQL_TO_SQL.md
+          - Pandas Pipeline: 09_EXAMPLES/PANDAS_PIPELINE.md
+          - Polars Pipeline: 09_EXAMPLES/POLARS_PIPELINE.md
+          - Airflow Pipeline: 09_EXAMPLES/AIRFLOW_PIPELINE.md
+          - Multi-output: 09_EXAMPLES/MULTI_OUTPUT.md
+          - Callbacks: 09_EXAMPLES/CALLBACKS.md
+          - Async Pipelines: 09_EXAMPLES/ASYNC_PIPELINES.md
+          - Contract First: 09_EXAMPLES/CONTRACT_FIRST.md
+          - Code First: 09_EXAMPLES/CODE_FIRST.md
+          - End to End: 09_EXAMPLES/END_TO_END.md
+          - SQL to PySpark: 09_EXAMPLES/SQL_TO_PYSPARK.md
+          - PySpark to SQL: 09_EXAMPLES/PYSPARK_TO_SQL.md
+          - PySpark to Delta: 09_EXAMPLES/PYSPARK_TO_DELTA.md
+          - Streaming PySpark: 09_EXAMPLES/STREAMING_PYSPARK.md
+  - Reference:
+      - Overview: 10_REFERENCE/README.md
+      - CLI: 10_REFERENCE/CLI.md
+      - Compatibility: 10_REFERENCE/COMPATIBILITY.md
+      - Configuration in 0.14.0: 10_REFERENCE/CONFIGURATION_TODAY.md
+      - Portable Compiler Matrix: 10_REFERENCE/PORTABLE_COMPILER_MATRIX.md
+      - Optional Packages: 10_REFERENCE/OPTIONAL_PACKAGES.md
+      - Known Limitations: 10_REFERENCE/KNOWN_ISSUES.md
+      - Runtime configuration: 10_REFERENCE/RUNTIME_CONFIGURATION.md
+      - Diagnostics: 10_REFERENCE/DIAGNOSTICS.md
+      - Exceptions: 10_REFERENCE/EXCEPTIONS.md
+      - API Reference: 10_REFERENCE/API_REFERENCE.md
+  - Project:
+      - Overview: 11_DEVELOPMENT/README.md
+      - Support policy: 11_DEVELOPMENT/SUPPORT.md
+      - Governance: 11_DEVELOPMENT/GOVERNANCE.md
+      - Code of Conduct: 11_DEVELOPMENT/CODE_OF_CONDUCT.md
+      - API stability and deprecation: 11_DEVELOPMENT/DEPRECATION_POLICY.md
+      - Changelog: https://github.com/eddiethedean/etlantic/blob/main/CHANGELOG.md
+      - Roadmap summary: 11_DEVELOPMENT/ROADMAP_SUMMARY.md
+      - Full roadmap: https://github.com/eddiethedean/etlantic/blob/main/ROADMAP.md
+      - Migration 0.4 → 0.5: 11_DEVELOPMENT/MIGRATION_0_4_TO_0_5.md
+      - Migration 0.5 → 0.6: 11_DEVELOPMENT/MIGRATION_0_5_TO_0_6.md
+      - Migration 0.6 → 0.7: 11_DEVELOPMENT/MIGRATION_0_6_TO_0_7.md
+      - Migration 0.7 → 0.8: 11_DEVELOPMENT/MIGRATION_0_7_TO_0_8.md
+      - Migration 0.8 → 0.9: 11_DEVELOPMENT/MIGRATION_0_8_TO_0_9.md
+      - Migration 0.9 → 0.10: 11_DEVELOPMENT/MIGRATION_0_9_TO_0_10.md
+      - Migration 0.10 → 0.11: 11_DEVELOPMENT/MIGRATION_0_10_TO_0_11.md
+      - Migration 0.11 → 0.12: 11_DEVELOPMENT/MIGRATION_0_11_TO_0_12.md
+      - Migration 0.12 → 0.13: 11_DEVELOPMENT/MIGRATION_0_12_TO_0_13.md
+      - Migration 0.13 → 0.14: 11_DEVELOPMENT/MIGRATION_0_13_TO_0_14.md
+      - Contributing: 11_DEVELOPMENT/CONTRIBUTING.md
+      - Documentation: 11_DEVELOPMENT/DOCUMENTATION.md
+      - Testing: 11_DEVELOPMENT/TESTING.md
+      - Coding Standards: 11_DEVELOPMENT/CODING_STANDARDS.md
+      - Release Process: 11_DEVELOPMENT/RELEASE_PROCESS.md
+      - Dependency Strategy: 11_DEVELOPMENT/DEPENDENCY_STRATEGY.md
+      - Design Decisions: 11_DEVELOPMENT/DESIGN_DECISIONS.md
+      - Architecture Decisions: 11_DEVELOPMENT/ARCHITECTURE_DECISIONS.md
+      - ADR-013 Portable Transform IR: 11_DEVELOPMENT/adr/ADR-013-PORTABLE-TRANSFORMATION-IR.md
+      - Benchmarks: 11_DEVELOPMENT/BENCHMARKS.md
+      - Performance baselines: 11_DEVELOPMENT/PERFORMANCE_RESULTS.md
   - Design Proposals:
       - Read this first: 11_DEVELOPMENT/DESIGN_PROPOSALS.md
       - Portable compilers and plans (history):
@@ -234,70 +312,6 @@ nav:
           - SQLModel Integration Plan: 11_DEVELOPMENT/SQLMODEL_INTEGRATION_PLAN.md
           - SparkForge Adoption: 11_DEVELOPMENT/SPARKFORGE_ADOPTION.md
 
-  - Visualization:
-      - Overview: 08_VISUALIZATION/README.md
-      - Mermaid: 08_VISUALIZATION/MERMAID.md
-      - Graphviz: 08_VISUALIZATION/GRAPHVIZ.md
-      - HTML: 08_VISUALIZATION/HTML.md
-      - Lineage: 08_VISUALIZATION/LINEAGE.md
-  - Examples:
-      - Overview: 09_EXAMPLES/README.md
-      - Runnable Guides:
-          - Airflow Compile: 09_EXAMPLES/AIRFLOW_COMPILE.md
-          - SparkForge Adapter: 09_EXAMPLES/SPARKFORGE_ADAPTER.md
-          - Portable Polars Kernel: 09_EXAMPLES/PORTABLE_TRANSFORMATION.md
-      - Design Studies:
-          - CSV to CSV: 09_EXAMPLES/CSV_TO_CSV.md
-          - CSV to SQL: 09_EXAMPLES/CSV_TO_SQL.md
-          - SQL to SQL: 09_EXAMPLES/SQL_TO_SQL.md
-          - Pandas Pipeline: 09_EXAMPLES/PANDAS_PIPELINE.md
-          - Polars Pipeline: 09_EXAMPLES/POLARS_PIPELINE.md
-          - Airflow Pipeline: 09_EXAMPLES/AIRFLOW_PIPELINE.md
-          - Multi-output: 09_EXAMPLES/MULTI_OUTPUT.md
-          - Callbacks: 09_EXAMPLES/CALLBACKS.md
-          - Async Pipelines: 09_EXAMPLES/ASYNC_PIPELINES.md
-          - Contract First: 09_EXAMPLES/CONTRACT_FIRST.md
-          - Code First: 09_EXAMPLES/CODE_FIRST.md
-          - End to End: 09_EXAMPLES/END_TO_END.md
-          - SQL to PySpark: 09_EXAMPLES/SQL_TO_PYSPARK.md
-          - PySpark to SQL: 09_EXAMPLES/PYSPARK_TO_SQL.md
-          - PySpark to Delta: 09_EXAMPLES/PYSPARK_TO_DELTA.md
-          - Streaming PySpark: 09_EXAMPLES/STREAMING_PYSPARK.md
-  - Reference:
-      - Overview: 10_REFERENCE/README.md
-      - CLI: 10_REFERENCE/CLI.md
-      - Compatibility: 10_REFERENCE/COMPATIBILITY.md
-      - Known Limitations: 10_REFERENCE/KNOWN_ISSUES.md
-      - Runtime configuration: 10_REFERENCE/RUNTIME_CONFIGURATION.md
-      - Diagnostics: 10_REFERENCE/DIAGNOSTICS.md
-      - Exceptions: 10_REFERENCE/EXCEPTIONS.md
-      - API Reference: 10_REFERENCE/API_REFERENCE.md
-  - Project:
-      - Overview: 11_DEVELOPMENT/README.md
-      - Support policy: 11_DEVELOPMENT/SUPPORT.md
-      - Governance: 11_DEVELOPMENT/GOVERNANCE.md
-      - Code of Conduct: 11_DEVELOPMENT/CODE_OF_CONDUCT.md
-      - API stability and deprecation: 11_DEVELOPMENT/DEPRECATION_POLICY.md
-      - Roadmap: https://github.com/eddiethedean/etlantic/blob/main/ROADMAP.md
-      - Migration 0.4 → 0.5: 11_DEVELOPMENT/MIGRATION_0_4_TO_0_5.md
-      - Migration 0.5 → 0.6: 11_DEVELOPMENT/MIGRATION_0_5_TO_0_6.md
-      - Migration 0.6 → 0.7: 11_DEVELOPMENT/MIGRATION_0_6_TO_0_7.md
-      - Migration 0.7 → 0.8: 11_DEVELOPMENT/MIGRATION_0_7_TO_0_8.md
-      - Migration 0.8 → 0.9: 11_DEVELOPMENT/MIGRATION_0_8_TO_0_9.md
-      - Migration 0.9 → 0.10: 11_DEVELOPMENT/MIGRATION_0_9_TO_0_10.md
-      - Migration 0.10 → 0.11: 11_DEVELOPMENT/MIGRATION_0_10_TO_0_11.md
-      - Migration 0.11 → 0.12: 11_DEVELOPMENT/MIGRATION_0_11_TO_0_12.md
-      - Contributing: 11_DEVELOPMENT/CONTRIBUTING.md
-      - Documentation: 11_DEVELOPMENT/DOCUMENTATION.md
-      - Testing: 11_DEVELOPMENT/TESTING.md
-      - Coding Standards: 11_DEVELOPMENT/CODING_STANDARDS.md
-      - Release Process: 11_DEVELOPMENT/RELEASE_PROCESS.md
-      - Dependency Strategy: 11_DEVELOPMENT/DEPENDENCY_STRATEGY.md
-      - Design Decisions: 11_DEVELOPMENT/DESIGN_DECISIONS.md
-      - Architecture Decisions: 11_DEVELOPMENT/ARCHITECTURE_DECISIONS.md
-      - ADR-013 Portable Transform IR: 11_DEVELOPMENT/adr/ADR-013-PORTABLE-TRANSFORMATION-IR.md
-      - Benchmarks: 11_DEVELOPMENT/BENCHMARKS.md
-      - Performance baselines: 11_DEVELOPMENT/PERFORMANCE_RESULTS.md
   - Standards:
       - Overview: specifications/README.md
       - DTCS 3.0 (canonical): specifications/DTCS.md

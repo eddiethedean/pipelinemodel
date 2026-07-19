@@ -26,11 +26,15 @@ plugins via `Profile.plugin_allowlist` (bare versions are accepted as
 3. **Process isolation** — do not multi-tenant in one process
 4. **SARIF validate** in CI before compile/generate
 
+Use an explicit allowlisted profile file (the built-in name
+`production` is empty and fail-closed). See
+[Production profiles](PRODUCTION_PROFILES.md).
+
 ```bash
 etlantic validate path/to/pipeline.py:MyPipeline \
-  --profile production --format sarif
+  --profile ./profiles/prod.json --format sarif
 etlantic plan path/to/pipeline.py:MyPipeline \
-  --profile production --format json
+  --profile ./profiles/prod.json --format json
 ```
 
 ## Runtime configuration
@@ -50,7 +54,7 @@ etlantic plan path/to/pipeline.py:MyPipeline \
 ## Airflow handoff
 
 1. Plan with a production profile and allowlist that includes your orchestrator
-2. `etlantic compile TARGET --target airflow -o dags/ --profile production`
+2. `etlantic compile TARGET --target airflow -o dags/ --profile ./profiles/prod.json`
 3. Deploy the generated DAG with your normal Airflow process
 
 Ownership: ETLantic owns modeling, validation, and the secret-free plan;
@@ -68,6 +72,7 @@ compute.
 
 ## Related
 
+- [Production profiles](PRODUCTION_PROFILES.md)
 - [Production Readiness](PRODUCTION_READINESS.md)
 - [Evaluator Brief](../01_GETTING_STARTED/EVALUATOR.md)
 - [Security](../02_FOUNDATIONS/SECURITY.md)
