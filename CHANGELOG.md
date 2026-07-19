@@ -43,6 +43,9 @@ compliance, and supply-chain controls remain outside that support claim. See
 - Pandas 2-arg `substr` first-row-only start index
 - SQL analyze/execute gaps for predicate joins and byPosition
   `allowMissingColumns`
+- Documentation and release-checklist drift for the published 0.17.0 support
+  envelope (bounded production/stable posture, install pins, Prefect status,
+  MkDocs navigation, and docs/release drift checks)
 
 ## [0.16.0] - 2026-07-19
 

@@ -90,4 +90,4 @@ Every shipped gate publishes:
 - limitations, fallback behavior, and a migration/rollback note.
 
 The full milestone gates and acceptance scenarios are normative in the
-[roadmap](../../ROADMAP.md).
+[roadmap](https://github.com/eddiethedean/etlantic/blob/main/ROADMAP.md).

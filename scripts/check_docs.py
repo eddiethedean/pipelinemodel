@@ -279,9 +279,7 @@ def main() -> None:
         raise SystemExit(f"Missing {whats_new_minor.relative_to(ROOT)}")
     if not (ROOT / "docs/11_DEVELOPMENT/MIGRATION_0_15_TO_0_16.md").exists():
         raise SystemExit("Missing docs/11_DEVELOPMENT/MIGRATION_0_15_TO_0_16.md")
-    current_migration = (
-        ROOT / "docs/11_DEVELOPMENT" / "MIGRATION_0_16_TO_0_17.md"
-    )
+    current_migration = ROOT / "docs/11_DEVELOPMENT" / "MIGRATION_0_16_TO_0_17.md"
     if major_minor_for_notes == "0.17" and not current_migration.exists():
         raise SystemExit("Missing docs/11_DEVELOPMENT/MIGRATION_0_16_TO_0_17.md")
     if not (ROOT / "examples/portable_polars_kernel.py").exists():
@@ -510,9 +508,7 @@ def main() -> None:
     if "prefer from-source until PyPI" in docs_home:
         raise SystemExit("docs/README.md still prefers from-source install")
     # Current What's New must not point at the prior release notes file.
-    whats_new_current_link = (
-        f"WHATS_NEW_{major_minor.replace('.', '_')}.md"
-    )
+    whats_new_current_link = f"WHATS_NEW_{major_minor.replace('.', '_')}.md"
     prior_whats_new = None
     try:
         maj_s, min_s = major_minor.split(".")
@@ -648,9 +644,7 @@ def main() -> None:
         "OBSERVABILITY_PROVIDER",
     ):
         if f'"{future_sdk}"' not in future_sdk_block:
-            raise SystemExit(
-                f"status-banner.js must mark {future_sdk} as future"
-            )
+            raise SystemExit(f"status-banner.js must mark {future_sdk} as future")
 
     secrets = (ROOT / "docs/06_EXECUTION/SECRETS_MANAGEMENT.md").read_text(
         encoding="utf-8"
@@ -819,7 +813,9 @@ def main() -> None:
             "Package stability | Alpha",
         ):
             if banned in text:
-                raise SystemExit(f"{path} still presents current release as alpha: {banned!r}")
+                raise SystemExit(
+                    f"{path} still presents current release as alpha: {banned!r}"
+                )
 
     subprocess.run(
         [sys.executable, str(ROOT / "scripts/check_runnable_docs.py")],
