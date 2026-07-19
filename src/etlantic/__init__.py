@@ -249,7 +249,6 @@ __all__ = [
     "Step",
     "StepFailureContext",
     "SubpipelineInstance",
-    "SubpipelineInstance",
     "Transformation",
     "ValidationPolicy",
     "ValidationReport",
