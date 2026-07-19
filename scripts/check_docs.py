@@ -48,8 +48,16 @@ def main() -> None:
         "etlantic==0.13.0",
         "etlantic-polars==0.13.0",
         "etlantic-pyspark==0.13.0",
+        "etlantic==0.14.0",
+        "etlantic-polars==0.14.0",
+        "etlantic-pandas==0.14.0",
+        "etlantic-sql==0.14.0",
+        "etlantic-pyspark==0.14.0",
         "Pandas / SQL compilers remain 0.14\u20130.15",
         "Pandas and SQL portable compilers remain",
+        "Safe SQL portable lowering planned for the **0.15** exit gate",
+        "Safe SQL portable lowering remains planned for 0.15",
+        "claim set is the **0.15** exit gate",
         "complete CLI-runnable example",
         "CLI-runnable continuation",
         "does not ship Pandas or Polars",
@@ -224,6 +232,16 @@ def main() -> None:
         raise SystemExit(
             "EVALUATOR.md must list Portable Pandas relational compiler as ready"
         )
+    if "Portable SQL compiler (kernel + relational `/1`) | Yes (0.15)" not in (
+        evaluator
+    ):
+        raise SystemExit(
+            "EVALUATOR.md must list Portable SQL relational compiler as ready"
+        )
+    if "Portable SQL compiler (kernel + relational `/1`) | No" in evaluator:
+        raise SystemExit(
+            "EVALUATOR.md must not deny Portable SQL after the 0.15 exit gate"
+        )
     if "end-to-end portable execution on Polars, PySpark" in evaluator:
         raise SystemExit(
             "EVALUATOR.md must not deny Polars portable execution after 0.12"
@@ -246,6 +264,10 @@ def main() -> None:
         raise SystemExit("Missing docs/05_PIPELINES/LOADS.md")
     if not (ROOT / "docs/01_GETTING_STARTED/WHATS_NEW_0_14.md").exists():
         raise SystemExit("Missing docs/01_GETTING_STARTED/WHATS_NEW_0_14.md")
+    if not (ROOT / "docs/01_GETTING_STARTED/WHATS_NEW_0_15.md").exists():
+        raise SystemExit("Missing docs/01_GETTING_STARTED/WHATS_NEW_0_15.md")
+    if "WHATS_NEW_0_15.md" not in (ROOT / "mkdocs.yml").read_text(encoding="utf-8"):
+        raise SystemExit("mkdocs.yml missing WHATS_NEW_0_15.md nav entry")
     if not (ROOT / "examples/portable_polars_kernel.py").exists():
         raise SystemExit("Missing examples/portable_polars_kernel.py")
     if not (ROOT / "examples/portable_pandas_kernel.py").exists():

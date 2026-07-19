@@ -22,6 +22,7 @@ __all__ = [
     "FailureStage",
     "InvalidationMode",
     "LocalOrchestrator",
+    "LocalScheduler",
     "MaterializationPolicy",
     "RetryPolicy",
     "RunIntent",
@@ -44,4 +45,8 @@ def __getattr__(name: str) -> Any:
         from etlantic.runtime.orchestrator import LocalOrchestrator
 
         return LocalOrchestrator
+    if name == "LocalScheduler":
+        from etlantic.runtime.scheduler import LocalScheduler
+
+        return LocalScheduler
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

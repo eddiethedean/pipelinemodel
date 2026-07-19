@@ -7,7 +7,7 @@
     claims the matching profile (see the
     [portable compiler matrix](../10_REFERENCE/PORTABLE_COMPILER_MATRIX.md)).
     Kernel + `portable-relational/1` execute on Polars / PySpark / Pandas in
-    0.13–0.14; safe SQL lowering for that claim set is the **0.15** exit gate;
+    0.13–0.14; safe SQL lowering for that claim set shipped in **0.15**;
     advanced families graduate under the 0.15 continuation backlog.
 
 Portable functions are imported through one stable namespace:

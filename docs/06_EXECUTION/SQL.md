@@ -6,9 +6,9 @@ logical semantics from DTCS and the Pipeline Plan.
 **Status: shipped in 0.6.0** via the `etlantic-sql` PostgreSQL reference
 plugin. SQLite is supported for local demos only.
 
-Safe portable SQL lowering for the already-shipped claim set (kernel +
-`portable-relational/1`) is the **0.15** exit gate. Current 0.14 SQL
-transformations use native `@implementation("sql")` definitions.
+Safe portable SQL lowering for kernel + `portable-relational/1` **ships in
+0.15** via the `etlantic-sql` transform compiler. Native
+`@implementation("sql")` remains fully supported.
 
 ETLantic does **not** depend on database drivers. Install the plugin
 separately:
@@ -45,11 +45,11 @@ def normalize_sql(customers: RelationRef):
 Select the engine with `Profile.sql_engine = "sql"`. Plugins are discovered
 through the `etlantic.sql_plugins` entry point.
 
-## Portable SQL lowering (planned 0.15 exit gate)
+## Portable SQL lowering (shipped in 0.15)
 
-Portable kernel and `portable-relational/1` nodes will lower first into
-ETLantic's typed `etlantic.sql/1` IR and then into dialect SQL (PostgreSQL via
-`etlantic-sql` is the reference):
+Portable kernel and `portable-relational/1` nodes lower into typed
+`etlantic.sql/1` IR and then into dialect SQL (PostgreSQL via `etlantic-sql`
+is the reference):
 
 ```text
 dtcs.transform-plan/2
@@ -57,6 +57,13 @@ dtcs.transform-plan/2
 SqlQuery / typed SQL expressions
         ↓
 safe dialect compiler
+```
+
+```python
+from etlantic.testing import run_portable_transform_conformance_suite
+from etlantic_sql import create_transform_compiler
+
+run_portable_transform_conformance_suite(create_transform_compiler())
 ```
 
 Identifiers remain validated and values remain bound parameters. Portable
@@ -72,11 +79,8 @@ Policy when portable SQL cannot claim the needed profile:
   or another dataframe engine;
 - `native` prefers a registered SQL implementation.
 
-Advanced families (window, complex types/values, reshape, …) are **not** part
-of the 0.15 exit gate. They graduate later under the 0.15 continuation
-backlog, one family at a time, only when a dialect compiler advertises the
-exact profile and passes shared fixtures. Syntactic SQL support alone is not
-sufficient.
+Advanced families (window, complex types/values, reshape, …) remain under the
+**0.15 continuation** backlog.
 
 ## SQL→SQL without Python fetch
 

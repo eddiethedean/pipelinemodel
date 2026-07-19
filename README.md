@@ -52,12 +52,11 @@ Typed contracts ──▶ Validation ──▶ Deterministic plan ──▶ Run 
 - **Adopt incrementally.** The core has no dataframe, SQL, Spark, or Airflow
   dependency. Install only the integrations you need.
 
-> **Project status:** Alpha **0.14.0**. The local runtime and reference plugins
+> **Project status:** Alpha **0.15.0**. The local runtime and reference plugins
 > are available today. Structured Streaming is experimental. Portable
-> transformation authoring and Polars/PySpark/Pandas relational compilers plus
-> the public conformance SDK are available; safe SQL portable lowering for that
-> claim set is the **0.15** exit gate (advanced profiles follow as 0.15
-> continuation). See the
+> transformation authoring and Polars/PySpark/Pandas/SQL relational compilers
+> plus the public conformance SDK are available; advanced portable profiles
+> follow as **0.15 continuation**. See the
 > [capabilities guide](docs/01_GETTING_STARTED/CAPABILITIES.md) before choosing
 > a production architecture.
 
@@ -79,8 +78,8 @@ from etlantic import (
     Output,
     Pipeline,
     PipelineRuntime,
-    Load,
-    Extract,
+    Sink,
+    Source,
     Transformation,
 )
 
@@ -113,11 +112,11 @@ def normalize_customers(customers: list[RawCustomer]) -> list[Customer]:
 
 
 class CustomerPipeline(Pipeline):
-    raw: Extract[RawCustomer] = Extract(asset="customer_source")
+    raw: Source[RawCustomer] = Source(binding="customer_source")
     normalized = NormalizeCustomers.step(customers=raw)
-    curated: Load[Customer] = Load(
+    curated: Sink[Customer] = Sink(
         input=normalized.result,
-        asset="customer_sink",
+        binding="customer_sink",
     )
 
 
@@ -234,7 +233,7 @@ before mutation.
 
 ## Capability boundary
 
-| Capability | 0.14 |
+| Capability | 0.15 |
 |---|---|
 | Typed modeling, validation, contracts, and deterministic planning | Available |
 | Local Python execution and structured run reports | Available |
@@ -246,11 +245,10 @@ before mutation.
 | Schema drift, reliability, visualization, and SARIF tooling | Available |
 | Production plugin allowlists and runtime secret providers | Available |
 | Portable transformation authoring | Available |
-| Polars + PySpark + Pandas portable compilers (kernel + relational `/1`) | Available |
+| Polars + PySpark + Pandas + SQL portable compilers (kernel + relational `/1`) | Available |
 | Public portable transform conformance SDK | Available |
 | Structured Streaming | Experimental |
-| Safe SQL portable lowering (kernel + relational `/1`) | Planned for **0.15** (exit gate) |
-| Advanced portable profile graduation | Planned for **0.15 continuation** (after SQL gate) |
+| Advanced portable profile graduation | Planned for **0.15 continuation** |
 
 See [Capabilities and Limitations](docs/01_GETTING_STARTED/CAPABILITIES.md)
 and the [roadmap](ROADMAP.md) for the precise support
@@ -260,7 +258,7 @@ boundary.
 
 - [Hosted documentation](https://etlantic.readthedocs.io/)
 - [Getting Started](docs/01_GETTING_STARTED/README.md)
-- [Current 0.14 User Guide](docs/01_GETTING_STARTED/CURRENT_VERSION.md)
+- [Current 0.15 User Guide](docs/01_GETTING_STARTED/CURRENT_VERSION.md)
 - [Quickstart](docs/01_GETTING_STARTED/QUICKSTART.md)
 - [Core Concepts](docs/02_FOUNDATIONS/CORE_CONCEPTS.md)
 - [Architecture](docs/02_FOUNDATIONS/ARCHITECTURE.md)

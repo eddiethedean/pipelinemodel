@@ -7,7 +7,7 @@
     `etlantic-pyspark` / `etlantic-pandas` without a native
     `@implementation(...)` for the advertised kernel +
     `portable-relational/1` claim set. Safe SQL portable lowering for that
-    claim set is the **0.15** exit gate. See
+    claim set shipped in **0.15**. See
     [Portable Transformations](../04_TRANSFORMATIONS/PORTABLE_TRANSFORMATIONS.md)
     and
     [`examples/portable_polars_kernel.py`](https://github.com/eddiethedean/etlantic/blob/main/examples/portable_polars_kernel.py).

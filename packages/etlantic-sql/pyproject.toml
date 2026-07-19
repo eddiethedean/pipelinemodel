@@ -1,6 +1,6 @@
 [project]
 name = "etlantic-sql"
-version = "0.14.0"
+version = "0.15.0"
 description = "PostgreSQL reference SQL execution plugin for ETLantic."
 readme = "README.md"
 license = "MIT"
@@ -17,7 +17,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "etlantic>=0.14.0,<0.15",
+    "etlantic>=0.15.0,<0.16",
     "sqlalchemy>=2.0,<3",
     "psycopg[binary]>=3.1,<4",
 ]
@@ -34,6 +34,9 @@ sqlite = []
 
 [project.entry-points."etlantic.sql_plugins"]
 sql = "etlantic_sql:create_plugin"
+
+[project.entry-points."etlantic.transform_compilers"]
+sql = "etlantic_sql.transform_compiler:create_transform_compiler"
 
 [build-system]
 requires = ["hatchling"]

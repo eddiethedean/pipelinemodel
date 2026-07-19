@@ -25,7 +25,7 @@ as executable interface declarations—to data engineering.
 
 ## Project Status
 
-The published **0.14.0 alpha** ships validation, profiles, an immutable secret-free
+The published **0.15.0 alpha** ships validation, profiles, an immutable secret-free
 `PipelinePlan`, local Python execution, runtime secret resolution, run reports,
 memory/callable/JSON/CSV storage, a versioned dataframe protocol with Polars
 and Pandas plugins, a versioned SQL protocol with the `etlantic-sql`
@@ -38,7 +38,7 @@ in 0.14. Structured Streaming APIs are experimental.
 
 !!! tip "Green path (start here only)"
     1. [What's new in 0.14](01_GETTING_STARTED/WHATS_NEW_0_14.md) — adopter delta
-    2. [Installation](01_GETTING_STARTED/INSTALLATION.md) — `pip install etlantic==0.14.0`
+    2. [Installation](01_GETTING_STARTED/INSTALLATION.md) — `pip install etlantic==0.15.0`
     3. [Quickstart](01_GETTING_STARTED/QUICKSTART.md) — five-minute success
     4. [Capabilities](01_GETTING_STARTED/CAPABILITIES.md) — shipped vs not
     5. [Evaluator brief](01_GETTING_STARTED/EVALUATOR.md) — for decision-makers
@@ -58,7 +58,7 @@ and `etlantic.transform`, emitting `dtcs.transform-plan/2`. **0.12** added
 planning integration and Polars **kernel** portable execution. **0.13** shipped
 Polars and PySpark `portable-relational/1` compilers; **0.14** shipped the
 Pandas eager compiler and public conformance SDK. Safe SQL portable lowering
-for that claim set is the **0.15** exit gate; advanced profiles follow as 0.15
+for that claim set shipped in **0.15**; advanced profiles follow as 0.15
 continuation work. Start with
 [Portable Transformations](04_TRANSFORMATIONS/PORTABLE_TRANSFORMATIONS.md).
 

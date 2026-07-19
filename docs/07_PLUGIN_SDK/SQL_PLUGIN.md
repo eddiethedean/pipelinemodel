@@ -6,7 +6,7 @@
 
 !!! note "Future portable lowering"
     Lowering DTCS Transformation Plans (kernel + `portable-relational/1`) into
-    the safe SQL IR is the **0.15** exit gate. See the
+    the safe SQL IR shipped in **0.15**. See the
     [portable compiler protocol](PORTABLE_TRANSFORM_COMPILER.md).
 
 A **SQL Plugin** implements the ETLantic SQL Plugin API for a specific SQL

@@ -5,7 +5,7 @@
   `etlantic.transform/1` authoring are available since 0.11. **0.13** shipped
   Polars and PySpark compilers for `portable-relational/1`; **0.14** shipped
   the eager Pandas compiler (joins, aggregates, unions, sort/dedupe/limit).
-  Safe SQL portable lowering for that claim set is the **0.15** exit gate;
+  Safe SQL portable lowering for that claim set shipped in **0.15**;
   richer profiles (windows, complex values, …) remain native-or-later until
   they graduate under the 0.15 continuation backlog.
 - The planned PySpark-inspired syntax will intentionally support a closed
@@ -49,7 +49,7 @@
 - Generated plans should be regenerated after incompatible schema changes
   rather than edited by hand.
 - Docs on `main` may briefly lead a published tag; pin
-  `etlantic==0.14.0` (or the version you evaluated) in production installs.
+  `etlantic==0.15.0` (or the version you evaluated) in production installs.
 
 Release-specific fixes and changes are recorded in the
 [changelog](https://github.com/eddiethedean/etlantic/blob/main/CHANGELOG.md).

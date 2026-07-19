@@ -1,6 +1,6 @@
 # Current Capabilities and Limitations
 
-ETLantic **0.14.0** is a **published alpha** release on PyPI. This page is the
+ETLantic **0.15.0** is a **published alpha** release on PyPI. This page is the
 shortest answer to "What can I use today?"
 
 ## Recommended first production-like pilot
@@ -15,13 +15,14 @@ Controlled pilot only (see [Evaluator](EVALUATOR.md) and
 5. No multi-tenant sharing of a process; no unresolved security Gaps from the
    [Security](../02_FOUNDATIONS/SECURITY.md) chapter
 
-## Available in 0.14
+## Available in 0.15
 
 ### Core authoring and validation
 
 | Capability | Status |
 |---|---|
 | Typed data, transformation, and pipeline models | Available |
+| `Extract` / `Load` / `asset=` authoring (Source/Sink warned) | Available |
 | Structural and semantic validation | Available |
 | ODCS, DTCS, and DPCS generation and loading | Available |
 | Profiles and deterministic, secret-free pipeline plans | Available |
@@ -33,7 +34,7 @@ Controlled pilot only (see [Evaluator](EVALUATOR.md) and
 
 | Capability | Status |
 |---|---|
-| Local synchronous and asynchronous execution | Available |
+| Local synchronous and asynchronous execution (`LocalScheduler`) | Available |
 | Python transformation implementations | Available |
 | Memory, callable, JSON, CSV, and no-write storage | Available |
 | Run reports, structured logging, and local debugging | Available |
@@ -48,6 +49,7 @@ Controlled pilot only (see [Evaluator](EVALUATOR.md) and
 | Portable Polars compiler (kernel + relational `/1`) | Available |
 | Portable PySpark compiler (kernel + relational `/1`) | Available |
 | Portable Pandas compiler (kernel + relational `/1`, eager) | Available |
+| Portable SQL compiler (kernel + relational `/1`) | Available (`etlantic-sql`) |
 | Public portable transform conformance suite | Available |
 | Optional Arrow interchange | Available when PyArrow is installed |
 | SQL protocol + PostgreSQL reference plugin | Available (`etlantic-sql`) |
@@ -75,20 +77,19 @@ Controlled pilot only (see [Evaluator](EVALUATOR.md) and
 |---|---|
 | Structured Streaming foundation | **Experimental** |
 
-## Not included in 0.14
+## Not included in 0.15
 
 | Capability | Status |
 |---|---|
 | `MERGE` / upsert in the reference SQL plugin | Not implemented (`sql_merge=False`; fail closed) |
 | Managed Spark providers (Databricks/EMR/Connect) | Future / optional adapters |
-| Event sensors / Dagster / Prefect compilers | Future plugins |
+| Event sensors / Dagster / Prefect compilers | Prefect plugin planned for **0.16**; others remain future |
 | Full LSP server productization | Continues in 1.5 |
 | Registry-backed schema history | Continues in 1.2 |
 | FastAPI control plane | Continues in 1.1 |
 | Full SparkForge engine retirement inside SparkForge | Progressive path (see migration guide) |
 | Stable 1.0 compatibility guarantees | Not yet |
-| Portable SQL lowering (kernel + `portable-relational/1`) | Planned for **0.15** (exit gate) |
-| Advanced portable profile graduation (window, reshape, …) | Planned for **0.15 continuation** after the SQL gate (not the 0.15 exit gate) |
+| Advanced portable profile graduation (window, reshape, …) | **0.15 continuation** (not part of the 0.15 exit gate) |
 | Dedicated deployment / multi-worker ops guide | Partial — see [Ops Pilot](../06_EXECUTION/OPS_PILOT.md) |
 
 ## CI starter

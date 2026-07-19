@@ -17,12 +17,12 @@ from etlantic.registry import PlanningContext
 from etlantic.reliability_runtime import invalidation_targets
 from etlantic.reports.model import PipelineRunReport
 from etlantic.runtime.artifacts import ArtifactStore
-from etlantic.runtime.orchestrator import LocalOrchestrator
 from etlantic.runtime.request import (
     InvalidationMode,
     RunRequest,
     RunSelection,
 )
+from etlantic.runtime.scheduler import LocalScheduler, SchedulingContext
 from etlantic.runtime.state import RunStatus
 
 
@@ -159,16 +159,21 @@ async def arun_pipeline(
             if node.name in targets and node.binding:
                 runtime.memory._store.pop(node.binding, None)
 
-    orch = LocalOrchestrator(
-        runtime=runtime,
-        plan=plan,
-        request=request,
-        pipeline_cls=pipeline_cls,
-        workspace=Path(workspace) if workspace else store.workspace,
-        artifacts=store,
-    )
+    scheduler = LocalScheduler()
     async with runtime.session():
-        return await orch.execute()
+        return await scheduler.execute(
+            plan,
+            request=request,
+            runtime=runtime,
+            pipeline_cls=pipeline_cls,
+            workspace=Path(workspace) if workspace else store.workspace,
+            artifact_store=store,
+            context=SchedulingContext(
+                pipeline_id=plan.pipeline_id,
+                plan_id=plan.plan_id,
+                profile_name=plan.profile_name,
+            ),
+        )
 
 
 def run_pipeline(

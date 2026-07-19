@@ -34,6 +34,14 @@ def test_suite_passes_pyspark() -> None:
     run_portable_transform_conformance_suite(create_transform_compiler())
 
 
+@pytest.mark.sql
+def test_suite_passes_sql() -> None:
+    pytest.importorskip("sqlalchemy")
+    from etlantic_sql import create_transform_compiler
+
+    run_portable_transform_conformance_suite(create_transform_compiler())
+
+
 def test_module_export_surface() -> None:
     assert hasattr(
         portable_transform_conformance, "run_portable_transform_conformance_suite"

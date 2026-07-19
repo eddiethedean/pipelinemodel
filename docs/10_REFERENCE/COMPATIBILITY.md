@@ -1,6 +1,6 @@
 # Compatibility Matrix
 
-This table describes the declared compatibility of ETLantic 0.14.0.
+This table describes the declared compatibility of ETLantic 0.15.0.
 
 | Surface | Supported range or version |
 |---|---|
@@ -13,14 +13,14 @@ This table describes the declared compatibility of ETLantic 0.14.0.
 | Pipeline plan schema | `etlantic.plan/1` |
 | Dataframe protocol | `etlantic.dataframe/1` |
 | SQL protocol | `etlantic.sql/1` |
-| Polars plugin | `etlantic-polars==0.14.0` |
-| Pandas plugin | `etlantic-pandas==0.14.0` |
-| SQL plugin | `etlantic-sql==0.14.0` |
-| PySpark plugin | `etlantic-pyspark==0.14.0` |
-| Airflow plugin | `etlantic-airflow==0.14.0` |
-| Keyring provider | `etlantic-keyring==0.14.0` |
-| SQLModel bridge | `etlantic-sqlmodel==0.14.0` |
-| SparkForge adapter | `etlantic-sparkforge==0.14.0` |
+| Polars plugin | `etlantic-polars==0.15.0` |
+| Pandas plugin | `etlantic-pandas==0.15.0` |
+| SQL plugin | `etlantic-sql==0.15.0` |
+| PySpark plugin | `etlantic-pyspark==0.15.0` |
+| Airflow plugin | `etlantic-airflow==0.15.0` |
+| Keyring provider | `etlantic-keyring==0.15.0` |
+| SQLModel bridge | `etlantic-sqlmodel==0.15.0` |
+| SparkForge adapter | `etlantic-sparkforge==0.15.0` |
 | Orchestration protocol | `etlantic.orchestration/1` |
 | DTCS Transformation Plan protocol | Published in DTCS 3.0 / `dtcs` 0.13 as `dtcs.transform-plan/2` (v1 readable); ETLantic authoring shipped in 0.11 |
 | Portable authoring profile | Shipped as `etlantic.transform/1` (full DTCS 3.0 facade→IR authoring) |
@@ -58,11 +58,11 @@ Package metadata declares these backend dependency ranges:
 A declared range means the resolver may install that version; it does not mean
 every backend version and operating system combination is exercised in CI.
 For a controlled deployment, test the exact resolved environment and pin
-`etlantic==0.14.0` plus every official plugin to `==0.14.0`.
+`etlantic==0.15.0` plus every official plugin to `==0.15.0`.
 
 Core extras already enforce exact official plugin versions, for example
-`etlantic[polars]==0.14.0` depends on `etlantic-polars==0.14.0`. The 0.14.0
-official plugin source metadata accepts core `etlantic>=0.14.0,<0.15`, which is
+`etlantic[polars]==0.15.0` depends on `etlantic-polars==0.15.0`. The 0.14.0
+official plugin source metadata accepts core `etlantic>=0.15.0,<0.16`, which is
 minor-matched but less exact. Published, older, or third-party plugin metadata
 may use a broader bound such as `etlantic>=0.14,<1.0`; do not treat that broad
 specifier as evidence of tested cross-minor compatibility. Match the core and

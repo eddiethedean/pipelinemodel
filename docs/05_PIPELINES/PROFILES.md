@@ -180,7 +180,7 @@ The choice must be retained in `plan explain` and run reports. Prefer never
 silently emulates portable semantics (including under SQL: no implicit Polars
 or other engine switch). Polars and PySpark shipped **kernel** +
 **relational `/1`** claims in 0.13; eager Pandas shipped the same claims in
-0.14. Safe SQL lowering for that claim set is the **0.15** exit gate. Richer
+0.14. Safe SQL lowering for that claim set shipped in **0.15**. Richer
 profiles such as windows and reshape still need native implementations until
 they graduate under the 0.15 continuation backlog.
 

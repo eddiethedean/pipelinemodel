@@ -1,14 +1,14 @@
 # Portable vs Native Implementations
 
-> **Status: Available in ETLantic 0.14.0.**
+> **Status: Available in ETLantic 0.15.0.**
 
 ## Decision guide
 
 | Situation | Prefer |
 |---|---|
-| One closed relational definition for Polars / PySpark / Pandas within kernel + `portable-relational/1` | `@Transformation.portable` |
+| One closed relational definition for Polars / PySpark / Pandas / SQL within kernel + `portable-relational/1` | `@Transformation.portable` |
 | Local Python / memory demos | `@Transformation.implementation("local")` |
-| SQL execution today | Native `@implementation("sql")` (safe portable SQL lowering is the **0.15** exit gate) |
+| Explicit SQL dialect control or unclaimed SQL ops | Native `@implementation("sql")` |
 | Ops outside advertised claims (UDFs, unclaimed profiles, Pandas index semantics) | Native `@implementation(...)` |
 | Force native only | `Profile(portable_transform_policy="native")` |
 | Fail if portable cannot compile | `Profile(portable_transform_policy="require")` |
@@ -27,9 +27,9 @@ def normalize(rows):
 ```
 
 Inspect with `Normalize.to_transform_plan()` / `portable_fingerprint()`.
-With `portable_transform_policy` of `prefer` or `require`, Polars, PySpark, and
-Pandas can execute fitting plans without a matching native implementation
-(Pandas is eager-only and index-neutral).
+With `portable_transform_policy` of `prefer` or `require`, Polars, PySpark,
+Pandas, and SQL can execute fitting plans without a matching native
+implementation (Pandas is eager-only and index-neutral; SQL uses typed IR).
 
 ## When to use `@Transformation.implementation`
 
@@ -43,12 +43,11 @@ def normalize_sql(rows):
     ...
 ```
 
-Keep native SQL implementations **today**; safe portable SQL lowering for
-kernel + `portable-relational/1` is the **0.15** exit gate. Until that ships,
-`prefer` may select an explicit native `@implementation("sql")` only — never
-silent portable emulation. Keep native callables for profiles outside the
-advertised claim set; advanced families graduate later under the 0.15
-continuation backlog (see the
+Safe portable SQL lowering for kernel + `portable-relational/1` shipped in
+**0.15**. Keep native `@implementation("sql")` when you need dialect-specific
+control or profiles outside the advertised claim set; `prefer` may select an
+explicit native SQL implementation only — never silent portable emulation.
+Advanced families graduate later under the 0.15 continuation backlog (see the
 [portable compiler matrix](../10_REFERENCE/PORTABLE_COMPILER_MATRIX.md)).
 
 ## Related
@@ -56,4 +55,4 @@ continuation backlog (see the
 - [Portable Transformations](../04_TRANSFORMATIONS/PORTABLE_TRANSFORMATIONS.md)
 - [Portable compiler matrix](../10_REFERENCE/PORTABLE_COMPILER_MATRIX.md)
 - [`examples/portable_polars_kernel.py`](https://github.com/eddiethedean/etlantic/blob/main/examples/portable_polars_kernel.py)
-- [Migration 0.13 → 0.14](../11_DEVELOPMENT/MIGRATION_0_13_TO_0_14.md)
+- [Migration 0.14 → 0.15](../11_DEVELOPMENT/MIGRATION_0_14_TO_0_15.md)

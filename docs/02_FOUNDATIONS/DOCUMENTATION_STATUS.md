@@ -1,6 +1,6 @@
 # Documentation Status and Conventions
 
-ETLantic **0.14.0** implements the typed modeling kernel, contract
+ETLantic **0.15.0** implements the typed modeling kernel, contract
 interoperability, Validation / Pipeline Plan IR, the local runtime /
 operational model, dataframe execution (Polars reference + Pandas
 compatibility), SQL-native execution (`etlantic-sql`), distributed Spark batch
@@ -11,12 +11,12 @@ adapter (`etlantic-sparkforge`), `@Transformation.portable` /
 `etlantic.transform` authoring to `dtcs.transform-plan/2`, and Polars +
 PySpark portable compilers for kernel + `portable-relational/1`. Structured
 Streaming APIs are experimental. Pandas eager portable compilation ships in
-0.14; safe SQL portable lowering for that claim set is the **0.15** exit gate.
+0.15; safe SQL portable lowering for that claim set shipped in **0.15**.
 Advanced profiles graduate later under the 0.15 continuation backlog. Keep
 `@implementation(...)` for SQL today and for profiles outside the advertised
 claim set.
 
-Prefer pages marked **Available in 0.14** and the Green path on the docs home.
+Prefer pages marked **Available in 0.15** and the Green path on the docs home.
 Design Proposals and **Future design** chapters describe intended 1.0 surfaces
 and are not current APIs. Documentation serves three related purposes:
 
@@ -41,7 +41,7 @@ Public pages use these visible statuses:
 
 | Page status | Meaning |
 |---|---|
-| Available in 0.14 | Tested against the current package |
+| Available in 0.15 | Tested against the current package |
 | Shipped in 0.x | Available since that milestone (still current) |
 | Experimental | Public APIs that may change without a major version bump |
 | Partially available | Shipped and future behavior are explicitly separated |

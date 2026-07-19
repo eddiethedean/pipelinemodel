@@ -1,15 +1,16 @@
 # Portable Compiler Matrix
 
 This matrix records the portable transformation claims shipped in ETLantic
-0.14.0. It is narrower than each backend's native capabilities.
+0.15.0. It is narrower than each backend's native capabilities.
 
 ## Compiler claims
 
 | Package | Engine | Claimed profiles | Execution mode | Join collision policy |
 |---|---|---|---|---|
-| `etlantic-polars==0.14.0` | Polars | `portable-relational-kernel/1`, `portable-relational/1` | Eager and lazy | `fail` only |
-| `etlantic-pyspark==0.14.0` | PySpark | `portable-relational-kernel/1`, `portable-relational/1` | Eager and lazy | `fail` only |
-| `etlantic-pandas==0.14.0` | Pandas | `portable-relational-kernel/1`, `portable-relational/1` | Eager only (`lazy=False`) | `fail` only |
+| `etlantic-polars==0.15.0` | Polars | `portable-relational-kernel/1`, `portable-relational/1` | Eager and lazy | `fail` only |
+| `etlantic-pyspark==0.15.0` | PySpark | `portable-relational-kernel/1`, `portable-relational/1` | Eager and lazy | `fail` only |
+| `etlantic-pandas==0.15.0` | Pandas | `portable-relational-kernel/1`, `portable-relational/1` | Eager only (`lazy=False`) | `fail` only |
+| `etlantic-sql==0.15.0` | SQL | `portable-relational-kernel/1`, `portable-relational/1` | Eager (relation/SQL) | `fail` only |
 
 The full profile identifiers are
 `dtcs:profile/portable-relational-kernel/1` and
@@ -20,7 +21,7 @@ candidate extensions.
 
 ## Claimed operations
 
-All three compilers advertise the same 0.14.0 action surface:
+All four compilers advertise the same 0.15.0 action surface:
 
 | Profile group | Actions |
 |---|---|
@@ -36,21 +37,19 @@ assuming backend-wide compatibility.
 
 Supported join types are `inner`, `left`, `right`, `full`, `outer`, `semi`,
 `anti`, and `cross`. For portable plans, `collisionPolicy` must be `fail`.
-Suffixing or coalescing colliding non-key columns is outside the 0.14.0 claim
-and fails during analysis.
+Suffixing or coalescing colliding non-key columns is outside the claim and
+fails during analysis.
 
 ## Boundaries
 
 - Pandas portable execution is eager. A plan requiring lazy execution is
   rejected.
 - Polars and PySpark preserve backend-visible lazy operations where supported.
+- SQL portable lowering targets typed `etlantic.sql/1` with bound parameters
+  only. Trusted SQL fragments are forbidden in portable definitions. The
+  PostgreSQL dialect is the reference; SQLite is a local convenience path.
 - Windows, complex values/types, reshape, advanced conversion/statistics, and
   extended relational profiles are not claimed (0.15 continuation backlog).
-- There is no portable SQL compiler in 0.14.0. `etlantic-sql` implements the
-  separate `etlantic.sql/1` execution protocol; safe portable SQL lowering for
-  kernel + `portable-relational/1` is the **0.15** exit gate (SQL column to be
-  added when that slice ships). Until then, use native
-  `@implementation("sql")`.
 - Unsupported actions, functions, modes, and profiles must fail closed during
   support analysis. Compilers do not silently fall back to UDFs or raw SQL.
 
@@ -61,14 +60,14 @@ record:
 
 ```python
 from etlantic.testing import run_portable_transform_conformance_suite
-from etlantic_polars import create_transform_compiler
+from etlantic_sql import create_transform_compiler
 
 run_portable_transform_conformance_suite(create_transform_compiler())
 ```
 
-Official Polars, PySpark, and Pandas compilers run this suite in CI, along with
-cross-engine differential tests. Third-party compilers must run it for every
-advertised profile and operation.
+Official Polars, PySpark, Pandas, and SQL compilers run this suite in CI,
+along with cross-engine differential tests. Third-party compilers must run it
+for every advertised profile and operation.
 
 See [Portable Transformation Compiler Protocol](../07_PLUGIN_SDK/PORTABLE_TRANSFORM_COMPILER.md),
 [Third-Party Compiler Tutorial](../07_PLUGIN_SDK/THIRD_PARTY_COMPILER_TUTORIAL.md),

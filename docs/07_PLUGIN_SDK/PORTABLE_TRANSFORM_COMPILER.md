@@ -1,12 +1,11 @@
 # Portable Transformation Compiler Protocol
 
-!!! success "Available in ETLantic 0.14"
-    `etlantic.transform-compiler/1` is importable. Polars, PySpark, and Pandas
-    claim `portable-relational-kernel/1` and `portable-relational/1`. Third
+!!! success "Available in ETLantic 0.15"
+    `etlantic.transform-compiler/1` is importable. Polars, PySpark, Pandas, and
+    SQL claim `portable-relational-kernel/1` and `portable-relational/1`. Third
     parties must pass `run_portable_transform_conformance_suite` for every
-    advertised claim. Safe SQL lowering for that claim set is the **0.15**
-    exit gate; Rich Portable Analytics / advanced family claims remain 0.15
-    continuation work afterward.
+    advertised claim. Rich Portable Analytics / advanced family claims remain
+    0.15 continuation work.
 
 A portable transformation compiler translates a validated
 `dtcs.transform-plan/2` (and readable v1) into backend-native expressions without changing its
@@ -214,10 +213,10 @@ Compile to dataframe and series operations. Declare eager execution, copying,
 index treatment, and unsupported operations precisely. Portable semantics must
 not depend on a meaningful Pandas index.
 
-### SQL (0.15 exit gate)
+### SQL (shipped in 0.15)
 
-Lower kernel + `portable-relational/1` into the existing typed
-`etlantic.sql/1` IR before dialect compilation. Use bound parameters, validate
+Lower kernel + `portable-relational/1` into typed `etlantic.sql/1` IR before
+dialect compilation (`etlantic-sql`). Use bound parameters, validate
 identifiers, retain relation lineage, and prohibit trusted SQL fragments in
 portable definitions. Under `require`, fail when the dialect cannot claim the
 profile; under `prefer`, select an explicit native SQL implementation only —
@@ -236,6 +235,9 @@ The proposed entry-point group is:
 ```toml
 [project.entry-points."etlantic.transform_compilers"]
 polars = "etlantic_polars:create_transform_compiler"
+pandas = "etlantic_pandas:create_transform_compiler"
+pyspark = "etlantic_pyspark:create_transform_compiler"
+sql = "etlantic_sql:create_transform_compiler"
 ```
 
 An existing engine plugin MAY expose its compiler through its primary plugin
@@ -248,7 +250,7 @@ process privileges.
 
 ## Conformance
 
-**0.14** ships the public suite:
+**0.15** ships the public suite (Polars, PySpark, Pandas, SQL):
 
 ```python
 from etlantic.testing import run_portable_transform_conformance_suite

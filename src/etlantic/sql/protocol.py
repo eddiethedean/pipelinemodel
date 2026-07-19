@@ -184,6 +184,107 @@ class AliasedExpr:
         }
 
 
+@dataclass(frozen=True, slots=True)
+class UnaryExpr:
+    """Unary expression (NOT, negate)."""
+
+    op: str
+    operand: Any
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "kind": "unary",
+            "op": self.op,
+            "operand": _expr_to_dict(self.operand),
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class CallExpr:
+    """Function call expression (scalar or aggregate)."""
+
+    callee: str
+    args: tuple[Any, ...] = ()
+    alias: str | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "kind": "call",
+            "callee": self.callee,
+            "args": [_expr_to_dict(a) for a in self.args],
+            "alias": self.alias,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class CaseWhenExpr:
+    """Searched CASE expression."""
+
+    branches: tuple[tuple[Any, Any], ...] = ()
+    otherwise: Any | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "kind": "case_when",
+            "branches": [
+                {"when": _expr_to_dict(w), "then": _expr_to_dict(t)}
+                for w, t in self.branches
+            ],
+            "otherwise": (
+                _expr_to_dict(self.otherwise) if self.otherwise is not None else None
+            ),
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class JoinClause:
+    """JOIN clause against another relation (fail-collision policy only)."""
+
+    right: RelationRef
+    how: str = "inner"
+    left_keys: tuple[str, ...] = ()
+    right_keys: tuple[str, ...] = ()
+    right_alias: str | None = None
+    null_safe: bool = False
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "right": self.right.to_dict(),
+            "how": self.how,
+            "left_keys": list(self.left_keys),
+            "right_keys": list(self.right_keys),
+            "right_alias": self.right_alias,
+            "null_safe": self.null_safe,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class OrderByItem:
+    """ORDER BY key with null placement."""
+
+    column: str
+    descending: bool = False
+    nulls_last: bool = True
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "column": self.column,
+            "descending": self.descending,
+            "nulls_last": self.nulls_last,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class CteDef:
+    """Common table expression wrapping a subquery."""
+
+    name: str
+    query: SqlQuery
+
+    def to_dict(self) -> dict[str, Any]:
+        return {"name": self.name, "query": self.query.to_dict()}
+
+
 def _expr_to_dict(expr: Any) -> Any:
     if hasattr(expr, "to_dict"):
         return expr.to_dict()
@@ -211,7 +312,7 @@ class TrustedSqlFragment:
 
 @dataclass(frozen=True, slots=True)
 class SqlQuery:
-    """Closed portable select / projection query IR."""
+    """Closed portable select query IR (kernel + relational ``/1`` surface)."""
 
     source: RelationRef
     columns: tuple[Any, ...] = ()
@@ -220,15 +321,31 @@ class SqlQuery:
     distinct: bool = False
     parameters: tuple[SqlParameter, ...] = ()
     metadata: Mapping[str, Any] = field(default_factory=dict)
+    source_alias: str | None = None
+    joins: tuple[JoinClause, ...] = ()
+    group_by: tuple[str, ...] = ()
+    order_by: tuple[OrderByItem, ...] = ()
+    offset: int | None = None
+    ctes: tuple[CteDef, ...] = ()
+    union: SqlQuery | None = None
+    union_all: bool = True
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "kind": "select",
             "source": self.source.to_dict(),
+            "source_alias": self.source_alias,
             "columns": [_expr_to_dict(c) for c in self.columns],
             "where": _expr_to_dict(self.where) if self.where is not None else None,
             "limit": self.limit,
+            "offset": self.offset,
             "distinct": self.distinct,
+            "joins": [j.to_dict() for j in self.joins],
+            "group_by": list(self.group_by),
+            "order_by": [o.to_dict() for o in self.order_by],
+            "ctes": [c.to_dict() for c in self.ctes],
+            "union": self.union.to_dict() if self.union is not None else None,
+            "union_all": self.union_all,
             "parameters": [p.to_dict() for p in self.parameters],
             "metadata": dict(self.metadata),
         }

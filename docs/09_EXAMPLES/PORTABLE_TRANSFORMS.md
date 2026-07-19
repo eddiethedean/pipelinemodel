@@ -1,16 +1,16 @@
 # Portable Customer Transformation
 
-!!! success "**Status: Available in ETLantic 0.14** (Polars + PySpark + Pandas relational)"
+!!! success "**Status: Available in ETLantic 0.15** (Polars + PySpark + Pandas + SQL relational)"
     `@Transformation.portable` authoring shipped in 0.11. This guide runs a
     kernel or relational plan on Polars/PySpark/Pandas without a native
     `@implementation(...)` for the advertised claim set. Safe SQL portable
-    lowering for that claim set is the **0.15** exit gate.
+    lowering for that claim set also shipped in **0.15** (`etlantic-sql`).
 
 Runnable companion:
 [`examples/portable_polars_kernel.py`](https://github.com/eddiethedean/etlantic/blob/main/examples/portable_polars_kernel.py).
 
 ```bash
-pip install 'etlantic==0.14.0' 'etlantic-polars==0.14.0'
+pip install 'etlantic==0.15.0' 'etlantic-polars==0.15.0'
 python examples/portable_polars_kernel.py
 ```
 

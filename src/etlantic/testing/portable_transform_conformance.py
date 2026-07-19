@@ -90,6 +90,13 @@ def default_frame_factory(engine: str) -> FrameFactory:
         _spark._etlantic_handle = handle  # type: ignore[attr-defined]
         _spark._etlantic_ctx = ctx  # type: ignore[attr-defined]
         return _spark
+    if engine == "sql":
+        from etlantic_sql.frame import SqlRelationFrame
+
+        def _sql(rows: list[dict[str, Any]]) -> Any:
+            return SqlRelationFrame(rows=list(rows))
+
+        return _sql
     raise ValueError(f"No default frame factory for engine {engine!r}")
 
 

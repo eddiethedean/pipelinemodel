@@ -63,7 +63,7 @@ semantics. It does not commit the transformation to a dataframe engine.
     `etlantic.transform` and `@Transformation.portable` author to
     `dtcs.transform-plan/2`. Polars, PySpark, and Pandas relational
     compilation ships in 0.13–0.14; safe SQL portable lowering for that claim
-    set is the **0.15** exit gate. Native
+    set shipped in **0.15**. Native
     `@Transformation.implementation(...)` remains available for engines and
     profiles outside the advertised compiler claim set.
 

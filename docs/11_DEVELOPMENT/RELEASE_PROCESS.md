@@ -82,8 +82,8 @@ git status
 git pull --ff-only origin main
 
 # Tag must match src/etlantic/_version.py (and every plugin package).
-git tag -a v0.14.0 -m "ETLantic 0.14.0"
-git push origin v0.14.0
+git tag -a v0.15.0 -m "ETLantic 0.15.0"
+git push origin v0.15.0
 ```
 
 GitHub Actions workflow
@@ -101,8 +101,8 @@ GitHub Actions workflow
 
 ## After PyPI succeeds
 
-1. Verify `pip install etlantic==0.14.0` and plugin extras from a clean venv.
-2. Create or confirm the GitHub Release for `v0.14.0`.
+1. Verify `pip install etlantic==0.15.0` and plugin extras from a clean venv.
+2. Create or confirm the GitHub Release for `v0.15.0`.
 3. Confirm install docs remain pip-first (`README.md`,
    `docs/01_GETTING_STARTED/INSTALLATION.md`) and hosted docs
    (`https://etlantic.readthedocs.io/`) build for the tag.

@@ -1153,7 +1153,7 @@ third-party engines.
 
 ## 0.15 — Safe SQL Lowering
 
-**Status: planned — after 0.14.**
+**Status: shipped in 0.15.0.**
 
 **Headline:** lower already-shipped portable claims (kernel +
 `portable-relational/1`) into the existing typed `etlantic.sql/1` IR, with

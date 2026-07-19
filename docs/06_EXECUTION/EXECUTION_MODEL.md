@@ -7,10 +7,12 @@ ETLantic coordinates execution through plugins. External libraries and
 platforms perform reads, transformations, writes, scheduling, and distributed
 computation.
 
-The 0.15+ plan keeps a small built-in `LocalScheduler` as the zero-service
-default and introduces an optional `etlantic-prefect` integration after the
-scheduler boundary is proven. Airflow remains an external compilation target.
-All paths consume the same resolved plan; no scheduler may re-plan it. See the
+In 0.15, direct execution enters through the built-in `LocalScheduler`
+(`etlantic.runtime.scheduler`) — the zero-service default for
+`Pipeline.run` / `arun`. Airflow remains an external compilation target via
+`etlantic.orchestration/1` (`etlantic-airflow`). Optional `etlantic-prefect`
+is planned for 0.16; it must consume the same resolved plan and must not
+re-plan. See the
 [Local Scheduler and Prefect Integration Plan](../11_DEVELOPMENT/SCHEDULER_AND_PREFECT_PLAN.md).
 
 ## Lifecycle

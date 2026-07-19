@@ -1,14 +1,29 @@
-# Migration: 0.14 → 0.15 (Extract / Load / asset)
+# Migration: 0.14 → 0.15
 
-ETLantic 0.15 introduces a public authoring vocabulary rename. Semantics are
-unchanged: extracts still introduce data, loads still publish data, and
-profiles still resolve logical names to providers. This is a second 0.15 theme
-alongside **Safe SQL Lowering** (see the roadmap); it does not replace that
-exit gate.
+ETLantic 0.15 ships three themes:
 
-Package versioning for this vocabulary work may land under **Unreleased** until
-the 0.15 release is cut. Prefer the new names immediately; legacy names emit
-`DeprecationWarning` and are scheduled for removal in **0.16**.
+1. **Safe SQL Lowering** — portable kernel + `portable-relational/1` → typed
+   SQL IR (PostgreSQL reference via `etlantic-sql`)
+2. **Extract / Load / asset** — public authoring vocabulary rename
+3. **LocalScheduler** — direct-execution boundary for `Pipeline.run` / `arun`
+
+Prefer the new authoring names immediately; legacy `Source` / `Sink` /
+`binding=` emit `DeprecationWarning` and are removed in **0.16**.
+
+## Safe SQL Lowering
+
+Install `etlantic-sql==0.15.0`. Portable plans that fit the claimed SQL
+compiler surface no longer require a native `@implementation("sql")` under
+`portable_transform_policy="require"`. Native SQL implementations remain
+selectable. Trusted SQL fragments are rejected in portable definitions.
+See [SQL](../06_EXECUTION/SQL.md) and the
+[portable compiler matrix](../10_REFERENCE/PORTABLE_COMPILER_MATRIX.md).
+
+## LocalScheduler
+
+`Pipeline.run` / `arun` enter through `LocalScheduler`. Observable report
+shape and plan fingerprints are preserved. Airflow compilation is unchanged.
+Optional Prefect packaging is **0.16**.
 
 ## Mapping table
 

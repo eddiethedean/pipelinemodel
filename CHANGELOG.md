@@ -7,24 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-07-19
+
+### Added
+
+- Safe SQL Lowering: `etlantic-sql` portable transform compiler claiming
+  kernel + `portable-relational/1`, lowering DTCS plans into typed
+  `etlantic.sql/1` IR with bound parameters and `PMXFORM*` analyze findings
+- Expanded SQL IR (joins, unions, group/order, CTEs, call/case/unary exprs)
+  and dialect compiler coverage for the relational `/1` surface
+- Public SQL portable conformance + Polars differential suite; portable SQL
+  security corpus (no interpolation; trusted fragments forbidden)
+- Built-in `LocalScheduler` (`etlantic.scheduler/1`) as the
+  `Pipeline.run` / `arun` entrypoint; private scheduler conformance corpus;
+  Prefect feasibility spike notes (package deferred to 0.16)
+- Canonical `Extract` / `Load` / `asset=` authoring with warned
+  `Source` / `Sink` / `binding=` compatibility through 0.16
+- `Profile.assets` and `RunRequest.asset_overrides` (legacy aliases warned);
+  fingerprint-stable bindings-only `profile_snapshot`
+- `docs/01_GETTING_STARTED/WHATS_NEW_0_15.md` and SQL column in the portable
+  compiler matrix
+
 ### Changed
 
-- Clarified the 0.15 roadmap: **Safe SQL Lowering** (kernel +
-  `portable-relational/1`) is the mandatory exit gate; advanced portable
-  profile graduation is sequenced afterward as **0.15 continuation**, not
-  mixed into the 0.15 exit criteria.
-- **Authoring vocabulary (second 0.15 theme):** prefer `Extract` / `Load` /
-  `asset=` and `Profile.assets` / `RunRequest.asset_overrides`. Legacy
-  `Source` / `Sink` / `binding=` / `Profile.bindings` /
-  `RunRequest.binding_overrides` emit `DeprecationWarning` and are scheduled
-  for removal in **0.16**. Plan/DPCS/plugin wire names (`binding`,
-  `NodeKind` source/sink, `etlantic:binding`) remain unchanged for fingerprint
-  and protocol stability. See
+- Package version set to 0.15.0 across core and optional plugins
+- Official plugin dependencies bound to `etlantic>=0.15.0,<0.16`
+- Clarified that advanced portable profile graduation remains **0.15
+  continuation** (not part of this exit gate)
+
+### Upgrade notes
+
+- Pin `etlantic==0.15.0` and matching plugins. Prefer `Extract`/`Load`/
+  `asset=` / `Profile.assets`. See
   `docs/11_DEVELOPMENT/MIGRATION_0_14_TO_0_15.md`.
-- Added the 0.15+ scheduler program: retain a small built-in
-  `LocalScheduler`, extract a conformance-tested direct-execution boundary in
-  0.15, target optional `etlantic-prefect` for 0.16, and keep
-  `etlantic-airflow` as the reference external compiler.
+- Portable SQL requires `etlantic-sql`; use
+  `run_portable_transform_conformance_suite` for third-party SQL compilers.
 
 ## [0.14.0] - 2026-07-18
 
@@ -594,6 +611,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - uv + ruff toolchain, MkDocs documentation site, shared GitHub Actions
   checks, and tag-triggered PyPI release
 
+[0.15.0]: https://github.com/eddiethedean/etlantic/releases/tag/v0.15.0
 [0.14.0]: https://github.com/eddiethedean/etlantic/releases/tag/v0.14.0
 [0.13.0]: https://github.com/eddiethedean/etlantic/releases/tag/v0.13.0
 [0.12.0]: https://github.com/eddiethedean/etlantic/releases/tag/v0.12.0

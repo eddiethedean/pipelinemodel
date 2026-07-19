@@ -1,6 +1,6 @@
 # Optional Packages
 
-> **Status: Available in ETLantic 0.14.0.** Core `etlantic` does not install
+> **Status: Available in ETLantic 0.15.0.** Core `etlantic` does not install
 > engines. Install only the plugins you need, pinned to the same minor line.
 
 ## Install pins
@@ -8,18 +8,18 @@
 Prefer exact pins for a controlled pilot:
 
 ```bash
-pip install 'etlantic==0.14.0'
-pip install 'etlantic-polars==0.14.0'
-pip install 'etlantic-pandas==0.14.0'
-pip install 'etlantic-sql==0.14.0'
-pip install 'etlantic-pyspark==0.14.0'
-pip install 'etlantic-airflow==0.14.0'
-pip install 'etlantic-keyring==0.14.0'
-pip install 'etlantic-sqlmodel==0.14.0'
-pip install 'etlantic-sparkforge==0.14.0'
+pip install 'etlantic==0.15.0'
+pip install 'etlantic-polars==0.15.0'
+pip install 'etlantic-pandas==0.15.0'
+pip install 'etlantic-sql==0.15.0'
+pip install 'etlantic-pyspark==0.15.0'
+pip install 'etlantic-airflow==0.15.0'
+pip install 'etlantic-keyring==0.15.0'
+pip install 'etlantic-sqlmodel==0.15.0'
+pip install 'etlantic-sparkforge==0.15.0'
 ```
 
-Official plugin packages declare `etlantic>=0.14.0,<0.15` so they stay on the
+Official plugin packages declare `etlantic>=0.15.0,<0.16` so they stay on the
 0.14 line. Cross-minor mixing is unsupported unless a future release documents
 compatibility tests.
 
