@@ -20,7 +20,7 @@ profile = Profile(
         "etlantic-polars": ">=0.10,<1",
         "etlantic-sql": ">=0.10,<1",
     },
-    bindings={"customer_source": "customers"},
+    assets={"customer_source": "customers"},
 )
 ```
 

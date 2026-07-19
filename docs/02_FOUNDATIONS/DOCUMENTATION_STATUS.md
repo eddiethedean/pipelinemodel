@@ -100,9 +100,10 @@ Polars, PySpark, and Pandas.
 **Experimental in 0.7+:** Structured Streaming foundation APIs.
 
 **Still accepted design until later milestones:** managed Spark providers
-(Databricks/EMR/Connect), Dagster/Prefect compilers, remaining Plugin SDK
-surfaces, SQL lowering (**0.15** exit gate), and advanced profile graduation
-(0.15 continuation).
+(Databricks/EMR/Connect), Dagster compile plugins, remaining Plugin SDK
+surfaces, optional Prefect `ExecutionScheduler` (**0.16** Gate B), authoring
+vocabulary cleanup (**0.16** Gate A), and advanced profile graduation
+(0.15 continuation). SQL lowering shipped in **0.15**.
 
 ## Normative Authority
 

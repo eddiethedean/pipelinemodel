@@ -6,9 +6,15 @@ Orchestration plugins bind a validated **Pipeline Plan** to a workflow
 orchestration platform.
 
 ETLantic does not embed Airflow, Dagster, Prefect, or any other scheduler
-into its core. Instead, orchestration plugins translate the implementation-
-independent Pipeline Plan into runtime-specific workflows while preserving the
-pipeline's declared semantics.
+into its core. Instead, **orchestration plugins** translate the
+implementation-independent Pipeline Plan into runtime-specific workflow
+*artifacts* (for example Airflow DAGs) while preserving the pipeline's
+declared semantics.
+
+Direct in-process or Python-native coordination uses the separate
+`ExecutionScheduler` boundary (`LocalScheduler` today; optional
+`etlantic-prefect` planned for 0.16). Prefect is not modeled as an
+Airflow-style `compile_plan` target.
 
 ## Goals
 
@@ -30,15 +36,18 @@ Orchestration plugins define **where and how** it is coordinated.
 ```text
 Pipeline Plan
       │
-      ▼
-Orchestration Plugin
-      │
- ┌────┼──────────────┐
- ▼    ▼              ▼
-Airflow Dagster   Prefect
+      ├──────────────────────────────┐
+      ▼                              ▼
+Orchestration Plugin           ExecutionScheduler
+(compile / submit)             (direct execution)
+      │                              │
+ ┌────┼────────┐              ┌──────┼────────┐
+ ▼    ▼        ▼              ▼               ▼
+Airflow Dagster  …        LocalScheduler   Prefect (0.16)
 ```
 
-Each plugin produces an equivalent workflow for its target platform.
+Compile plugins produce platform artifacts. Scheduler plugins coordinate
+already-resolved physical/logical work without re-planning.
 
 ## Why Plugins?
 
@@ -54,16 +63,16 @@ Pipeline definitions never depend on orchestrator APIs.
 
 ## Supported Platforms
 
-ETLantic is designed to support plugins for:
+ETLantic is designed to support:
 
-- Local execution
-- Airflow
-- Dagster
-- Prefect
-- Argo Workflows
-- Azure Data Factory
-- AWS Step Functions
-- Future orchestrators
+- Local execution via built-in `LocalScheduler`
+- Airflow via `etlantic-airflow` (`OrchestratorPlugin` / `compile_plan`)
+- Prefect via planned `etlantic-prefect` (`ExecutionScheduler`, 0.16 MVP)
+- Future compile or scheduler adapters (Dagster, Argo, cloud workflow
+  services) behind the matching protocol
+
+Do not assume every platform is a compile target. Prefect's planned path is
+direct execution, not DAG artifact generation.
 
 ## Capability Matching
 
@@ -93,9 +102,11 @@ Examples include:
 
 - Airflow DAG
 - Dagster Definitions
-- Prefect Flow
 - Argo Workflow
 - Deployment manifests
+
+Prefect Flow / task mapping for the planned 0.16 plugin belongs to the
+`ExecutionScheduler` path, not this compile binding list.
 
 Bindings must preserve:
 

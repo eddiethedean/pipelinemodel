@@ -16,6 +16,7 @@ PACKAGES = (
     "etlantic-sql",
     "etlantic-pyspark",
     "etlantic-airflow",
+    "etlantic-prefect",
     "etlantic-keyring",
     "etlantic-sqlmodel",
     "etlantic-sparkforge",

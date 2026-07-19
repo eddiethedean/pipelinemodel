@@ -83,7 +83,8 @@ Controlled pilot only (see [Evaluator](EVALUATOR.md) and
 |---|---|
 | `MERGE` / upsert in the reference SQL plugin | Not implemented (`sql_merge=False`; fail closed) |
 | Managed Spark providers (Databricks/EMR/Connect) | Future / optional adapters |
-| Event sensors / Dagster / Prefect compilers | Prefect plugin planned for **0.16**; others remain future |
+| Event sensors / Dagster compilers | Future |
+| Prefect direct-execution scheduler (`etlantic-prefect`) | **Shipped in 0.16** as `ExecutionScheduler` (local MVP; not an Airflow-style compiler) |
 | Full LSP server productization | Continues in 1.5 |
 | Registry-backed schema history | Continues in 1.2 |
 | FastAPI control plane | Continues in 1.1 |

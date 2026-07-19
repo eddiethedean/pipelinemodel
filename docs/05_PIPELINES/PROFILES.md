@@ -104,7 +104,7 @@ Planning uses the selected profile when generating a Pipeline Plan.
 ## Logical assets
 
 Profiles resolve logical asset names into physical resources. Prefer
-`Profile(assets=...)` in 0.15; `bindings=` remains a warned alias until 0.16.
+`Profile(assets=...)` is required in 0.16; `bindings=` authoring was removed.
 Public profile JSON may emit both `assets` and mirrored `bindings`; plan
 `profile_snapshot` keeps the fingerprint-stable bindings-only shape.
 

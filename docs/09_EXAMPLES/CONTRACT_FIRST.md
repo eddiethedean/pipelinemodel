@@ -434,7 +434,7 @@ class NormalizeCustomers(Transformation):
 A generated `pipelines.py` may resemble:
 
 ```python
-from etlantic import Pipeline, Sink, Source
+from etlantic import Extract, Load, Pipeline
 
 from .contracts import Customer, RawCustomer
 from .transformations import NormalizeCustomers

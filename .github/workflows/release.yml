@@ -39,6 +39,7 @@ jobs:
           SQL_VERSION="$(sed -n 's/^version = "\(.*\)"/\1/p' packages/etlantic-sql/pyproject.toml | head -1)"
           SPARK_VERSION="$(sed -n 's/^version = "\(.*\)"/\1/p' packages/etlantic-pyspark/pyproject.toml | head -1)"
           AIRFLOW_VERSION="$(sed -n 's/^version = "\(.*\)"/\1/p' packages/etlantic-airflow/pyproject.toml | head -1)"
+          PREFECT_VERSION="$(sed -n 's/^version = "\(.*\)"/\1/p' packages/etlantic-prefect/pyproject.toml | head -1)"
           KEYRING_VERSION="$(sed -n 's/^version = "\(.*\)"/\1/p' packages/etlantic-keyring/pyproject.toml | head -1)"
           SQLMODEL_VERSION="$(sed -n 's/^version = "\(.*\)"/\1/p' packages/etlantic-sqlmodel/pyproject.toml | head -1)"
           SPARKFORGE_VERSION="$(sed -n 's/^version = "\(.*\)"/\1/p' packages/etlantic-sparkforge/pyproject.toml | head -1)"
@@ -46,8 +47,8 @@ jobs:
             echo "Version mismatch: tag='$TAG' pyproject='$VERSION' module='$MODULE_VERSION'"
             exit 1
           fi
-          if [ "$TAG" != "$POLARS_VERSION" ] || [ "$TAG" != "$PANDAS_VERSION" ] || [ "$TAG" != "$SQL_VERSION" ] || [ "$TAG" != "$SPARK_VERSION" ] || [ "$TAG" != "$AIRFLOW_VERSION" ] || [ "$TAG" != "$KEYRING_VERSION" ] || [ "$TAG" != "$SQLMODEL_VERSION" ] || [ "$TAG" != "$SPARKFORGE_VERSION" ]; then
-            echo "Plugin version mismatch: tag='$TAG' polars='$POLARS_VERSION' pandas='$PANDAS_VERSION' sql='$SQL_VERSION' spark='$SPARK_VERSION' airflow='$AIRFLOW_VERSION' keyring='$KEYRING_VERSION' sqlmodel='$SQLMODEL_VERSION' sparkforge='$SPARKFORGE_VERSION'"
+          if [ "$TAG" != "$POLARS_VERSION" ] || [ "$TAG" != "$PANDAS_VERSION" ] || [ "$TAG" != "$SQL_VERSION" ] || [ "$TAG" != "$SPARK_VERSION" ] || [ "$TAG" != "$AIRFLOW_VERSION" ] || [ "$TAG" != "$PREFECT_VERSION" ] || [ "$TAG" != "$KEYRING_VERSION" ] || [ "$TAG" != "$SQLMODEL_VERSION" ] || [ "$TAG" != "$SPARKFORGE_VERSION" ]; then
+            echo "Plugin version mismatch: tag='$TAG' polars='$POLARS_VERSION' pandas='$PANDAS_VERSION' sql='$SQL_VERSION' spark='$SPARK_VERSION' airflow='$AIRFLOW_VERSION' prefect='$PREFECT_VERSION' keyring='$KEYRING_VERSION' sqlmodel='$SQLMODEL_VERSION' sparkforge='$SPARKFORGE_VERSION'"
             exit 1
           fi
 
@@ -61,6 +62,7 @@ jobs:
           uv build --package etlantic-sql --out-dir dist
           uv build --package etlantic-pyspark --out-dir dist
           uv build --package etlantic-airflow --out-dir dist
+          uv build --package etlantic-prefect --out-dir dist
           uv build --package etlantic-keyring --out-dir dist
           uv build --package etlantic-sqlmodel --out-dir dist
           uv build --package etlantic-sparkforge --out-dir dist
@@ -79,6 +81,7 @@ jobs:
           assert importlib.util.find_spec('psycopg') is None
           assert importlib.util.find_spec('pyspark') is None
           assert importlib.util.find_spec('airflow') is None
+          assert importlib.util.find_spec('prefect') is None
           print('core ok, driver-free')
           "
 
@@ -91,12 +94,13 @@ jobs:
           SQL="dist/etlantic_sql-${TAG}-py3-none-any.whl"
           SPARK="dist/etlantic_pyspark-${TAG}-py3-none-any.whl"
           AIRFLOW="dist/etlantic_airflow-${TAG}-py3-none-any.whl"
+          PREFECT="dist/etlantic_prefect-${TAG}-py3-none-any.whl"
           KEYRING="dist/etlantic_keyring-${TAG}-py3-none-any.whl"
           SQLMODEL="dist/etlantic_sqlmodel-${TAG}-py3-none-any.whl"
           SPARKFORGE="dist/etlantic_sparkforge-${TAG}-py3-none-any.whl"
           uv run --isolated --no-project \
             --with "$CORE" --with "$POLARS" --with "$PANDAS" --with "$SQL" \
-            --with "$SPARK" --with "$AIRFLOW" --with "$KEYRING" \
+            --with "$SPARK" --with "$AIRFLOW" --with "$PREFECT" --with "$KEYRING" \
             --with "$SQLMODEL" --with "$SPARKFORGE" \
             python -c "
           import etlantic
@@ -105,6 +109,7 @@ jobs:
           import etlantic_sql
           import etlantic_pyspark
           import etlantic_airflow
+          import etlantic_prefect
           import etlantic_keyring
           import etlantic_sqlmodel
           import etlantic_sparkforge
@@ -114,6 +119,7 @@ jobs:
           assert etlantic_sql.__version__ == '$TAG'
           assert etlantic_pyspark.__version__ == '$TAG'
           assert etlantic_airflow.__version__ == '$TAG'
+          assert etlantic_prefect.__version__ == '$TAG'
           assert etlantic_keyring.__version__ == '$TAG'
           assert etlantic_sqlmodel.__version__ == '$TAG'
           assert etlantic_sparkforge.__version__ == '$TAG'
@@ -121,6 +127,7 @@ jobs:
           from etlantic.sql.discovery import discover_sql_plugins
           from etlantic.spark.discovery import discover_spark_plugins
           from etlantic.orchestration.discovery import discover_orchestrator_plugins
+          from etlantic.runtime.scheduler_discovery import discover_scheduler_plugins
           from etlantic.transform.discovery import discover_transform_compilers
           found = discover_dataframe_plugins()
           assert set(found) >= {'polars', 'pandas'}, found
@@ -130,11 +137,13 @@ jobs:
           assert 'pyspark' in spark, spark
           orch = discover_orchestrator_plugins()
           assert 'airflow' in orch, orch
+          sched = discover_scheduler_plugins()
+          assert 'prefect' in sched, sched
           compilers = discover_transform_compilers()
           assert 'polars' in compilers, compilers
           assert 'pyspark' in compilers, compilers
           assert 'pandas' in compilers, compilers
-          print('ok', etlantic.__version__, sorted(found), sorted(sql), sorted(spark), sorted(orch), sorted(compilers))
+          print('ok', etlantic.__version__, sorted(found), sorted(sql), sorted(spark), sorted(orch), sorted(sched), sorted(compilers))
           "
 
       - name: Publish packages to PyPI (paced + 429 retry)
@@ -239,6 +248,9 @@ jobs:
           publish_pair etlantic-airflow \
             "dist/etlantic_airflow-${TAG}-py3-none-any.whl" \
             "dist/etlantic_airflow-${TAG}.tar.gz"
+          publish_pair etlantic-prefect \
+            "dist/etlantic_prefect-${TAG}-py3-none-any.whl" \
+            "dist/etlantic_prefect-${TAG}.tar.gz"
           publish_pair etlantic-keyring \
             "dist/etlantic_keyring-${TAG}-py3-none-any.whl" \
             "dist/etlantic_keyring-${TAG}.tar.gz"

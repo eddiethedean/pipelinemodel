@@ -286,6 +286,38 @@ jobs:
       - name: Runnable Airflow compile example
         run: uv run python examples/airflow_compile.py
 
+  prefect:
+    name: Prefect scheduler plugin
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.3"
+          python-version: "3.11"
+          enable-cache: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync with Prefect plugin
+        run: uv sync --locked --group prefect
+
+      - name: Discovery smoke
+        run: |
+          uv run python -c "
+          from etlantic.runtime.scheduler_discovery import discover_scheduler_plugins
+          found = discover_scheduler_plugins()
+          assert 'prefect' in found, found
+          print('discovered', sorted(found))
+          "
+
+      - name: Pytest Prefect suite
+        run: uv run pytest -q tests/prefect -m prefect
+
+      - name: Runnable Prefect example
+        run: uv run python examples/prefect_run.py
+
   keyring:
     name: Keyring secret provider
     runs-on: ubuntu-latest

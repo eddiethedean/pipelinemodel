@@ -389,7 +389,7 @@ Both implementations satisfy the same DTCS transformation contract.
 ```python
 # src/sql_to_sql/pipeline.py
 
-from etlantic import Pipeline, Sink, Source
+from etlantic import Extract, Load, Pipeline
 
 from .contracts import Customer, CustomerOrderSummary, Order
 from .transformations import BuildCustomerOrderSummary

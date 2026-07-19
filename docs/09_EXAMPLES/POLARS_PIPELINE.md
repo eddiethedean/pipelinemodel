@@ -202,7 +202,7 @@ A `pl.DataFrame` implementation may still be supported for compatibility.
 ```python
 # src/polars_pipeline/pipeline.py
 
-from etlantic import Pipeline, Sink, Source
+from etlantic import Extract, Load, Pipeline
 
 from .contracts import Customer, RawCustomer
 from .transformations import NormalizeCustomers

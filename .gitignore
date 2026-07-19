@@ -20,6 +20,8 @@ htmlcov/
 # macOS
 .DS_Store
 **/.DS_Store
+._*
+**/._*
 
 examples/_file_storage_out/
 examples/_generated_*.py

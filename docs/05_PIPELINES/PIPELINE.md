@@ -25,7 +25,7 @@ ETLantic uses pipeline definitions to:
 ## Basic Example
 
 ```python
-from etlantic import Pipeline, Sink, Source
+from etlantic import Extract, Load, Pipeline
 
 class CustomerPipeline(Pipeline):
     raw: Extract[RawCustomer] = Extract(asset="customer_source")

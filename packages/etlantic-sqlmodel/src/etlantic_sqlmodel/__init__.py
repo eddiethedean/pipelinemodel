@@ -20,7 +20,7 @@ from etlantic.schema_drift import (
 )
 from sqlmodel import Field, SQLModel
 
-__version__ = "0.15.0"
+__version__ = "0.16.0"
 
 __all__ = [
     "SqlModelIntegrationPlugin",

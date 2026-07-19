@@ -23,7 +23,9 @@ See [SQL](../06_EXECUTION/SQL.md) and the
 
 `Pipeline.run` / `arun` enter through `LocalScheduler`. Observable report
 shape and plan fingerprints are preserved. Airflow compilation is unchanged.
-Optional Prefect packaging is **0.16**.
+Optional Prefect packaging is **0.16 Gate B** (`ExecutionScheduler` MVP).
+Authoring vocabulary removal (`Source` / `Sink` / `binding=`) is the
+independent **0.16 Gate A**.
 
 ## Mapping table
 

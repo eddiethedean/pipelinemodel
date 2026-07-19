@@ -399,7 +399,7 @@ async def report_pipeline_failure(
 ```python
 # src/callbacks_example/pipeline.py
 
-from etlantic import Pipeline, Sink, Source
+from etlantic import Extract, Load, Pipeline
 
 from .callbacks import (
     handle_invalid_customers,

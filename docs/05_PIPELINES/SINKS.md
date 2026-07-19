@@ -1,18 +1,11 @@
-# Sinks (deprecated)
+# Sinks (removed)
 
-`Sink[T]` is a deprecated alias of [`Load[T]`](LOADS.md) in ETLantic 0.15.
-Prefer:
+`Sink` was removed in ETLantic **0.16**. Use [`Load`](LOADS.md):
 
 ```python
 from etlantic import Load
 
-warehouse = Load[Customer](
-    input=normalized.result,
-    asset="warehouse.customers",
-)
+curated = Load[Customer](input=normalized.result, asset="customers_curated")
 ```
 
-`Sink` and `binding=` will be removed in **0.16**. See
-[Migration 0.14 → 0.15](../11_DEVELOPMENT/MIGRATION_0_14_TO_0_15.md).
-
-Canonical documentation: **[Loads](LOADS.md)**.
+See [Migration 0.15 → 0.16](../11_DEVELOPMENT/MIGRATION_0_15_TO_0_16.md).

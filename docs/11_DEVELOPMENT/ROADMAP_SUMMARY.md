@@ -32,22 +32,27 @@ ETLantic 0.14.0 completed the first three-engine portable relational baseline
 (Pandas joined Polars and PySpark) and published the public portable
 conformance SDK. See [What's New in 0.14](../01_GETTING_STARTED/WHATS_NEW_0_14.md).
 
-## Next: 0.16 (Optional Prefect orchestration)
+## Next: 0.16 (shipped)
 
-- publish optional `etlantic-prefect` as the reference Python-native
-  orchestrator integration;
-- consume resolved physical execution units without re-planning;
-- preserve ETLantic-owned validation, retry safety, identities, artifacts,
-  redaction, and run reports;
-- support a basic local Prefect path without requiring Prefect Cloud;
-- keep local execution as the default and require explicit production profile
-  selection/allowlisting;
-- retain `etlantic-airflow` as the reference external compiler;
-- remove the deprecated 0.15 `Source` / `Sink` / `binding=` compatibility API.
+0.16.0 shipped Gate A (vocabulary cleanup) and Gate B (optional
+`etlantic-prefect` `ExecutionScheduler`). See
+[What's New in 0.16](../01_GETTING_STARTED/WHATS_NEW_0_16.md) and
+[Migration 0.15 → 0.16](MIGRATION_0_15_TO_0_16.md).
 
-See the
-[Local Scheduler and Prefect Integration Plan](SCHEDULER_AND_PREFECT_PLAN.md)
-(Prefect packaging remains 0.16; feasibility notes live in-repo only).
+## 0.17+ portable plugin workstream
+
+Every applicable first-party dataframe, SQL, and Spark execution plugin will
+pair its runtime integration with a portable transform compiler. Polars,
+Pandas, SQL, and PySpark already provide the kernel and
+`portable-relational/1` baseline; future work expands truthful per-family
+coverage, cross-engine differential tests, conformance evidence, capability
+matrices, and native-to-portable migration guidance.
+
+This does not require portable compilers from orchestrators, schedulers,
+secret/storage/resource/observability providers, or model bridges. Third-party
+execution plugins may remain native-only when they omit portable claims and
+document the limitation. See
+[Building an ETLantic Plugin](../07_PLUGIN_SDK/BUILDING_A_PLUGIN.md).
 
 ## Toward 1.0
 

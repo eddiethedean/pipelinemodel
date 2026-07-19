@@ -6,9 +6,9 @@ Loads publish validated data to external systems. Like `Extract[T]`, a load
 declares **what** data crosses the pipeline boundary while execution plugins
 determine **how** that data is written.
 
-> **0.15 note:** `Sink[T]` and `binding=` remain available as deprecated
-> aliases and will be removed in **0.16**. Prefer `Load[T](..., asset=...)`.
-> See [Migration 0.14 → 0.15](../11_DEVELOPMENT/MIGRATION_0_14_TO_0_15.md).
+> Prefer `Load[T](..., asset=...)`. Public `Sink` / `binding=` aliases were
+> removed in **0.16**. See
+> [Migration 0.15 → 0.16](../11_DEVELOPMENT/MIGRATION_0_15_TO_0_16.md).
 
 ## Purpose
 

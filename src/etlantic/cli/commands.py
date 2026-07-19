@@ -218,12 +218,18 @@ def register_commands(
         profile: str = typer.Option("local", "--profile", "-p"),
         fmt: str = typer.Option("json", "--format"),
         kind: str = typer.Option(
-            "all", "--kind", help="all|dataframe|sql|spark|orchestrator"
+            "all",
+            "--kind",
+            help="all|dataframe|sql|spark|orchestrator|scheduler",
         ),
     ) -> None:
         """List discovered plugins (honors profile allowlist)."""
         from etlantic.dataframe.discovery import discover_dataframe_plugins
         from etlantic.orchestration.discovery import discover_orchestrator_plugins
+        from etlantic.runtime.scheduler_discovery import (
+            builtin_local_scheduler,
+            discover_scheduler_plugins,
+        )
         from etlantic.spark.discovery import discover_spark_plugins
         from etlantic.sql.discovery import discover_sql_plugins
 
@@ -237,6 +243,10 @@ def register_commands(
             groups["spark"] = discover_spark_plugins()
         if kind in {"all", "orchestrator"}:
             groups["orchestrator"] = discover_orchestrator_plugins()
+        if kind in {"all", "scheduler"}:
+            sched = dict(discover_scheduler_plugins())
+            sched.setdefault("local", builtin_local_scheduler())
+            groups["scheduler"] = sched
         items: list[dict[str, Any]] = []
         diagnostics: list[dict[str, Any]] = []
         for group_name, plugins in groups.items():

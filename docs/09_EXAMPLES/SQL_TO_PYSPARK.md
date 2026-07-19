@@ -303,7 +303,7 @@ The implementation should preserve:
 ```python
 # src/sql_to_pyspark/pipeline.py
 
-from etlantic import Pipeline, Sink, Source
+from etlantic import Extract, Load, Pipeline
 
 from .contracts import Customer, CustomerOrderSummary, Order
 from .transformations import BuildCustomerOrderSummary

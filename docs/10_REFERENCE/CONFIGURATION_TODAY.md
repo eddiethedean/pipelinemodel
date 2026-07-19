@@ -47,7 +47,7 @@ path = write_profile(
     Profile(
         name="pilot",
         dataframe_engine="polars",
-        bindings={"customer_source": "json", "customer_sink": "json"},
+        assets={"customer_source": "json", "customer_sink": "json"},
     ),
     "profiles/pilot.json",
 )

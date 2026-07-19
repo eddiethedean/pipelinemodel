@@ -166,7 +166,7 @@ The implementation uses vectorized Pandas operations and avoids row-wise
 ## Step 4 — Define the Pipeline
 
 ```python
-from etlantic import Pipeline, Sink, Source
+from etlantic import Extract, Load, Pipeline
 
 
 class CustomerPandasPipeline(Pipeline):

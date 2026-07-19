@@ -174,7 +174,7 @@ The transformation contract remains portable.
 ```python
 # src/csv_to_csv/pipeline.py
 
-from etlantic import Pipeline, Sink, Source
+from etlantic import Extract, Load, Pipeline
 
 from .contracts import Customer, RawCustomer
 from .transformations import NormalizeCustomers

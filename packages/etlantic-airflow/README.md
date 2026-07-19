@@ -39,5 +39,6 @@ validate and plan first, then compile the valid plan with
 - Artifact-ref-only XCom payloads (no large inline data)
 - Lifecycle correlation keys for normalized run reports
 
-**Not included:** managed Airflow deployments, Dagster/Prefect compilers (future
-plugins).
+**Not included:** managed Airflow deployments, Dagster compile plugins, or
+Prefect (planned separately as an `ExecutionScheduler` in 0.16, not as an
+Airflow-style compiler).

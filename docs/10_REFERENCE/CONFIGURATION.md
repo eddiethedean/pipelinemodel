@@ -122,7 +122,7 @@ write_mode = "merge"
 Pipeline code refers only to the logical name:
 
 ```python
-customers: Source[RawCustomer] = Source(binding="customer_source")
+customers: Extract[RawCustomer] = Extract(asset="customer_source")
 ```
 
 ## Plugin Configuration

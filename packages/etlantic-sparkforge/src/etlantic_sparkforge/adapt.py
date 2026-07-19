@@ -255,7 +255,7 @@ def adapt_pipeline(
     for step in ordered:
         if step.kind is StepKind.BRONZE_RULES:
             binding = step.table_name or step.name
-            source = Extract[AdaptedRow](asset=binding, _compat_warn=False)
+            source = Extract[AdaptedRow](asset=binding)
             ns[step.name] = source
             annotations[step.name] = Extract[AdaptedRow]
             members[step.name] = source
@@ -360,7 +360,7 @@ def adapt_pipeline(
                 )
             )
             sink = Load[AdaptedRow](
-                input=step_inst.result, asset=binding, _compat_warn=False
+                input=step_inst.result, asset=binding
             )
             ns[sink_name] = sink
             annotations[sink_name] = Load[AdaptedRow]

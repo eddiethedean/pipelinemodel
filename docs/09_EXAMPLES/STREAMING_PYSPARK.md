@@ -203,7 +203,7 @@ The implementation builds a streaming logical plan and does not start the query.
 ## Step 4 — Define the Streaming Pipeline
 
 ```python
-from etlantic import Pipeline, Sink, Source
+from etlantic import Extract, Load, Pipeline
 
 from .contracts import (
     CustomerOrderWindow,

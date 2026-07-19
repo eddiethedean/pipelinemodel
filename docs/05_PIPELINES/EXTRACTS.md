@@ -9,9 +9,9 @@ pipeline—not **how** it is retrieved.
 
 Execution plugins perform the actual reads.
 
-> **0.15 note:** `Source[T]` and `binding=` remain available as deprecated
-> aliases and will be removed in **0.16**. Prefer `Extract[T](asset=...)`.
-> See [Migration 0.14 → 0.15](../11_DEVELOPMENT/MIGRATION_0_14_TO_0_15.md).
+> Prefer `Extract[T](asset=...)`. Public `Source` / `binding=` aliases were
+> removed in **0.16**. See
+> [Migration 0.15 → 0.16](../11_DEVELOPMENT/MIGRATION_0_15_TO_0_16.md).
 
 ## Purpose
 

@@ -52,7 +52,7 @@ Typed contracts ──▶ Validation ──▶ Deterministic plan ──▶ Run 
 - **Adopt incrementally.** The core has no dataframe, SQL, Spark, or Airflow
   dependency. Install only the integrations you need.
 
-> **Project status:** Alpha **0.15.0**. The local runtime and reference plugins
+> **Project status:** Alpha **0.16.0**. The local runtime and reference plugins
 > are available today. Structured Streaming is experimental. Portable
 > transformation authoring and Polars/PySpark/Pandas/SQL relational compilers
 > plus the public conformance SDK are available; advanced portable profiles
@@ -74,12 +74,12 @@ Create `pipeline.py`:
 ```python
 from etlantic import (
     Data,
+    Extract,
     Input,
+    Load,
     Output,
     Pipeline,
     PipelineRuntime,
-    Sink,
-    Source,
     Transformation,
 )
 
@@ -112,11 +112,11 @@ def normalize_customers(customers: list[RawCustomer]) -> list[Customer]:
 
 
 class CustomerPipeline(Pipeline):
-    raw: Source[RawCustomer] = Source(binding="customer_source")
+    raw: Extract[RawCustomer] = Extract(asset="customer_source")
     normalized = NormalizeCustomers.step(customers=raw)
-    curated: Sink[Customer] = Sink(
+    curated: Load[Customer] = Load(
         input=normalized.result,
-        binding="customer_sink",
+        asset="customer_sink",
     )
 
 

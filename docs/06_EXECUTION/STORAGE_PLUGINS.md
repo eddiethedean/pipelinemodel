@@ -80,7 +80,7 @@ ETLantic is designed to support plugins for:
 A source declares a logical binding.
 
 ```python
-customers = Source[Customer](
+customers = Extract[Customer](
     binding="customers",
 )
 ```
@@ -92,7 +92,7 @@ The storage plugin resolves that binding into a physical location.
 A sink publishes through the same abstraction.
 
 ```python
-warehouse = Sink[Customer](
+warehouse = Load[Customer](
     input=normalized.result,
     binding="warehouse.customers",
 )

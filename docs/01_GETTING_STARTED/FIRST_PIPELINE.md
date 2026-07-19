@@ -61,7 +61,7 @@ The built-in development profile selects local Python implementations.
 ## Connect the pipeline
 
 ```python
-from etlantic import Pipeline, Sink, Source
+from etlantic import Extract, Load, Pipeline
 
 
 class CustomerPipeline(Pipeline):
@@ -151,8 +151,10 @@ CSV, and no-write storage. Optional plugins are available today:
 - Airflow compile — `etlantic-airflow`
 - SparkForge adapter — `etlantic-sparkforge`
 
-Dagster/Prefect compilers and managed cloud Spark providers remain future
-work. See [Capabilities](CAPABILITIES.md).
+Dagster compilers, managed cloud Spark providers, and Prefect
+deployment/serve remain future work. Optional Prefect direct execution
+(`ExecutionScheduler`) is planned for **0.16**; see
+[Capabilities](CAPABILITIES.md).
 
 Continue with [Project Structure](PROJECT_STRUCTURE.md) or run the complete
 repository example in `examples/quickstart.py`.

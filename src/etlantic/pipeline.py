@@ -8,11 +8,6 @@ from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Any, ClassVar, TypeVar
 
-from etlantic._compat import (
-    resolve_asset_identifier,
-    warn_binding_property,
-    warn_source_sink_name,
-)
 from etlantic.contracts import is_data_contract_type
 from etlantic.identity import contract_id, node_id, pipeline_id
 from etlantic.model import (
@@ -31,6 +26,20 @@ T = TypeVar("T")
 _subpipeline_key_counter = itertools.count(1)
 _extract_key_counter = itertools.count(1)
 _building_graphs: set[type[Any]] = set()
+
+def _require_asset(asset: str | None, *, kwargs: dict[str, Any]) -> str:
+    """Validate ``asset=`` and reject removed ``binding=`` authoring."""
+    if "binding" in kwargs:
+        raise TypeError(
+            "binding= was removed in ETLantic 0.16. Use asset= instead. "
+            "See docs/11_DEVELOPMENT/MIGRATION_0_15_TO_0_16.md."
+        )
+    if asset is None:
+        raise TypeError("Extract/Load require asset= (a non-empty logical name).")
+    text = str(asset).strip()
+    if not text:
+        raise ValueError("asset identifiers must be non-empty logical names")
+    return text
 
 
 def _class_annotations(cls: type[Any]) -> dict[str, Any]:
@@ -79,19 +88,13 @@ class Extract:
         self,
         asset: str | None = None,
         *,
-        binding: str | None = None,
         contract_type: type[Any] | None = None,
         name: str | None = None,
         pipeline_id: str | None = None,
         producer_key: str | None = None,
-        _compat_warn: bool = True,
+        **kwargs: Any,
     ) -> None:
-        self.asset = resolve_asset_identifier(
-            asset=asset,
-            binding=binding,
-            warn=_compat_warn,
-            stacklevel=3,
-        )
+        self.asset = _require_asset(asset, kwargs=kwargs)
         self.contract_type = contract_type
         self.name = name
         self.pipeline_id = pipeline_id
@@ -106,12 +109,6 @@ class Extract:
             f"{type(self).__name__}(asset={self.asset!r}, "
             f"contract_type={ctype!r}, name={self.name!r})"
         )
-
-    @property
-    def binding(self) -> str:
-        """Deprecated alias for :attr:`asset` (removed in 0.16)."""
-        warn_binding_property(stacklevel=2)
-        return self.asset
 
     @property
     def result(self) -> OutputRef[Any]:
@@ -138,7 +135,6 @@ class Extract:
             name=name,
             pipeline_id=pipeline_id,
             producer_key=self.producer_key,
-            _compat_warn=False,
         )
 
 
@@ -162,19 +158,13 @@ class Load:
         input: Any = None,
         asset: str | None = None,
         *,
-        binding: str | None = None,
         contract_type: type[Any] | None = None,
         name: str | None = None,
         pipeline_id: str | None = None,
-        _compat_warn: bool = True,
+        **kwargs: Any,
     ) -> None:
         self.input = input
-        self.asset = resolve_asset_identifier(
-            asset=asset,
-            binding=binding,
-            warn=_compat_warn,
-            stacklevel=3,
-        )
+        self.asset = _require_asset(asset, kwargs=kwargs)
         self.contract_type = contract_type
         self.name = name
         self.pipeline_id = pipeline_id
@@ -189,12 +179,6 @@ class Load:
             f"contract_type={ctype!r}, name={self.name!r})"
         )
 
-    @property
-    def binding(self) -> str:
-        """Deprecated alias for :attr:`asset` (removed in 0.16)."""
-        warn_binding_property(stacklevel=2)
-        return self.asset
-
     def bind(self, name: str, *, pipeline_id: str | None = None) -> Load:
         """Return a load bound to a node name within a pipeline."""
         return type(self)(
@@ -203,71 +187,6 @@ class Load:
             contract_type=self.contract_type,
             name=name,
             pipeline_id=pipeline_id,
-            _compat_warn=False,
-        )
-
-
-class Source(Extract):
-    """Deprecated alias for :class:`Extract` (removed in 0.16)."""
-
-    def __init__(
-        self,
-        asset: str | None = None,
-        *,
-        binding: str | None = None,
-        contract_type: type[Any] | None = None,
-        name: str | None = None,
-        pipeline_id: str | None = None,
-        producer_key: str | None = None,
-        _compat_warn: bool = True,
-    ) -> None:
-        if _compat_warn:
-            warn_source_sink_name(
-                legacy_name="Source",
-                replacement="Extract",
-                used_binding=binding is not None and asset is None,
-                stacklevel=3,
-            )
-        super().__init__(
-            asset=asset,
-            binding=binding,
-            contract_type=contract_type,
-            name=name,
-            pipeline_id=pipeline_id,
-            producer_key=producer_key,
-            _compat_warn=False,
-        )
-
-
-class Sink(Load):
-    """Deprecated alias for :class:`Load` (removed in 0.16)."""
-
-    def __init__(
-        self,
-        input: Any = None,
-        asset: str | None = None,
-        *,
-        binding: str | None = None,
-        contract_type: type[Any] | None = None,
-        name: str | None = None,
-        pipeline_id: str | None = None,
-        _compat_warn: bool = True,
-    ) -> None:
-        if _compat_warn:
-            warn_source_sink_name(
-                legacy_name="Sink",
-                replacement="Load",
-                used_binding=binding is not None and asset is None,
-                stacklevel=3,
-            )
-        super().__init__(
-            input=input,
-            asset=asset,
-            binding=binding,
-            contract_type=contract_type,
-            name=name,
-            pipeline_id=pipeline_id,
-            _compat_warn=False,
         )
 
 
@@ -693,14 +612,12 @@ def _collect_pipeline_members(cls: type[Pipeline]) -> dict[str, Any]:
         owner = _member_owner(cls, name)
         if isinstance(value, Extract) and not isinstance(value, Load):
             contract = value.contract_type or _annotation_contract(owner or cls, name)
-            # Quiet rebuild: preserve concrete Source/Extract type without warnings.
             members[name] = type(value)(
                 asset=value.asset,
                 contract_type=contract,
                 name=name,
                 pipeline_id=pid,
                 producer_key=value.producer_key,
-                _compat_warn=False,
             )
         elif isinstance(value, Load):
             contract = value.contract_type or _annotation_contract(owner or cls, name)
@@ -710,7 +627,6 @@ def _collect_pipeline_members(cls: type[Pipeline]) -> dict[str, Any]:
                 contract_type=contract,
                 name=name,
                 pipeline_id=pid,
-                _compat_warn=False,
             )
         elif isinstance(value, (Step, SubpipelineInstance)):
             members[name] = value.bind_name(name, pipeline_id=pid)

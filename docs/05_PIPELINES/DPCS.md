@@ -101,7 +101,7 @@ duplicating their semantics.
 ETLantic recommends authoring pipelines with typed Python classes.
 
 ```python
-from etlantic import Pipeline, Sink, Source
+from etlantic import Extract, Load, Pipeline
 
 
 class CustomerPipeline(Pipeline):
@@ -115,7 +115,7 @@ class CustomerPipeline(Pipeline):
 
     curated: Load[Customer] = Load(
         input=normalized.result,
-        binding="curated.customers",
+        asset="curated.customers",
     )
 ```
 
@@ -226,7 +226,7 @@ raw: Extract[RawCustomer] = Extract(
 ```python
 curated: Load[Customer] = Load(
     input=normalized.result,
-    binding="curated.customers",
+    asset="curated.customers",
 )
 ```
 

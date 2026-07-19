@@ -208,6 +208,9 @@ class LocalOrchestrator:
     outbound_events: list[dict[str, Any]] = field(default_factory=list)
     _spark_session: SparkSessionHandle | None = field(default=None, repr=False)
     _spark_compiled: dict[str, Any] = field(default_factory=dict, repr=False)
+    # Optional wave coordinator for ExecutionScheduler plugins (e.g. Prefect).
+    # Signature: async (ready_names, run_one) -> None
+    wave_runner: Any | None = field(default=None, repr=False)
 
     def __post_init__(self) -> None:
         if self.pipeline_cls is not None:
@@ -216,6 +219,15 @@ class LocalOrchestrator:
             self.artifacts = ArtifactStore(workspace=self.workspace)
         elif self.workspace is not None and self.artifacts.workspace is None:
             self.artifacts.workspace = self.workspace
+
+    async def _run_ready_wave(self, ready: list[str], run_one: Any) -> None:
+        """Run one ready wave via the built-in anyio group or a plugin runner."""
+        if self.wave_runner is not None:
+            await self.wave_runner(ready, run_one)
+            return
+        async with anyio.create_task_group() as wave:
+            for name in ready:
+                wave.start_soon(run_one, name)
 
     def _index_transformations(self, pipeline_cls: type[Any]) -> None:
         members = getattr(pipeline_cls, "__pipeline_members__", {})
@@ -335,10 +347,9 @@ class LocalOrchestrator:
                                         failed.add(child)
                                 stack.extend(consumers.get(child, ()))
 
-                async with anyio.create_task_group() as wave:
-                    for name in ready:
-                        pending.discard(name)
-                        wave.start_soon(_one, name)
+                for name in ready:
+                    pending.discard(name)
+                await self._run_ready_wave(ready, _one)
                 if failed:
                     break
 

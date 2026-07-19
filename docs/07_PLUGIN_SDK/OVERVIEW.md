@@ -1,9 +1,12 @@
 # Plugin SDK Overview
 
-The published DTCS 3.0 Transformation Plan model enables ETLantic's planned
-portable transformation compiler role for engine plugins. See
-[Portable Transformation Compiler](PORTABLE_TRANSFORM_COMPILER.md). It is
-planned across ETLantic 0.11-0.15 and is not shipped in 0.10.
+The published DTCS 3.0 Transformation Plan model supports ETLantic's portable
+transformation compiler role for engine plugins. See
+[Portable Transformation Compiler](PORTABLE_TRANSFORM_COMPILER.md). Reference
+compilers and the public conformance suite are available in ETLantic 0.15.
+
+For the canonical package-from-zero workflow, start with
+[Building an ETLantic Plugin](BUILDING_A_PLUGIN.md).
 
 Compiler support is expressed through exact DTCS profiles, actions, functions,
 operators, types, and modes. Plugin identity alone never implies portable

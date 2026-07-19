@@ -13,9 +13,11 @@ its local runtime.
 
 No.
 
-ETLantic models pipelines and produces resolved `PipelinePlan` objects. It intentionally
-delegates scheduling and orchestration to external systems such as
-Airflow or other orchestration plugins.
+ETLantic models pipelines and produces resolved `PipelinePlan` objects. It
+includes a built-in `LocalScheduler` for development and tests, and
+intentionally delegates durable scheduling and external workflow platforms to
+optional plugins (for example Airflow compilation via `etlantic-airflow`, or
+a planned Prefect `ExecutionScheduler` in 0.16).
 
 ------------------------------------------------------------------------
 
@@ -48,8 +50,10 @@ Its focus is:
 -   execution abstraction
 
 ETLantic's architecture is designed so plugins can consume the same
-logical model. Use Airflow (via `etlantic-airflow`) or another orchestrator
-for scheduling; use ETLantic for typed contracts and fail-closed planning.
+logical model. Use Airflow (via `etlantic-airflow`) to compile plans into DAG
+artifacts; use a direct-execution scheduler (built-in `LocalScheduler`, or
+planned `etlantic-prefect`) to run resolved plans in process; use ETLantic for
+typed contracts and fail-closed planning.
 
 ------------------------------------------------------------------------
 
@@ -58,7 +62,7 @@ for scheduling; use ETLantic for typed contracts and fail-closed planning.
 | Tool | Primary job | ETLantic relationship |
 |---|---|---|
 | **dbt** | SQL transformation project / warehouse analytics | Complementary. ETLantic models typed Python pipelines and multi-engine plans; dbt owns SQL project workflows. |
-| **Prefect / Dagster / Airflow** | Orchestration and scheduling | Complementary. ETLantic emits plans/DAGs; orchestrators run them. |
+| **Prefect / Dagster / Airflow** | Orchestration and scheduling | Complementary. Airflow compiles plans to DAG artifacts today; Prefect is planned as a direct-execution `ExecutionScheduler` in 0.16 (not a DAG compiler). Dagster remains future. |
 | **Pandera / Great Expectations** | Dataframe / table validation libraries | Complementary. ETLantic validates **wiring and contracts** before run; row-level suites remain engine-side or library-side. |
 
 If you need only SQL analytics projects, start with dbt. If you need only

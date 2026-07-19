@@ -279,7 +279,7 @@ ETLantic invokes each callback according to its declaration style.
 ```python
 # src/async_pipelines/pipeline.py
 
-from etlantic import Pipeline, Sink, Source
+from etlantic import Extract, Load, Pipeline
 
 from .callbacks import (
     log_retry,

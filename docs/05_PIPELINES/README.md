@@ -27,7 +27,7 @@ This section explains how to:
 A pipeline is declared using ordinary Python.
 
 ```python
-from etlantic import Pipeline, Sink, Source
+from etlantic import Extract, Load, Pipeline
 
 
 class CustomerPipeline(Pipeline):

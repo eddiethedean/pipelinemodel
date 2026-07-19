@@ -254,29 +254,20 @@ class RunRequest:
         timeout: TimeoutPolicy | None = None,
         cancellation: CancellationPolicy | None = None,
         parameter_overrides: dict[str, dict[str, Any]] | None = None,
-        binding_overrides: dict[str, str] | None = None,
         asset_overrides: dict[str, str] | None = None,
         implementation_overrides: dict[str, str] | None = None,
         invalidation: InvalidationMode = InvalidationMode.NONE,
         no_write: bool = False,
         metadata: dict[str, Any] | None = None,
-        *,
-        _warn_legacy_overrides: bool = True,
+        **kwargs: Any,
     ) -> None:
-        from etlantic._compat import warn_binding_overrides
-
-        assets_map = {str(k): str(v) for k, v in dict(asset_overrides or {}).items()}
-        bindings_map = {
-            str(k): str(v) for k, v in dict(binding_overrides or {}).items()
-        }
-        if assets_map and bindings_map and assets_map != bindings_map:
-            raise ValueError(
-                "RunRequest asset_overrides and binding_overrides disagree. "
-                "Provide only asset_overrides= (preferred) or identical maps."
+        if "binding_overrides" in kwargs:
+            raise TypeError(
+                "RunRequest(binding_overrides=...) was removed in ETLantic 0.16. "
+                "Use asset_overrides= instead. "
+                "See docs/11_DEVELOPMENT/MIGRATION_0_15_TO_0_16.md."
             )
-        if bindings_map and not assets_map and _warn_legacy_overrides:
-            warn_binding_overrides(stacklevel=3)
-        store = assets_map or bindings_map
+        store = {str(k): str(v) for k, v in dict(asset_overrides or {}).items()}
         object.__setattr__(
             self,
             "selection",
@@ -322,7 +313,6 @@ class RunRequest:
             "cancellation": self.cancellation.to_dict(),
             "parameter_overrides": dict(self.parameter_overrides),
             "asset_overrides": overrides,
-            "binding_overrides": dict(overrides),
             "implementation_overrides": dict(self.implementation_overrides),
             "invalidation": self.invalidation.value,
             "no_write": self.no_write,

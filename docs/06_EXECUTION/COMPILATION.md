@@ -65,9 +65,11 @@ Execution backends require backend-specific artifacts such as:
 
 - Airflow DAGs
 - Dagster Definitions
-- Prefect Flows
 - Local execution graphs
 - Deployment manifests
+
+Prefect is planned as a direct-execution `ExecutionScheduler` (0.16), not as
+a `compile_plan` target like Airflow.
 
 Compilation performs this translation.
 
@@ -93,14 +95,15 @@ Every compiler consumes the same IR.
 
 ETLantic may compile to:
 
-- Local Python
-- Airflow
-- Dagster
-- Prefect
-- Argo Workflows
-- Future orchestration systems
+- Local Python artifacts where useful
+- Airflow (shipped via `etlantic-airflow`)
+- Dagster (future)
+- Argo Workflows (future)
+- Future orchestration systems that consume `compile_plan`
 
-Additional plugins may define new compilation targets.
+Prefect is **not** a compilation target in the planned 0.16 path; it is a
+direct-execution scheduler. Additional plugins may define new compilation
+targets.
 
 ## Optimization
 

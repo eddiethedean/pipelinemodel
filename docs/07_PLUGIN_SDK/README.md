@@ -1,5 +1,11 @@
 # Plugin SDK
 
+!!! tip "Start here when creating a plugin"
+    Follow [Building an ETLantic Plugin](BUILDING_A_PLUGIN.md) for the canonical
+    package-from-zero workflow and release checklist. All reference and
+    third-party plugins should follow that guide; the category pages below
+    define the detailed protocols.
+
 !!! note "Portable transformation compilers (0.14)"
     The
     [Portable Transformation Compiler Protocol](PORTABLE_TRANSFORM_COMPILER.md)
@@ -140,17 +146,11 @@ releases across the ecosystem.
 
 Read this section in the following order:
 
-1. [Overview](OVERVIEW.md)
-2. [Dataframe Plugin](DATAFRAME_PLUGIN.md)
-3. [Orchestrator Plugin](ORCHESTRATOR_PLUGIN.md)
-4. [Storage Plugin](STORAGE_PLUGIN.md)
-5. [Resource Provider](RESOURCE_PROVIDER.md)
-6. [Secret Provider](SECRET_PROVIDER.md)
-7. [Observability Provider](OBSERVABILITY_PROVIDER.md)
-8. [SQL Plugin](SQL_PLUGIN.md)
-9. [PySpark Plugin](PYSPARK_PLUGIN.md)
-10. [Testing Plugins](TESTING_PLUGINS.md)
-11. [Distribution](DISTRIBUTION.md)
+1. [Building an ETLantic Plugin](BUILDING_A_PLUGIN.md)
+2. [Overview](OVERVIEW.md)
+3. The protocol page for your plugin category
+4. [Testing Plugins](TESTING_PLUGINS.md)
+5. [Distribution](DISTRIBUTION.md)
 
 ## Key Principles
 

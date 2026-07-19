@@ -33,7 +33,7 @@ profile = Profile(
     plugin_allowlist={
         "etlantic-polars": "==0.15.0",
     },
-    bindings={
+    assets={
         "customer_source": "json",
         "customer_sink": "json",
     },

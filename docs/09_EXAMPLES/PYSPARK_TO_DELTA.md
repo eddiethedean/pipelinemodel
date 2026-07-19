@@ -180,7 +180,7 @@ action.
 ## Pipeline Definition
 
 ```python
-from etlantic import Pipeline, Sink, Source
+from etlantic import Extract, Load, Pipeline
 
 
 class CustomerOrderDeltaPipeline(Pipeline):

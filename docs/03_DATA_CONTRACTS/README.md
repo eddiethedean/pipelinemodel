@@ -127,7 +127,7 @@ ETLantic can use those annotations to determine:
 Sources and sinks also reference data-contract classes:
 
 ```python
-from etlantic import Pipeline, Sink, Source
+from etlantic import Extract, Load, Pipeline
 
 
 class CustomerPipeline(Pipeline):
@@ -141,7 +141,7 @@ class CustomerPipeline(Pipeline):
 
     curated: Load[Customer] = Load(
         input=normalized.result,
-        binding="customer_warehouse",
+        asset="customer_warehouse",
     )
 ```
 

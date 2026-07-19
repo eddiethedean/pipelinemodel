@@ -20,7 +20,8 @@
 - Spark batch execution is available via `etlantic-pyspark` (0.7+). Managed
   cloud providers (Databricks/EMR/Connect) are not.
 - Airflow DAG compilation is available via `etlantic-airflow` (0.8+).
-  Dagster and Prefect compilers are not.
+  Dagster compilers are not shipped. Prefect is planned for 0.16 as an
+  `ExecutionScheduler` (not a DAG compiler).
 - Structured Streaming APIs are experimental in 0.7+.
 - SQL plugins do not treat untrusted raw SQL as safe; use the typed expression
   model and dialect identifier/parameter APIs.

@@ -47,6 +47,7 @@ class PipelineRuntime:
     spark_plugins: dict[str, Any] = field(default_factory=dict)
     spark_providers: dict[str, Any] = field(default_factory=dict)
     orchestrator_plugins: dict[str, Any] = field(default_factory=dict)
+    scheduler_plugins: dict[str, Any] = field(default_factory=dict)
     memory: MemoryStorage = field(default_factory=MemoryStorage)
     callables: CallableStorage = field(default_factory=CallableStorage)
     _entered: bool = False
@@ -136,6 +137,25 @@ class PipelineRuntime:
                 msg = f"Orchestrator plugin discovery failed during runtime init: {exc}"
                 logging.getLogger(__name__).warning(msg)
                 warnings.warn(msg, RuntimeWarning, stacklevel=2)
+        if not self.scheduler_plugins:
+            try:
+                from etlantic.runtime.scheduler_discovery import (
+                    discover_scheduler_plugins,
+                )
+                from etlantic.runtime.scheduler_discovery import (
+                    register_discovered_plugins as register_sched_plugins,
+                )
+
+                discovered_sched = discover_scheduler_plugins()
+                self.scheduler_plugins.update(discovered_sched)
+                register_sched_plugins(self.registry, plugins=discovered_sched)
+            except Exception as exc:
+                import logging
+                import warnings
+
+                msg = f"Scheduler plugin discovery failed during runtime init: {exc}"
+                logging.getLogger(__name__).warning(msg)
+                warnings.warn(msg, RuntimeWarning, stacklevel=2)
         if not self.storage:
             self.storage = {
                 "memory": self.memory,
@@ -198,6 +218,13 @@ class PipelineRuntime:
         self.orchestrator_plugins[engine] = plugin
         register_discovered_plugins(self.registry, plugins={engine: plugin})
 
+    def register_scheduler_plugin(self, name: str, plugin: Any) -> None:
+        """Register a live ExecutionScheduler plugin and its planning descriptor."""
+        from etlantic.runtime.scheduler_discovery import register_discovered_plugins
+
+        self.scheduler_plugins[name] = plugin
+        register_discovered_plugins(self.registry, plugins={name: plugin})
+
     def apply_plugin_allowlist(self, profile: Any) -> list[Any]:
         """Filter discovered plugins using ``profile.plugin_allowlist``.
 
@@ -211,6 +238,7 @@ class PipelineRuntime:
             "sql_plugins",
             "spark_plugins",
             "orchestrator_plugins",
+            "scheduler_plugins",
         ):
             plugins = getattr(self, attr)
             kept, diags = filter_plugins_by_allowlist(plugins, profile)

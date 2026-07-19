@@ -31,7 +31,9 @@ def test_profile_round_trip(tmp_path: Path) -> None:
     path = write_profile(profile, tmp_path / "demo.json")
     loaded = load_profile(path)
     assert loaded.name == "demo"
+    assert loaded.assets["customers"] == "csv://customers"
     assert loaded.bindings["customers"] == "csv://customers"
+    assert "bindings" not in loaded.to_dict()
     assert loaded.secrets["token"].provider == "env-secrets"
 
 

@@ -296,7 +296,7 @@ A missing `metrics` output should fail before downstream execution.
 ```python
 # src/multi_output/pipeline.py
 
-from etlantic import Pipeline, Sink, Source
+from etlantic import Extract, Load, Pipeline
 
 from .contracts import (
     Customer,

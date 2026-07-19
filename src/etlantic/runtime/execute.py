@@ -22,7 +22,7 @@ from etlantic.runtime.request import (
     RunRequest,
     RunSelection,
 )
-from etlantic.runtime.scheduler import LocalScheduler, SchedulingContext
+from etlantic.runtime.scheduler import SchedulingContext
 from etlantic.runtime.state import RunStatus
 
 
@@ -159,7 +159,18 @@ async def arun_pipeline(
             if node.name in targets and node.binding:
                 runtime.memory._store.pop(node.binding, None)
 
-    scheduler = LocalScheduler()
+    from etlantic.runtime.scheduler_discovery import resolve_scheduler
+
+    orchestrator_name = str(
+        getattr(resolved, "orchestrator", None)
+        or (plan.execution_settings or {}).get("orchestrator")
+        or "local"
+    )
+    scheduler_plugins = getattr(runtime, "scheduler_plugins", None)
+    scheduler = resolve_scheduler(
+        orchestrator_name,
+        plugins=None if scheduler_plugins is None else dict(scheduler_plugins),
+    )
     async with runtime.session():
         return await scheduler.execute(
             plan,

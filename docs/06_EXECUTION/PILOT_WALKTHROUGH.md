@@ -75,7 +75,7 @@ write_profile(
         security_domain="production",
         validation_policy="strict",
         plugin_allowlist={"etlantic-polars": "==0.15.0"},
-        bindings={
+        assets={
             "customer_source": "reviewed-source",
             "customer_sink": "reviewed-sink",
         },

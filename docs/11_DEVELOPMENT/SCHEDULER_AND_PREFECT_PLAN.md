@@ -55,11 +55,12 @@ Pipeline + Profile
         ↓
 validated, resolved PipelinePlan
         ↓
-ETLantic physical execution units
+ready work units
+(logical nodes today; physical_units when fusion scheduling lands)
         ↓
 ExecutionScheduler
    ├── LocalScheduler          built in and default
-   └── PrefectScheduler        optional etlantic-prefect
+   └── PrefectScheduler        optional etlantic-prefect (0.16)
 
 PipelinePlan
         ↓
@@ -67,9 +68,10 @@ Orchestrator compiler
    └── Airflow DAG             optional etlantic-airflow
 ```
 
-The scheduler boundary coordinates ready physical units. It does not compile
-DTCS expressions, execute dataframe operations itself, resolve secrets during
-planning, or invent retry/materialization semantics.
+The scheduler boundary coordinates ready work without re-planning. It does
+not compile DTCS expressions, execute dataframe operations itself, resolve
+secrets during planning, or invent retry/materialization semantics. Until
+fusion-driven unit scheduling lands, schedulers map selected logical nodes.
 
 ## Proposed scheduler boundary
 
@@ -121,16 +123,15 @@ The shipped orchestration protocol primarily models deterministic compilation,
 submission, polling, cancellation, and correlation for external platforms.
 The scheduler boundary is the direct-execution companion to that protocol.
 
-0.15 must decide whether to:
+**Decision (resolved in 0.15):** publish a narrowly scoped
+`etlantic.scheduler/1` protocol for direct execution. Keep
+`etlantic.orchestration/1` for external compile/submit/poll plugins such as
+Airflow. Do not merge the two discovery systems. Shared models for retry
+intent, schedule intent, capabilities, correlation, and reports are reused
+across both protocols.
 
-- add direct-execution capabilities compatibly to
-  `etlantic.orchestration/1`; or
-- publish a narrowly scoped `etlantic.scheduler/1` protocol.
-
-The decision must avoid two overlapping plugin discovery systems. Shared
-models for retry intent, schedule intent, capabilities, correlation, and
-reports should be reused. A protocol major is required if existing
-orchestrator meaning cannot be extended compatibly.
+`LocalScheduler` and the planned `etlantic-prefect` adapter implement
+`ExecutionScheduler`. `etlantic-airflow` remains an `OrchestratorPlugin`.
 
 ## 0.15: scheduler extraction and hardening
 
@@ -146,14 +147,16 @@ Deliver:
 - implement `LocalScheduler` through that boundary
 - preserve `Pipeline.run()` and `Pipeline.arun()` behavior
 - preserve plan fingerprints and serialized plan/report schemas
-- formalize physical-unit readiness, completion, failure, cancellation, and
-  timeout transitions
+- formalize readiness, completion, failure, cancellation, and timeout
+  transitions for scheduled work (logical nodes in 0.15; physical-unit
+  fusion remains later)
 - make concurrency and retry limits explicit and bounded
 - prevent scheduler code from reselecting implementations or plugins
 - add scheduler capability analysis and structured diagnostics
 - add private scheduler conformance fixtures
 - document the direct-execution versus external-compilation distinction
-- complete a Prefect adapter spike against the resolved physical-unit model
+- complete a Prefect adapter spike against the scheduler boundary (logical-node
+  mapping until fusion-driven unit scheduling lands)
 
 Non-goals for 0.15:
 
@@ -183,28 +186,48 @@ The built-in local path uses one explicit scheduler boundary, retains current
 observable behavior, and passes the private conformance corpus. The Prefect
 spike demonstrates feasibility without becoming a release dependency.
 
-## 0.16: optional `etlantic-prefect`
+## Sibling 0.16 gate: authoring vocabulary cleanup
+
+0.16 also removes the public `Source` / `Sink` / `binding=` compatibility
+layer. That work is **independent** of Prefect packaging and is owned by the
+[0.16 deletion checklist](MIGRATION_0_14_TO_0_15.md#016-deletion-checklist)
+and Migration 0.15 → 0.16 — not by `etlantic-prefect`. Plan/DPCS/plugin wire
+names stay unchanged. See
+[ROADMAP §0.16 Gate A](../../ROADMAP.md#gate-a--authoring-vocabulary-cleanup-hard).
+
+## 0.16: optional `etlantic-prefect` (Gate B MVP)
 
 After the 0.15 scheduler boundary is proven, publish
-`etlantic-prefect` as the reference Python-native orchestration plugin.
+`etlantic-prefect` as the reference Python-native **scheduler** plugin
+(`ExecutionScheduler` / `etlantic.scheduler/1`). This gate does not block
+vocabulary cleanup.
 
 Deliver:
 
-- deterministic mapping from resolved ETLantic physical units to Prefect flows
-  and tasks
+- honor `Profile(orchestrator=...)` plus production plugin allowlisting on the
+  run path (stop hard-coding only `LocalScheduler` when a non-local scheduler
+  is selected)
+- deterministic mapping from selected **logical nodes** to Prefect flows and
+  tasks, with the same dependency closure as `LocalScheduler`
 - local direct invocation without requiring a deployment for the basic path
-- optional deployment/serve integration behind Prefect-owned configuration
 - exact capability declaration for concurrency, retries, cancellation,
-  timeouts, schedules, and artifact transport
-- stable mapping between ETLantic run/unit identities and Prefect flow/task-run
+  timeouts, and artifact transport that the MVP claims
+- stable mapping between ETLantic run/node identities and Prefect flow/task-run
   identities
 - ETLantic-owned output normalization and `PipelineRunReport`
 - redacted diagnostics and event correlation
 - no Prefect object in `PipelinePlan`, contracts, or portable transformation IR
 - optional dependency/package installation only
-- public scheduler/orchestrator conformance fixtures shared with
-  `LocalScheduler` where behavior overlaps
-- comparison documentation for local, Prefect, and Airflow paths
+- a **minimal** public scheduler conformance suite shared with
+  `LocalScheduler` where behavior already overlaps
+- comparison documentation for local (scheduler), Prefect (scheduler), and
+  Airflow (compiler) paths
+
+Deferred past 0.16:
+
+- fusion-driven `physical_units` as the execution grain
+- Prefect deployment/serve and durable scheduling
+- the full scheduler conformance corpus below
 
 The plugin must not:
 
@@ -216,14 +239,15 @@ The plugin must not:
 - weaken ETLantic retry, transaction, validation, security, or materialization
   boundaries
 - require Prefect Cloud for local execution
+- implement Airflow-style `compile_plan` / DAG artifact compilation
 
 Acceptance scenarios:
 
 - the same resolved plan executes locally and through Prefect with equivalent
   logical results, lifecycle states, and report shape
-- independent physical units use the configured Prefect task runner without
+- independent ready nodes use the configured Prefect task runner without
   changing dependencies
-- unsupported scheduling requirements fail during planning
+- unsupported scheduling requirements fail during analyze/planning
 - retries are not duplicated between ETLantic and Prefect
 - large artifacts use declared artifact references rather than control-plane
   payloads
@@ -234,9 +258,9 @@ Acceptance scenarios:
 
 Exit gate:
 
-`etlantic-prefect` passes the public conformance suite as an optional plugin;
-`LocalScheduler` remains the default and `etlantic-airflow` remains the
-reference external compiler.
+`etlantic-prefect` passes the minimal public scheduler conformance suite as an
+optional plugin; `LocalScheduler` remains the default and `etlantic-airflow`
+remains the reference external compiler.
 
 ## Default selection policy
 
@@ -255,7 +279,7 @@ profile must not silently choose Prefect, Airflow, or local execution.
 
 ## Conformance requirements
 
-The scheduler suite covers:
+The **full** scheduler suite covers:
 
 - capability accuracy
 - dependency and concurrency behavior
@@ -271,6 +295,10 @@ The scheduler suite covers:
 - result and report equivalence
 - secret and row-data exclusion from control artifacts
 - bounded hostile plans and failure behavior
+
+0.16 Gate B requires only a **minimal** public subset of the overlapping
+LocalScheduler semantics. The full corpus remains a post-0.16 hardening
+target.
 
 Platform-specific capabilities run additional fixtures. Passing generic
 dependency scheduling tests does not permit a plugin to claim durable
@@ -295,13 +323,18 @@ scheduling, event triggers, approvals, or distributed execution.
 - document `LocalScheduler` as the zero-service reference
 - add an `etlantic-prefect` installation and execution guide when shipped
 - retain Airflow as the external compilation guide
-- add a local/Prefect/Airflow decision table
+- add a local (scheduler) / Prefect (scheduler) / Airflow (compiler) decision
+  table
 - document profile selection and production allowlisting
 - publish migration notes only if observable local-runner behavior changes
+- keep vocabulary cleanup migration notes under Migration 0.15 → 0.16, not
+  under the Prefect package docs
 
 ## Final success criteria
 
 The program succeeds when ETLantic has a smaller, testable built-in scheduling
-kernel; an optional Prefect integration can coordinate the same resolved plans;
-Airflow compilation remains independent; and no orchestrator becomes part of
-ETLantic's logical authoring or portable semantic model.
+kernel; an optional Prefect `ExecutionScheduler` can coordinate the same
+resolved plans via local direct invocation; Airflow compilation remains
+independent; authoring vocabulary cleanup can ship without Prefect; and no
+orchestrator becomes part of ETLantic's logical authoring or portable semantic
+model.

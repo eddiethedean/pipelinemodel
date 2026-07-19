@@ -154,7 +154,7 @@ The runtime-specific code is isolated in the implementation module.
 ```python
 # src/csv_to_sql/pipeline.py
 
-from etlantic import Pipeline, Sink, Source
+from etlantic import Extract, Load, Pipeline
 
 from .contracts import Customer, RawCustomer
 from .transformations import NormalizeCustomers

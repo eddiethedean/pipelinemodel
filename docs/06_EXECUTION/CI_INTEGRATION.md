@@ -34,7 +34,7 @@ write_profile(
             "local": None,
             # "polars": "==0.14.0",
         },
-        bindings={
+        assets={
             # Logical binding name → provider key or descriptor name
             # "customer_source": "json",
         },

@@ -220,7 +220,7 @@ action.
 ## Step 4 — Define the Pipeline
 
 ```python
-from etlantic import Pipeline, Sink, Source
+from etlantic import Extract, Load, Pipeline
 
 
 class CustomerOrderWarehousePipeline(Pipeline):

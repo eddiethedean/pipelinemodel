@@ -27,17 +27,17 @@ least one release before removal. Security fixes may shorten that window.
 After 1.0, incompatible public API removal requires a major release unless a
 documented security exception applies.
 
-## Active 0.15 → 0.16 vocabulary deprecations
+## Removed in 0.16 (authoring vocabulary)
 
-| Deprecated (0.15 warns) | Replacement | Removed |
-|---|---|---|
-| `Source` / `Sink` | `Extract` / `Load` | 0.16 |
-| `binding=` on extract/load constructors | `asset=` | 0.16 |
-| `.binding` property | `.asset` | 0.16 |
-| `Profile(bindings=...)` / bindings-only JSON | `Profile(assets=...)` | 0.16 |
-| `RunRequest.binding_overrides` | `asset_overrides` | 0.16 |
+| Removed | Replacement |
+|---|---|
+| `Source` / `Sink` | `Extract` / `Load` |
+| `binding=` on extract/load constructors | `asset=` |
+| `.binding` property | `.asset` |
+| `Profile(bindings=...)` / mirrored public JSON `bindings` | `Profile(assets=...)` |
+| `RunRequest.binding_overrides` | `asset_overrides` |
 
-Wire names intentionally **not** deprecated: plan/graph `binding`,
+Wire names intentionally **kept**: plan/graph `binding`,
 `NodeKind` `"source"`/`"sink"`, DPCS `etlantic:binding`, plugin
 `*_from_binding`, and port-wiring `Step.bindings`. See
-[Migration 0.14 → 0.15](MIGRATION_0_14_TO_0_15.md).
+[Migration 0.15 → 0.16](MIGRATION_0_15_TO_0_16.md).

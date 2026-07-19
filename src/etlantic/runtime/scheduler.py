@@ -1,9 +1,8 @@
-"""Direct-execution scheduler boundary (etlantic.scheduler/1 — built-in only).
+"""Direct-execution scheduler boundary (etlantic.scheduler/1).
 
-0.15 introduces an explicit ``ExecutionScheduler`` protocol with a single
-built-in ``LocalScheduler``. External orchestrators continue to use
-``etlantic.orchestration/1`` (compile/submit/poll). Optional Prefect packaging
-is deferred to 0.16.
+Built-in ``LocalScheduler`` is the zero-service default. Optional plugins such
+as ``etlantic-prefect`` register under ``etlantic.scheduler_plugins``. External
+compilers continue to use ``etlantic.orchestration/1`` (compile/submit/poll).
 """
 
 from __future__ import annotations

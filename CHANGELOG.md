@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-07-19
+
+### Added
+- Optional `etlantic-prefect` `ExecutionScheduler` plugin (Prefect 3.x local MVP)
+- `etlantic.scheduler_plugins` discovery and `Profile(orchestrator=...)` run dispatch
+- Public `etlantic.testing.run_scheduler_conformance_suite`
+- Migration guide 0.15 → 0.16
+
+### Changed
+- Removed public `Source` / `Sink` / `binding=` / `Profile(bindings=...)` /
+  `RunRequest(binding_overrides=...)` authoring aliases (Gate A)
+- Profile public JSON emits `assets` only; plan snapshots keep wire `bindings`
+- Package versions aligned at 0.16.0; plugins require `etlantic>=0.16.0,<0.17`
+
+### Migration
+- Prefer `Extract` / `Load` / `asset=` / `Profile(assets=...)`. See
+  `docs/11_DEVELOPMENT/MIGRATION_0_15_TO_0_16.md`.
+- Use `Profile(orchestrator="prefect")` only with `etlantic-prefect` installed.
+
 ## [0.15.0] - 2026-07-19
 
 ### Added
@@ -611,6 +630,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - uv + ruff toolchain, MkDocs documentation site, shared GitHub Actions
   checks, and tag-triggered PyPI release
 
+[0.16.0]: https://github.com/eddiethedean/etlantic/releases/tag/v0.16.0
 [0.15.0]: https://github.com/eddiethedean/etlantic/releases/tag/v0.15.0
 [0.14.0]: https://github.com/eddiethedean/etlantic/releases/tag/v0.14.0
 [0.13.0]: https://github.com/eddiethedean/etlantic/releases/tag/v0.13.0

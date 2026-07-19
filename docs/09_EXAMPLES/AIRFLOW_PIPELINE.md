@@ -176,7 +176,7 @@ The Polars plugin executes the transformation.
 ```python
 # src/airflow_pipeline/pipeline.py
 
-from etlantic import Pipeline, Sink, Source
+from etlantic import Extract, Load, Pipeline
 
 from .contracts import Customer, RawCustomer
 from .transformations import NormalizeCustomers

@@ -1,4 +1,4 @@
-"""Semantic parity between legacy Source/Sink/binding and Extract/Load/asset."""
+"""Wire-name parity for Extract/Load/asset authoring after 0.16 cleanup."""
 
 from __future__ import annotations
 
@@ -12,8 +12,6 @@ from etlantic import (
     Load,
     Output,
     Pipeline,
-    Sink,
-    Source,
     Transformation,
     graphs_equivalent,
 )
@@ -30,34 +28,15 @@ class Normalize(Transformation):
     result: Output[Customer]
 
 
-def _legacy_pipeline() -> type[Pipeline]:
-    class LegacyPipeline(Pipeline):
-        __published_id__ = "parity-pipeline"
-        __published_version__ = "0.15.0"
-        raw: Source[RawCustomer] = Source(asset="raw_customers", _compat_warn=False)
-        normalized = Normalize.step(customers=raw)
-        out: Sink[Customer] = Sink(
-            input=normalized.result, asset="curated_customers", _compat_warn=False
-        )
-
-    return LegacyPipeline
-
-
 def _canonical_pipeline() -> type[Pipeline]:
     class CanonicalPipeline(Pipeline):
         __published_id__ = "parity-pipeline"
-        __published_version__ = "0.15.0"
+        __published_version__ = "0.16.0"
         raw: Extract[RawCustomer] = Extract(asset="raw_customers")
         normalized = Normalize.step(customers=raw)
         out: Load[Customer] = Load(input=normalized.result, asset="curated_customers")
 
     return CanonicalPipeline
-
-
-def test_graphs_equivalent_legacy_and_canonical() -> None:
-    legacy = _legacy_pipeline()
-    canonical = _canonical_pipeline()
-    assert graphs_equivalent(legacy.inspect(), canonical.inspect())
 
 
 def test_graph_retains_source_sink_kinds_and_binding_field() -> None:
@@ -94,27 +73,21 @@ def test_dpcs_round_trip_graph_equivalence(tmp_path: Path) -> None:
     )
 
 
-def test_plan_fingerprint_stable_across_profile_vocabularies() -> None:
+def test_plan_fingerprint_uses_bindings_snapshot() -> None:
     pipeline_cls = _canonical_pipeline()
-    legacy_profile = Profile(
-        name="parity",
-        bindings={"raw_customers": "memory", "curated_customers": "memory"},
-        _warn_legacy_bindings=False,
-    )
-    canonical_profile = Profile(
+    profile = Profile(
         name="parity",
         assets={"raw_customers": "memory", "curated_customers": "memory"},
     )
-    left = plan_pipeline(
-        pipeline_cls, context=PlanningContext.create(profile=legacy_profile)
+    plan = plan_pipeline(
+        pipeline_cls, context=PlanningContext.create(profile=profile)
     )
-    right = plan_pipeline(
-        pipeline_cls, context=PlanningContext.create(profile=canonical_profile)
-    )
-    assert left.fingerprint == right.fingerprint
-    assert "assets" not in (left.profile_snapshot or {})
-    assert "bindings" in (left.profile_snapshot or {})
-    assert left.profile_snapshot == right.profile_snapshot
+    assert "assets" not in (plan.profile_snapshot or {})
+    assert "bindings" in (plan.profile_snapshot or {})
+    assert plan.profile_snapshot["bindings"] == {
+        "raw_customers": "memory",
+        "curated_customers": "memory",
+    }
 
 
 def test_plan_json_retains_binding_field_on_nodes() -> None:

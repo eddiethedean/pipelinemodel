@@ -97,7 +97,7 @@ class CustomerPipeline(Pipeline):
 
     curated: Load[Customer] = Load(
         input=normalized.result,
-        binding="customer_sink",
+        asset="customer_sink",
     )
 ```
 

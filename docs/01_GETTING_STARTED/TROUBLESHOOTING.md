@@ -151,7 +151,8 @@ Install the matching plugin and set the corresponding profile engine
 | SparkForge adapter | `pip install etlantic-sparkforge` or `uv sync --group sparkforge` | `tests/sparkforge/` |
 
 Airflow compilation is **available** via `etlantic-airflow` (0.8+). Dagster
-and Prefect compilers are not shipped.
+compilers are not shipped. Prefect is planned for 0.16 as a direct-execution
+scheduler (`ExecutionScheduler`), not a DAG compiler.
 
 ## Commands in a design page do not exist
 

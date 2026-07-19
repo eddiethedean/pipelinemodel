@@ -7,31 +7,32 @@ from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 from typing import Any, Literal
 
-from etlantic._compat import warn_profile_bindings
 from etlantic.secrets import SecretRef
 
 PortableTransformPolicy = Literal["require", "prefer", "native"]
 
-_WARN_PROFILE_BINDINGS = True
+_BINDINGS_REMOVED = (
+    "Profile(bindings=...) was removed in ETLantic 0.16. Use assets= instead. "
+    "See docs/11_DEVELOPMENT/MIGRATION_0_15_TO_0_16.md."
+)
 
 
-def _normalize_assets_bindings(
+def _normalize_assets(
     *,
     assets: dict[str, str] | None,
-    bindings: dict[str, str] | None,
-    warn: bool,
+    bindings: dict[str, str] | None = None,
+    allow_legacy_bindings: bool = False,
 ) -> dict[str, str]:
-    """Normalize public assets=/bindings= into one logical asset→provider map."""
+    """Normalize public assets= into the internal asset→provider store."""
     assets_map = {str(k): str(v) for k, v in dict(assets or {}).items()}
     bindings_map = {str(k): str(v) for k, v in dict(bindings or {}).items()}
+    if bindings_map and not allow_legacy_bindings:
+        raise TypeError(_BINDINGS_REMOVED)
     if assets_map and bindings_map and assets_map != bindings_map:
         raise ValueError(
-            "Profile assets and bindings disagree. Provide only assets= "
-            f"(preferred) or identical maps. assets={assets_map!r} "
-            f"bindings={bindings_map!r}"
+            "Profile assets and bindings disagree. Provide only assets=. "
+            f"assets={assets_map!r} bindings={bindings_map!r}"
         )
-    if bindings_map and not assets_map and warn and _WARN_PROFILE_BINDINGS:
-        warn_profile_bindings(stacklevel=4)
     return assets_map or bindings_map
 
 
@@ -47,7 +48,7 @@ class Profile:
     allow_trusted_sql: bool = False
     spark_udf_policy: str = "warn"
     spark_streaming: bool = False
-    # Internal store for logical asset name → provider. Prefer ``assets=``.
+    # Internal store for logical asset name → provider (plan wire name: bindings).
     bindings: dict[str, str] = field(default_factory=dict)
     implementation_overrides: dict[str, str] = field(default_factory=dict)
     secret_providers: dict[str, str] = field(default_factory=dict)
@@ -83,7 +84,6 @@ class Profile:
         allow_trusted_sql: bool = False,
         spark_udf_policy: str = "warn",
         spark_streaming: bool = False,
-        bindings: dict[str, str] | None = None,
         assets: dict[str, str] | None = None,
         implementation_overrides: dict[str, str] | None = None,
         secret_providers: dict[str, str] | None = None,
@@ -102,13 +102,11 @@ class Profile:
         plugin_allowlist: dict[str, str | None] | None = None,
         portable_transform_policy: PortableTransformPolicy = "prefer",
         metadata: dict[str, Any] | None = None,
-        _warn_legacy_bindings: bool = True,
+        **kwargs: Any,
     ) -> None:
-        store = _normalize_assets_bindings(
-            assets=assets,
-            bindings=bindings,
-            warn=_warn_legacy_bindings,
-        )
+        if "bindings" in kwargs:
+            raise TypeError(_BINDINGS_REMOVED)
+        store = _normalize_assets(assets=assets)
         object.__setattr__(self, "name", name)
         object.__setattr__(self, "orchestrator", orchestrator)
         object.__setattr__(self, "dataframe_engine", dataframe_engine)
@@ -156,19 +154,18 @@ class Profile:
         return f"profile:{self.name}"
 
     def to_dict(self) -> dict[str, Any]:
-        """Serialize profile for public JSON (assets preferred, bindings mirrored)."""
+        """Serialize profile for public JSON (assets only; no mirrored bindings)."""
         data = asdict(self)
         data["secrets"] = {
             key: ref.to_dict() if isinstance(ref, SecretRef) else ref
             for key, ref in self.secrets.items()
         }
-        asset_map = dict(self.bindings)
-        data["assets"] = asset_map
-        data["bindings"] = dict(asset_map)
+        data["assets"] = dict(self.bindings)
+        data.pop("bindings", None)
         return data
 
     def to_plan_snapshot(self) -> dict[str, Any]:
-        """Fingerprint-stable snapshot retaining the pre-0.15 ``bindings`` shape."""
+        """Fingerprint-stable snapshot retaining the plan wire ``bindings`` shape."""
         data = asdict(self)
         data["secrets"] = {
             key: ref.to_dict() if isinstance(ref, SecretRef) else ref
@@ -179,8 +176,12 @@ class Profile:
         return data
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any], *, warn_legacy: bool = True) -> Profile:
-        """Deserialize a profile mapping."""
+    def from_dict(cls, data: dict[str, Any]) -> Profile:
+        """Deserialize a profile mapping.
+
+        Accepts legacy JSON ``bindings`` keys for one-time loading of saved
+        profiles; new writes via :meth:`to_dict` emit ``assets`` only.
+        """
         secrets_raw = data.get("secrets") or {}
         if not isinstance(secrets_raw, dict):
             raise ValueError("Profile secrets must be a mapping of name → SecretRef")
@@ -197,10 +198,10 @@ class Profile:
                 )
         has_assets = "assets" in data and data.get("assets") is not None
         has_bindings = "bindings" in data and data.get("bindings") is not None
-        store = _normalize_assets_bindings(
+        store = _normalize_assets(
             assets=dict(data.get("assets") or {}) if has_assets else None,
             bindings=dict(data.get("bindings") or {}) if has_bindings else None,
-            warn=bool(warn_legacy and has_bindings and not has_assets),
+            allow_legacy_bindings=True,
         )
         return cls(
             name=str(data["name"]),
@@ -211,7 +212,7 @@ class Profile:
             allow_trusted_sql=bool(data.get("allow_trusted_sql", False)),
             spark_udf_policy=str(data.get("spark_udf_policy") or "warn"),
             spark_streaming=bool(data.get("spark_streaming", False)),
-            bindings=store,
+            assets=store,
             implementation_overrides=dict(data.get("implementation_overrides") or {}),
             secret_providers=dict(data.get("secret_providers") or {}),
             resources=dict(data.get("resources") or {}),
@@ -240,38 +241,29 @@ class Profile:
                 data.get("portable_transform_policy")
             ),
             metadata=dict(data.get("metadata") or {}),
-            _warn_legacy_bindings=False,
         )
 
     def with_updates(self, **kwargs: Any) -> Profile:
         """Return a copy with selected fields replaced.
 
         Unknown keys raise ``TypeError`` so typos like ``plugin_allow_list``
-        cannot silently leave production allowlists empty. ``assets`` is accepted
-        as the preferred alias for ``bindings``.
+        cannot silently leave production allowlists empty. ``assets`` is the
+        public authoring key for the internal bindings store.
         """
         known = {f.name for f in fields(self)} | {"assets"}
+        # Reject public bindings= authoring; internal snapshot still uses bindings.
+        if "bindings" in kwargs:
+            raise TypeError(_BINDINGS_REMOVED)
         unknown = sorted(set(kwargs) - known)
         if unknown:
             raise TypeError(
                 f"Profile.with_updates() got unexpected field(s): {', '.join(unknown)}"
             )
         current = self.to_plan_snapshot()
-        if "assets" in kwargs and "bindings" in kwargs:
-            store = _normalize_assets_bindings(
-                assets=kwargs.pop("assets"),
-                bindings=kwargs.pop("bindings"),
-                warn=False,
-            )
-            current["bindings"] = store
-        elif "assets" in kwargs:
+        if "assets" in kwargs:
             current["bindings"] = dict(kwargs.pop("assets") or {})
-        elif "bindings" in kwargs:
-            if _WARN_PROFILE_BINDINGS:
-                warn_profile_bindings(stacklevel=3)
-            current["bindings"] = dict(kwargs.pop("bindings") or {})
         current.update(kwargs)
-        return Profile.from_dict(current, warn_legacy=False)
+        return Profile.from_dict(current)
 
 
 def _as_str_tuple(value: Any) -> tuple[str, ...]:

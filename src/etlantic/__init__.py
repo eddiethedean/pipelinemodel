@@ -65,7 +65,7 @@ from etlantic.orchestration import (
     compile_plan,
     discover_orchestrator_plugins,
 )
-from etlantic.pipeline import Extract, Load, Pipeline, Sink, Source, SubpipelineInstance
+from etlantic.pipeline import Extract, Load, Pipeline, SubpipelineInstance
 from etlantic.plan import (
     ArtifactRef,
     ArtifactStrategy,
@@ -243,8 +243,7 @@ __all__ = [
     "SecretRef",
     "SecretValue",
     "Severity",
-    "Sink",
-    "Source",
+    "SubpipelineInstance",
     "SourceLocation",
     "SparkUdfPolicy",
     "SqlQuery",

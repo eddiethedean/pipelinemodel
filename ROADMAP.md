@@ -1279,57 +1279,215 @@ implementations, capability vocabulary, shared fixtures, and a short
 native-to-portable migration note. Until a family graduates, keep native
 `@implementation(...)` for that behavior.
 
-## 0.16 — Python-Native Orchestration Plugin and Vocabulary Cleanup
+## 0.16 — Authoring Vocabulary Cleanup and Optional Prefect Scheduler
 
-**Status: planned — after the 0.15 scheduler boundary and SQL exit gate.**
+**Status: shipped in 0.16.0.**
 
-### Deliver
+0.16 has two **independent** gates. Vocabulary cleanup (Gate A) must ship and
+must not wait on Prefect. Optional `etlantic-prefect` (Gate B) may ship in the
+same minor when ready, but it does not block Gate A. Portable profile
+graduation remains [0.15 continuation](#015-continuation-profile-graduation),
+not 0.16.
 
-- publish optional `etlantic-prefect` as the reference Python-native
-  orchestration plugin
-- map already-resolved physical execution units to Prefect flows/tasks without
-  re-planning or exposing Prefect APIs in pipeline authoring
-- support local direct invocation; keep deployment/serve behavior optional
-- correlate ETLantic run/unit identities with Prefect flow/task-run identities
+**Prerequisites already shipped in 0.15:** `ExecutionScheduler` /
+`etlantic.scheduler/1`, built-in `LocalScheduler`, private scheduler
+conformance corpus, and a Prefect feasibility spike. See the
+[Local Scheduler and Prefect Integration Plan](docs/11_DEVELOPMENT/SCHEDULER_AND_PREFECT_PLAN.md)
+and
+[Prefect Feasibility Spike notes](docs/11_DEVELOPMENT/PREFECT_SPIKE_NOTES.md).
+
+**Protocol distinction:** Prefect is a direct-execution **scheduler** plugin
+(`ExecutionScheduler`). Airflow remains an external **compiler** plugin
+(`OrchestratorPlugin` / `compile_plan`). Prefect must not become a DAG/artifact
+compiler like Airflow.
+
+### Gate A — Authoring vocabulary cleanup (hard)
+
+#### Deliver
+
+- remove public `Source`, `Sink`, `binding=`, `.binding`,
+  `Profile(bindings=...)`, mirrored profile JSON `bindings`, and
+  `RunRequest.binding_overrides` per the
+  [0.16 deletion checklist](docs/11_DEVELOPMENT/MIGRATION_0_14_TO_0_15.md#016-deletion-checklist)
+- keep plan/DPCS/plugin **wire** names unchanged (`binding`, source/sink
+  node kinds, storage `binding=` parameters)
+- publish `docs/11_DEVELOPMENT/MIGRATION_0_15_TO_0_16.md`
+- migrate README, docs, and examples still showing deprecated authoring names
+  to `Extract` / `Load` / `asset=` and `Profile.assets`
+
+#### Non-goals
+
+- renaming plan/DPCS/plugin wire vocabulary
+- changing logical graph semantics beyond removing authoring shims
+
+#### Acceptance scenarios
+
+- importing or constructing `Source`, `Sink`, or `binding=` authoring paths
+  fails with a clear migration error rather than a silent alias
+- validated pipelines and plans continue to use wire `binding` / source/sink
+  kinds where those names are protocol-owned
+- migration guide and What’s New notes cover every removed public surface
+
+#### Exit gate
+
+No public 0.15 authoring-vocabulary compatibility layer remains; docs and
+tests use `Extract`, `Load`, and `asset=` only.
+
+### Gate B — Optional Prefect `ExecutionScheduler` MVP (independent)
+
+#### Deliver
+
+- honor `Profile(orchestrator=...)` (and production plugin allowlisting) on the
+  run path instead of hard-coding `LocalScheduler()` when a non-local
+  scheduler is selected
+- publish optional `packages/etlantic-prefect` implementing
+  `ExecutionScheduler` / `etlantic.scheduler/1` (not `OrchestratorPlugin`)
+- map one Prefect task per selected **logical node**, with the same dependency
+  closure as `LocalScheduler` (fusion-driven `physical_units` scheduling remains
+  post-0.16)
+- support local direct invocation only for the MVP path
+- correlate ETLantic run/node identities with Prefect flow/task-run identities
 - preserve ETLantic-owned validation, retry safety, materialization, output
   normalization, redaction, and `PipelineRunReport`
-- publish scheduler/orchestrator conformance fixtures shared with
-  `LocalScheduler` where semantics overlap
+- publish a **minimal** shared public scheduler conformance suite for semantics
+  that already overlap with `LocalScheduler`
 - keep `LocalScheduler` as the development, test, notebook, and embedded
   default
 - keep `etlantic-airflow` as the reference external artifact compiler
 - require explicit profile selection and plugin allowlisting for production
-- complete the planned removal of public `Source`, `Sink`, `binding=`, and
-  their 0.15 compatibility paths; `Extract`, `Load`, and `asset=` remain
+  Prefect use
 
-### Non-goals
+#### Non-goals
 
 - adding Prefect to ETLantic core dependencies
 - requiring Prefect Cloud or a Prefect server for the basic local plugin path
 - making Prefect the automatic `production` profile orchestrator
+- Prefect deployment/serve or durable scheduling (post-0.16 Prefect follow-on)
+- fusion-driven `physical_units` as the Prefect (or local) execution grain
+  (post-0.16 / before 1.0 runtime work)
+- the full scheduler conformance corpus from the scheduler plan (later)
+- treating Prefect as an Airflow-style `compile_plan` / DAG artifact compiler
 - passing large datasets through scheduler control payloads
 - allowing Prefect retries or task boundaries to weaken ETLantic transaction,
   validation, security, or materialization semantics
 - replacing Airflow compilation
+- portable profile graduation (0.15 continuation)
+- production-default orchestrator selection or the full 1.0 security matrix
 
-### Acceptance scenarios
+#### Acceptance scenarios
 
 - one resolved plan produces equivalent logical results and report shape under
   `LocalScheduler` and Prefect
-- independent units run through the selected Prefect task runner without
+- independent ready nodes run through the selected Prefect task runner without
   dependency changes
 - retries occur once, under resolved ETLantic retry-safety policy
 - unsupported durable scheduling, cancellation, timeout, or artifact behavior
-  fails during planning with a stable diagnostic
+  fails during analyze/planning with a stable diagnostic
 - plans, Prefect parameters, diagnostics, and reports contain no resolved
   secrets or source rows
 - Prefect is absent from imports and installation for the default local path
+- `Profile(orchestrator="prefect")` without the optional package (or without
+  allowlisting in production) fails closed
 
-### Exit gate
+#### Exit gate
 
-`etlantic-prefect` passes public conformance as an optional plugin;
-`LocalScheduler` remains the zero-service default; Airflow remains the external
-compiler; and the 0.15 authoring-vocabulary compatibility layer is removed.
+`etlantic-prefect` passes the minimal public scheduler conformance suite as an
+optional plugin; `LocalScheduler` remains the zero-service default; Airflow
+remains the external compiler. Gate B does not block Gate A.
+
+## 0.17+ — Portable Coverage Across First-Party Execution Plugins
+
+**Status: planned.** This is a continuing 0.17-and-later workstream rather than
+a promise that every capability family graduates in one minor release.
+
+ETLantic's first-party data-processing plugins should provide portable
+transformation compilation wherever the plugin executes transformations.
+Polars, Pandas, SQL, and PySpark already ship the kernel and
+`portable-relational/1` baseline; 0.17+ expands, aligns, documents, and keeps
+that coverage conformant as richer DTCS profile families graduate.
+
+This requirement applies to first-party dataframe, SQL, and Spark execution
+plugins. It does not apply to plugins that do not execute transformations,
+including orchestrator compilers, schedulers, secret providers, storage or
+resource providers, observability providers, and model/migration bridges.
+Third-party runtime plugins may remain native-only, but must document that
+choice and must not advertise or register unsupported portable compilation.
+
+### Deliver
+
+- pair every applicable first-party execution plugin with a discoverable
+  `etlantic.transform_compilers` implementation in the same distribution or a
+  clearly documented companion distribution;
+- maintain an authoritative capability matrix for Polars, Pandas, SQL,
+  PySpark, and future first-party transformation runtimes, listing exact DTCS
+  profiles, actions, functions, operators, types, modes, and limits;
+- extend `etlantic plugin list` with transform-compiler inventory and exact
+  portable capability summaries so installed runtime/compiler pairs are
+  inspectable without planning a pipeline;
+- expand portable compiler coverage family by family under the existing
+  graduation rule: normative DTCS semantics, shared fixtures, and at least two
+  independent conformant compilers before a family is treated as graduated;
+- keep native implementations available for backend-specific behavior and
+  portable families that have not graduated;
+- require `run_portable_transform_conformance_suite` for every advertised
+  compiler claim and run cross-engine differential tests over each shared
+  capability intersection;
+- verify that portable lowering preserves contracts, null/missing/invalid
+  semantics, output roles, write and materialization boundaries, lineage,
+  diagnostics, and normalized report evidence;
+- keep `portable_transform_policy=require|prefer|native` behavior consistent
+  across all first-party execution plugins with no silent fallback;
+- make unsupported portable requirements fail during analyze/planning before
+  resource acquisition or mutation;
+- publish native-to-portable migration examples and one multi-engine portable
+  pipeline for each graduated profile family;
+- update [Building an ETLantic Plugin](docs/07_PLUGIN_SDK/BUILDING_A_PLUGIN.md)
+  and the category protocol pages whenever entry points, capability metadata,
+  conformance requirements, or the first-party portable baseline changes;
+- add guide-drift checks so reference plugin packaging, public factories,
+  capability declarations, conformance tests, and documentation remain aligned
+  with the canonical plugin guide.
+
+### Non-goals
+
+- requiring portable compilers from orchestrator, scheduler, secret, storage,
+  resource, observability, SQLModel, or SparkForge integration packages;
+- requiring every third-party execution plugin to implement portable lowering;
+- claiming the full portable authoring surface on every engine regardless of
+  backend semantics;
+- emulating unsupported semantics with Python, Pandas, Spark UDFs, raw SQL, or
+  eager collection without an explicit, policy-permitted, diagnosed boundary;
+- moving engine dependencies or compiler implementations into ETLantic core;
+- allowing plugin identity alone to imply portable capability coverage.
+
+### Acceptance scenarios
+
+- installing any first-party dataframe, SQL, or Spark execution plugin exposes
+  both its runtime entry point and its portable compiler entry point;
+- `etlantic plugin list`, plan JSON, and plan explanation identify the runtime,
+  compiler, protocol versions, exact portable requirements, and selection or
+  fallback reason without importing a different backend;
+- the same portable pipeline produces contract-equivalent results on every
+  first-party engine in the advertised capability intersection;
+- a profile requiring an unsupported family fails deterministically during
+  planning and performs no reads, writes, credential resolution, or cluster /
+  database acquisition;
+- native-only third-party plugins remain valid when they omit the transform
+  compiler entry point and clearly document the limitation;
+- plans, compiler diagnostics, golden fixtures, reports, and guide examples
+  contain no source rows, live backend objects, or resolved secret values;
+- a new first-party transformation runtime cannot pass its release gate until
+  its plugin-guide checklist, portable conformance suite, differential tests,
+  capability matrix, and native-to-portable documentation are complete.
+
+### Exit rule
+
+This workstream is complete for a release when every first-party plugin that
+executes transformations has truthful, tested portable coverage for the
+release's declared baseline; all richer claims satisfy the per-family
+graduation rule; native fallback is explicit and policy-governed; and the
+canonical plugin guide and capability matrix match the shipped entry points
+and conformance evidence.
 
 ## 1.0 — Stable Foundation
 

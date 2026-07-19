@@ -114,8 +114,10 @@ Examples include:
 
 - Airflow DAGs
 - Dagster Definitions
-- Prefect Flows
 - Argo Workflows
+
+Prefect Flow / task mapping belongs to the planned `ExecutionScheduler`
+plugin path (`etlantic-prefect`), not this compile-oriented SDK surface.
 
 Compilation must preserve pipeline semantics.
 

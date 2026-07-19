@@ -272,9 +272,7 @@ def pipeline_from_dpcs(
         name = str(entry["id"])
         contract = _resolve_odcs_type(entry.get("contractRef"), odcs_types)
         binding = entry.get("etlantic:binding") or name
-        source_nodes[name] = Extract(
-            asset=str(binding), contract_type=contract, _compat_warn=False
-        )
+        source_nodes[name] = Extract(asset=str(binding), contract_type=contract)
 
     for item in flow:
         src = str(item["from"])
@@ -337,7 +335,6 @@ def pipeline_from_dpcs(
             input=producer,
             asset=str(binding),
             contract_type=contract,
-            _compat_warn=False,
         )
         if contract is not None:
             annotations[name] = Load[contract]  # type: ignore[index]
