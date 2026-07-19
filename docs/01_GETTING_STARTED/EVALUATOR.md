@@ -120,7 +120,7 @@ How to read status labels in deeper chapters:
 9. Optional: SparkForge adapter via `uv sync --group sparkforge`
 10. [Migration 0.11 → 0.12](../11_DEVELOPMENT/MIGRATION_0_11_TO_0_12.md) if
     upgrading from 0.11
-11. [Roadmap](../11_DEVELOPMENT/ROADMAP.md) for sequencing
+11. [Roadmap](https://github.com/eddiethedean/etlantic/blob/main/ROADMAP.md) for sequencing
 
 ## Support channel
 

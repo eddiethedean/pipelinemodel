@@ -25,7 +25,7 @@
   <a href="https://etlantic.readthedocs.io/">Documentation</a> ·
   <a href="docs/01_GETTING_STARTED/QUICKSTART.md">Quickstart</a> ·
   <a href="docs/01_GETTING_STARTED/CAPABILITIES.md">Capabilities</a> ·
-  <a href="docs/11_DEVELOPMENT/ROADMAP.md">Roadmap</a>
+  <a href="ROADMAP.md">Roadmap</a>
 </p>
 
 ---
@@ -239,7 +239,7 @@ before mutation.
 | Safe SQL portable lowering and profile graduation | Planned for 0.15+ |
 
 See [Capabilities and Limitations](docs/01_GETTING_STARTED/CAPABILITIES.md)
-and the [roadmap](docs/11_DEVELOPMENT/ROADMAP.md) for the precise support
+and the [roadmap](ROADMAP.md) for the precise support
 boundary.
 
 ## Documentation
@@ -252,7 +252,7 @@ boundary.
 - [Architecture](docs/02_FOUNDATIONS/ARCHITECTURE.md)
 - [Portable Transformations](docs/04_TRANSFORMATIONS/PORTABLE_TRANSFORMATIONS.md)
 - [Contributing](CONTRIBUTING.md)
-- [Roadmap](docs/11_DEVELOPMENT/ROADMAP.md)
+- [Roadmap](ROADMAP.md)
 
 ## Development
 

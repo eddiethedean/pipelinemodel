@@ -278,7 +278,7 @@ nav:
       - Governance: 11_DEVELOPMENT/GOVERNANCE.md
       - Code of Conduct: 11_DEVELOPMENT/CODE_OF_CONDUCT.md
       - API stability and deprecation: 11_DEVELOPMENT/DEPRECATION_POLICY.md
-      - Roadmap: 11_DEVELOPMENT/ROADMAP.md
+      - Roadmap: https://github.com/eddiethedean/etlantic/blob/main/ROADMAP.md
       - Migration 0.4 → 0.5: 11_DEVELOPMENT/MIGRATION_0_4_TO_0_5.md
       - Migration 0.5 → 0.6: 11_DEVELOPMENT/MIGRATION_0_5_TO_0_6.md
       - Migration 0.6 → 0.7: 11_DEVELOPMENT/MIGRATION_0_6_TO_0_7.md

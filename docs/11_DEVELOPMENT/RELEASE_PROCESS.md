@@ -32,7 +32,8 @@ Tag `vX.Y.Z` publishes nine distributions:
 
 ## Pre-Release Checklist
 
-1. Confirm milestone scope against [ROADMAP](ROADMAP.md) and
+1. Confirm milestone scope against
+   [ROADMAP](https://github.com/eddiethedean/etlantic/blob/main/ROADMAP.md) and
    [CAPABILITIES](../01_GETTING_STARTED/CAPABILITIES.md).
 2. Resolve release-blocking issues; `main` CI must be green.
 3. Confirm every package version and `__version__` equals the intended tag

@@ -88,7 +88,7 @@ Every milestone must satisfy all applicable gates.
 ### Security
 
 - New trust boundaries are added to the
-  [Security Model](../02_FOUNDATIONS/SECURITY.md).
+  [Security Model](docs/02_FOUNDATIONS/SECURITY.md).
 - Parsing, traversal, and resolution work is bounded.
 - Plans, reports, diagnostics, and logs do not serialize secrets.
 - Plugin loading and remote access fail closed under production policy.
@@ -103,7 +103,7 @@ Every milestone must satisfy all applicable gates.
 - Breaking changes include migration guidance.
 - Plugins declare core, SDK, plan-schema, and capability compatibility.
 - Dependency additions and tier changes follow the
-  [Dependency Strategy](DEPENDENCY_STRATEGY.md).
+  [Dependency Strategy](docs/11_DEVELOPMENT/DEPENDENCY_STRATEGY.md).
 
 ## Workstreams
 
@@ -848,12 +848,12 @@ alternate source of pipeline truth.
 The ecosystem can grow outside the core repository without relying on internal
 modules or weakening security defaults.
 
-See [Schema Drift and Evolution Plan](SCHEMA_DRIFT_PLAN.md) for the cross-phase
+See [Schema Drift and Evolution Plan](docs/11_DEVELOPMENT/SCHEMA_DRIFT_PLAN.md) for the cross-phase
 observation, history, policy, impact, and remediation design.
-See [ETL Reliability and Recovery Plan](ETL_RELIABILITY_PLAN.md) for freshness,
+See [ETL Reliability and Recovery Plan](docs/11_DEVELOPMENT/ETL_RELIABILITY_PLAN.md) for freshness,
 repair, retries, writes, reconciliation, backfills, parity, drift, and quality
 tracking.
-See [SQLModel Integration Plan](SQLMODEL_INTEGRATION_PLAN.md) for optional
+See [SQLModel Integration Plan](docs/11_DEVELOPMENT/SQLMODEL_INTEGRATION_PLAN.md) for optional
 contract mapping, typed control-plane persistence, FastAPI reuse, and migration
 support.
 
@@ -890,7 +890,7 @@ Plugin SDK have stable integration surfaces.
 SparkForge can depend on ETLantic as its underlying model, planner, and
 coordination engine while remaining the medallion-focused facade.
 
-See [SparkForge Feature Adoption](SPARKFORGE_ADOPTION.md) for the detailed
+See [SparkForge Feature Adoption](docs/11_DEVELOPMENT/SPARKFORGE_ADOPTION.md) for the detailed
 feature assessment and adapter sequence.
 
 ## 0.11 — Portable Authoring and Transformation Plan
@@ -1188,11 +1188,11 @@ with an auditable, secure compiler model, and graduated profiles meet
 two-compiler criteria.
 
 See the
-[Portable Transformation Implementation Plan](PORTABLE_TRANSFORM_PLAN.md).
+[Portable Transformation Implementation Plan](docs/11_DEVELOPMENT/PORTABLE_TRANSFORM_PLAN.md).
 The required standards work is detailed in the
-[DTCS 2.0 Portable Relational Publication Record](DTCS_PORTABLE_SPEC_PROPOSAL.md)
+[DTCS 2.0 Portable Relational Publication Record](docs/11_DEVELOPMENT/DTCS_PORTABLE_SPEC_PROPOSAL.md)
 and
-[DTCS 3.0 Rich Portable Analytics Publication Record](DTCS_3_0_SPEC_PROPOSAL.md).
+[DTCS 3.0 Rich Portable Analytics Publication Record](docs/11_DEVELOPMENT/DTCS_3_0_SPEC_PROPOSAL.md).
 
 ## 1.0 — Stable Foundation
 
@@ -1246,7 +1246,7 @@ ETLantic 1.0 ships only when:
 - Typed authoring, contract interoperability, validation, planning, execution,
   reporting, and plugin coordination work together end to end.
 - Every mandatory control in the
-  [Security Model](../02_FOUNDATIONS/SECURITY.md) has an implementation owner,
+  [Security Model](docs/02_FOUNDATIONS/SECURITY.md) has an implementation owner,
   automated verification, and documented residual risk.
 - The public examples describe tested behavior rather than aspirations.
 - SparkForge migration has proved the core abstractions without moving
@@ -1307,7 +1307,7 @@ Acceptance:
 - SQLModel sessions remain request-scoped integration details and never become
   pipeline runtime resources.
 
-See [FastAPI Integration Plan](FASTAPI_INTEGRATION_PLAN.md).
+See [FastAPI Integration Plan](docs/11_DEVELOPMENT/FASTAPI_INTEGRATION_PLAN.md).
 
 ### 1.2 — Registry, Workspaces, and Discovery
 
@@ -1620,8 +1620,8 @@ Acceptance:
 - untrusted contract text or logs cannot grant tools, reveal secrets, install
   plugins, or initiate runs.
 
-See [Schema Drift and Evolution Plan](SCHEMA_DRIFT_PLAN.md).
-See [ETL Reliability and Recovery Plan](ETL_RELIABILITY_PLAN.md).
+See [Schema Drift and Evolution Plan](docs/11_DEVELOPMENT/SCHEMA_DRIFT_PLAN.md).
+See [ETL Reliability and Recovery Plan](docs/11_DEVELOPMENT/ETL_RELIABILITY_PLAN.md).
 
 ### 1.x Candidate Themes
 
