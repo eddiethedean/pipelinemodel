@@ -47,6 +47,31 @@ nondeterministic) graduate **one family at a time** only after two independent
 compilers pass shared fixtures. That work is sequenced after the SQL vertical
 slice; it is not a separate 0.16 milestone and is not required to close 0.15.
 
+### 0.15 companion: local scheduler boundary
+
+Refactor the current local runner behind one explicit scheduler boundary while
+preserving `Pipeline.run()` and `Pipeline.arun()` behavior. The built-in
+`LocalScheduler` remains the default for development, tests, notebooks, and
+embedded use. This companion workstream adds private scheduler conformance and
+a Prefect feasibility spike; it does not add Prefect to core or replace the SQL
+exit gate.
+
+## Next: 0.16 (Optional Prefect orchestration)
+
+- publish optional `etlantic-prefect` as the reference Python-native
+  orchestrator integration;
+- consume resolved physical execution units without re-planning;
+- preserve ETLantic-owned validation, retry safety, identities, artifacts,
+  redaction, and run reports;
+- support a basic local Prefect path without requiring Prefect Cloud;
+- keep local execution as the default and require explicit production profile
+  selection/allowlisting;
+- retain `etlantic-airflow` as the reference external compiler;
+- remove the deprecated 0.15 `Source` / `Sink` / `binding=` compatibility API.
+
+See the
+[Local Scheduler and Prefect Integration Plan](SCHEDULER_AND_PREFECT_PLAN.md).
+
 ## Toward 1.0
 
 The 1.0 goal is a stable foundation with:

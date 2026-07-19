@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `NodeKind` source/sink, `etlantic:binding`) remain unchanged for fingerprint
   and protocol stability. See
   `docs/11_DEVELOPMENT/MIGRATION_0_14_TO_0_15.md`.
+- Added the 0.15+ scheduler program: retain a small built-in
+  `LocalScheduler`, extract a conformance-tested direct-execution boundary in
+  0.15, target optional `etlantic-prefect` for 0.16, and keep
+  `etlantic-airflow` as the reference external compiler.
 
 ## [0.14.0] - 2026-07-18
 

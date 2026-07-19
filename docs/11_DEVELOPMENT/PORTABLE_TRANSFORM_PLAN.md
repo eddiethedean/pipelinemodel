@@ -291,6 +291,16 @@ Portable Analytics profiles (`portable-window/2`, `portable-complex-values/1`,
 string-advanced, reshape, and peers). ETLantic authoring aliases normalize
 arrays to DTCS lists and structs to DTCS objects.
 
+## 0.15+ scheduler relationship
+
+Portable compilers continue to lower DTCS plans into backend-native execution
+objects; they do not schedule the pipeline. The built-in local runner is
+refactored behind `LocalScheduler` in 0.15, and optional `etlantic-prefect`
+coordinates already-resolved physical units in 0.16. Neither scheduler may
+reselect a compiler, split/fuse portable regions differently from the resolved
+plan, or weaken materialization and validation boundaries. See the
+[Local Scheduler and Prefect Integration Plan](SCHEDULER_AND_PREFECT_PLAN.md).
+
 ## DTCS and Pipeline Plan integration
 
 ETLantic's `PipelinePlan` **embeds** the bounded canonical DTCS plan (plus

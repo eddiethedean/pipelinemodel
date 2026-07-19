@@ -289,6 +289,7 @@ nav:
       - Read this first: 11_DEVELOPMENT/DESIGN_PROPOSALS.md
       - Portable compilers and plans (history):
           - Implementation plan: 11_DEVELOPMENT/PORTABLE_TRANSFORM_PLAN.md
+          - Scheduler and Prefect plan: 11_DEVELOPMENT/SCHEDULER_AND_PREFECT_PLAN.md
           - DTCS evolution: 11_DEVELOPMENT/DTCS_PORTABLE_EVOLUTION.md
           - DTCS 2.0 Publication Record: 11_DEVELOPMENT/DTCS_PORTABLE_SPEC_PROPOSAL.md
           - DTCS 3.0 Publication Record: 11_DEVELOPMENT/DTCS_3_0_SPEC_PROPOSAL.md

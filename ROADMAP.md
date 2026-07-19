@@ -1168,6 +1168,16 @@ fourth realization for that claim intersection.
 [Migration 0.14 → 0.15](docs/11_DEVELOPMENT/MIGRATION_0_14_TO_0_15.md). This
 theme does **not** replace the Safe SQL Lowering exit gate below.
 
+**Companion 0.15 runtime workstream:** extract the current local runner behind
+one explicit scheduler boundary and preserve `Pipeline.run()` / `arun()`
+semantics through a small built-in `LocalScheduler`. Prefect, Airflow, Dagster,
+and other orchestrators remain optional plugins; none becomes a core dependency
+or automatic default. This workstream establishes the boundary and private
+conformance corpus, plus a Prefect feasibility spike. It does **not** replace or
+delay the Safe SQL Lowering exit gate unless a scheduler defect threatens SQL
+semantic safety. See the
+[Local Scheduler and Prefect Integration Plan](docs/11_DEVELOPMENT/SCHEDULER_AND_PREFECT_PLAN.md).
+
 **DTCS readiness:** rich facade authoring for Candidate/Experimental families
 already exists in 0.11 IR. Those families are **not** part of the 0.15 exit
 gate; they graduate later under
@@ -1196,6 +1206,8 @@ gate; they graduate later under
 - Inventing portable SQL semantics outside DTCS
 - Managed cloud Spark providers or SQL dialects beyond the documented
   reference set
+- Embedding Prefect or another general orchestrator in core, or making one the
+  implicit production default
 
 ### Exit gate (all must be true)
 
@@ -1266,6 +1278,58 @@ Compiler claims ship only with normative semantics, two compiler
 implementations, capability vocabulary, shared fixtures, and a short
 native-to-portable migration note. Until a family graduates, keep native
 `@implementation(...)` for that behavior.
+
+## 0.16 — Python-Native Orchestration Plugin and Vocabulary Cleanup
+
+**Status: planned — after the 0.15 scheduler boundary and SQL exit gate.**
+
+### Deliver
+
+- publish optional `etlantic-prefect` as the reference Python-native
+  orchestration plugin
+- map already-resolved physical execution units to Prefect flows/tasks without
+  re-planning or exposing Prefect APIs in pipeline authoring
+- support local direct invocation; keep deployment/serve behavior optional
+- correlate ETLantic run/unit identities with Prefect flow/task-run identities
+- preserve ETLantic-owned validation, retry safety, materialization, output
+  normalization, redaction, and `PipelineRunReport`
+- publish scheduler/orchestrator conformance fixtures shared with
+  `LocalScheduler` where semantics overlap
+- keep `LocalScheduler` as the development, test, notebook, and embedded
+  default
+- keep `etlantic-airflow` as the reference external artifact compiler
+- require explicit profile selection and plugin allowlisting for production
+- complete the planned removal of public `Source`, `Sink`, `binding=`, and
+  their 0.15 compatibility paths; `Extract`, `Load`, and `asset=` remain
+
+### Non-goals
+
+- adding Prefect to ETLantic core dependencies
+- requiring Prefect Cloud or a Prefect server for the basic local plugin path
+- making Prefect the automatic `production` profile orchestrator
+- passing large datasets through scheduler control payloads
+- allowing Prefect retries or task boundaries to weaken ETLantic transaction,
+  validation, security, or materialization semantics
+- replacing Airflow compilation
+
+### Acceptance scenarios
+
+- one resolved plan produces equivalent logical results and report shape under
+  `LocalScheduler` and Prefect
+- independent units run through the selected Prefect task runner without
+  dependency changes
+- retries occur once, under resolved ETLantic retry-safety policy
+- unsupported durable scheduling, cancellation, timeout, or artifact behavior
+  fails during planning with a stable diagnostic
+- plans, Prefect parameters, diagnostics, and reports contain no resolved
+  secrets or source rows
+- Prefect is absent from imports and installation for the default local path
+
+### Exit gate
+
+`etlantic-prefect` passes public conformance as an optional plugin;
+`LocalScheduler` remains the zero-service default; Airflow remains the external
+compiler; and the 0.15 authoring-vocabulary compatibility layer is removed.
 
 ## 1.0 — Stable Foundation
 

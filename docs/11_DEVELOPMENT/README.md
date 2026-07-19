@@ -45,6 +45,7 @@ These pages sequence future work. They are not product user guides:
 - [SQLModel Integration Plan](SQLMODEL_INTEGRATION_PLAN.md)
 - [SparkForge Feature Adoption](SPARKFORGE_ADOPTION.md)
 - [Portable Transformation Implementation Plan](PORTABLE_TRANSFORM_PLAN.md)
+- [Local Scheduler and Prefect Integration Plan](SCHEDULER_AND_PREFECT_PLAN.md)
 - [DTCS and Portable Transformation Evolution](DTCS_PORTABLE_EVOLUTION.md)
 - [DTCS 2.0 Portable Relational Publication Record](DTCS_PORTABLE_SPEC_PROPOSAL.md)
 - [DTCS 3.0 Rich Portable Analytics Publication Record](DTCS_3_0_SPEC_PROPOSAL.md)
