@@ -129,6 +129,7 @@ nav:
       - Overview: 02_FOUNDATIONS/README.md
       - Documentation Status: 02_FOUNDATIONS/DOCUMENTATION_STATUS.md
       - Core Concepts: 02_FOUNDATIONS/CORE_CONCEPTS.md
+      - Validation Everywhere: 02_FOUNDATIONS/VALIDATION_EVERYWHERE.md
       - Architecture: 02_FOUNDATIONS/ARCHITECTURE.md
       - Security: 02_FOUNDATIONS/SECURITY.md
       - Glossary: 02_FOUNDATIONS/GLOSSARY.md

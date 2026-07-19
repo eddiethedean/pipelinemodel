@@ -19,6 +19,23 @@ Its central idea is simple:
 > Define data, transformations, and pipelines with typed Python classes.
 > Validate and plan them once. Execute them through interchangeable backends.
 
+ETLantic also treats validation as a continuous envelope around ETL:
+
+```text
+V(model) ──▶ Extract ──▶ V(input) ──▶ Transform ──▶ V(output) ──▶ Load ──▶ V/evidence
+```
+
+The model is validated before execution, runtime values are validated at typed
+boundaries, and publication produces contract and write evidence. This is
+**ETL with validation at every boundary**, without requiring validation to be
+modeled as an ordinary transformation or forcing a sink reread when the
+provider cannot truthfully support one. See
+[Validation Everywhere](02_FOUNDATIONS/VALIDATION_EVERYWHERE.md).
+
+This is the practical meaning of the name: **ETL** is the data flow;
+**ETLantic** is ETL surrounded by typed contracts, validation, planning, and
+evidence from source to publication.
+
 ETLantic is inspired by FastAPI's type-driven developer experience, but it
 does not turn ETL into a web API metaphor. It applies the same principle—types
 as executable interface declarations—to data engineering.
@@ -148,6 +165,11 @@ Typed Python authoring or portable contracts
           ▼         ▼          ▼
       Plugins   Airflow/SQL  Docs/graphs
 ```
+
+Runtime execution adds contract checks around extracts, transformation inputs
+and outputs, engine/interchange boundaries, and loads. Those checks remain
+visible in plan decisions and run evidence even when a backend safely fuses
+their physical execution.
 
 ETLantic owns modeling, validation, planning, and coordination.
 

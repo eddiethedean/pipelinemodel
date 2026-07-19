@@ -23,6 +23,25 @@ Data contracts + transformation contracts + pipeline contract
 
 Each stage answers a different question.
 
+## ETL With Validation at Every Boundary
+
+Validation is both a lifecycle stage and a cross-cutting runtime concern:
+
+```text
+V(model) ──▶ Extract ──▶ V(input) ──▶ Transform ──▶ V(output) ──▶ Load ──▶ V/evidence
+```
+
+Before execution, ETLantic validates structure, references, contract
+compatibility, policy, capabilities, and plugin trust. During execution, typed
+contracts govern values crossing extract, transformation, engine/interchange,
+and load boundaries. After publication, ETLantic records the strongest
+evidence the selected provider and declared policy can truthfully supply.
+
+Validation is not a fourth contract authority or an ordinary transformation
+that authors must insert repeatedly. It is an envelope derived from ODCS,
+DTCS, DPCS, the resolved plan, and runtime policy. See
+[Validation Everywhere](VALIDATION_EVERYWHERE.md).
+
 ## Data Contract
 
 A data contract describes valid data.

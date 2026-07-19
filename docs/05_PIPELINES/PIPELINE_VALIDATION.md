@@ -1,5 +1,20 @@
 # Pipeline Validation
 
+ETLantic treats validation as a continuous envelope around ETL:
+
+```text
+V(model) ──▶ Extract ──▶ V(input) ──▶ Transform ──▶ V(output) ──▶ Load ──▶ V/evidence
+```
+
+Pipeline validation proves the model, wiring, environment, and capabilities
+before execution. Runtime data validation then enforces the same typed
+boundaries around extracted inputs, transformation inputs and outputs,
+interchange transitions, and publication. Post-load validation means truthful
+publication evidence or an explicitly planned read-after-write check—not an
+implicit sink reread. See
+[Validation Everywhere](../02_FOUNDATIONS/VALIDATION_EVERYWHERE.md) for the
+complete concept.
+
 For portable steps in 0.11+, validation additionally resolves referenced
 columns, infers expression types and nullability, verifies named outputs against
 contracts, enforces IR budgets, and checks exact compiler capabilities before

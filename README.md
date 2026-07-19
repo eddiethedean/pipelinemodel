@@ -38,11 +38,32 @@ run, or compile the same logical pipeline for different execution engines.
 Typed contracts ──▶ Validation ──▶ Deterministic plan ──▶ Run or compile
 ```
 
+ETLantic treats validation as a continuous control layer around ETL, not as a
+single check at the beginning:
+
+```text
+V(model) ──▶ Extract ──▶ V(input) ──▶ Transform ──▶ V(output) ──▶ Load ──▶ V/evidence
+```
+
+That means validating the pipeline before work begins, validating data against
+contracts at execution boundaries, and recording whether publication satisfied
+the declared contract and write policy. Validation is not an extra business
+transformation and does not always mean rereading a sink; the exact runtime
+check is selected by policy and backend capability. The principle is simple:
+**ETL, with validation at every boundary.**
+
+That is also the promise behind the name: **ETL** is the familiar data flow;
+**ETLantic** surrounds that flow with typed contracts, validation, planning,
+and evidence from source to publication.
+
 ## Why ETLantic?
 
 - **Fail earlier.** Detect broken references, incompatible contracts, missing
   implementations, unsupported capabilities, and untrusted plugins before a
   write occurs.
+- **Validate throughout.** Check extracted inputs, transformation outputs, and
+  publication boundaries against the same typed contracts and preserve the
+  result as structured evidence.
 - **Keep logic portable.** Separate logical pipeline structure from local,
   Polars, Pandas, SQL, PySpark, and orchestration implementations.
 - **Make plans reviewable.** Generate deterministic, immutable, secret-free
@@ -243,6 +264,11 @@ ETLantic keeps logical intent separate from physical execution:
 5. **Execute or compile** the plan through small backend protocols.
 6. **Report** step outcomes, diagnostics, lineage, artifacts, and schema
    observations.
+
+During execution, the same contracts form validation boundaries around
+extracts, transformations, engine/interchange transitions, and loads. A
+policy may fail, reject/quarantine invalid rows where supported, or record
+evidence, but a backend cannot silently weaken a required check.
 
 Plans and reports contain secret references, never resolved secret values.
 Secrets are resolved only at runtime. Capability and trust failures occur

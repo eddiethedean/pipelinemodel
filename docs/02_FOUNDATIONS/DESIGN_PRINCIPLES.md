@@ -82,12 +82,17 @@ Examples include:
 
 ------------------------------------------------------------------------
 
-## 7. Validate Early
+## 7. Validate Early and at Every Boundary
 
 Errors should be discovered during authoring and planning whenever
 possible.
 
 Validation should occur before expensive execution begins.
+
+During execution, the same typed contracts should govern extract,
+transformation input/output, engine/interchange, and load boundaries. Required
+validation semantics must survive fusion and optimization, and publication
+should produce explicit evidence rather than an assumed success.
 
 Clear diagnostics are preferred over runtime surprises.
 
