@@ -459,18 +459,19 @@ wheels = [
 
 [[package]]
 name = "contractmodel"
-version = "0.1.2"
+version = "0.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "email-validator" },
     { name = "pydantic" },
+    { name = "pyodcs" },
     { name = "pyyaml" },
     { name = "rich" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/69/cc/f2035240c3ebf09692685dc4f5ef7f0491d0ad16539267d8e596fc52e8bf/contractmodel-0.1.2.tar.gz", hash = "sha256:fb121644c61f3c122a787c6e64a259849e344d94691adcb4ae1bd7be04fcb28d", size = 85087, upload-time = "2026-06-24T13:55:10.98Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/85/1f/a767735580757e83ef8dcee67d7ec15f6900ae1ad0073c2a2a1e3651255b/contractmodel-0.2.0.tar.gz", hash = "sha256:e9ca98b64427264a5071fb9def0eab832794f2021d8266846e64dfc157e4604f", size = 244544, upload-time = "2026-07-20T03:03:23.996Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ff/85/a15e556429542040575c7a8af5d4819024383505b495ee85ddb0d41b76a8/contractmodel-0.1.2-py3-none-any.whl", hash = "sha256:bd98fa8ce86c176e1afc83ad2c1bd98c5f16957a3b5a81d4eea7fbb9bc76575e", size = 52614, upload-time = "2026-06-24T13:55:09.629Z" },
+    { url = "https://files.pythonhosted.org/packages/1e/b7/2397e7cd9cbeec6eaad2fcbe1ef1c441b057231c39928f79e8b158293eb9/contractmodel-0.2.0-py3-none-any.whl", hash = "sha256:8f6099020a7bf1ebaad4eed018cd22a10b43432bee206cded3f343251d26b622", size = 74644, upload-time = "2026-07-20T03:03:22.551Z" },
 ]
 
 [[package]]
@@ -786,7 +787,7 @@ sqlmodel = [
 requires-dist = [
     { name = "anyio", specifier = ">=4,<5" },
     { name = "click", specifier = ">=8,<9" },
-    { name = "contractmodel", specifier = ">=0.1.2" },
+    { name = "contractmodel", specifier = ">=0.2,<0.3" },
     { name = "dpcs", specifier = ">=0.13,<1" },
     { name = "dtcs", specifier = ">=0.13,<1" },
     { name = "etlantic-airflow", marker = "extra == 'airflow'", editable = "packages/etlantic-airflow" },
@@ -2572,6 +2573,29 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/9e/26/d1015444da4d952a1ca487a236b522eb979766f0295a0bd0c5fc089989a9/pymdown_extensions-10.21.3.tar.gz", hash = "sha256:72cfcf55f07aea0d4af2c4f11dd4e52466ddfb1bb819673146398e0bd3a77354", size = 854140, upload-time = "2026-05-13T12:57:32.267Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7e/85/545a951eecc270fcd688288c600017e2050a1aacb56c711d208586d3e470/pymdown_extensions-10.21.3-py3-none-any.whl", hash = "sha256:d7a5d08014fc571e80ca21dd6f854e31f94c489800350564d55d15b3c41e76b6", size = 269002, upload-time = "2026-05-13T12:57:30.296Z" },
+]
+
+[[package]]
+name = "pyodcs"
+version = "0.9.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/84/53/3ea02624de3aa29254d2d2e1c53e4b5fea8eab4ebef12eca15438085340f/pyodcs-0.9.1.tar.gz", hash = "sha256:61d7479d8d20c72c0b457cc68c6de3cfd5552074fcefd8abbf93d728b12f2f8a", size = 172453, upload-time = "2026-07-03T01:43:03.405Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/35/54/c2698476515881d0877726619a768e9b70d4712ccf5591053b4f636fc490/pyodcs-0.9.1-cp39-abi3-macosx_10_12_x86_64.whl", hash = "sha256:46f4c75eb403cccc3b536e70acd415cc8fc2cbdf71e443f9e460045d5df96830", size = 3158836, upload-time = "2026-07-03T01:42:35.921Z" },
+    { url = "https://files.pythonhosted.org/packages/26/55/5e277397af1850828ff59d3eaac5ce0c55d90cc9521d66477b0c11d421c9/pyodcs-0.9.1-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:de63ee42281b488fd88f3620048e0cf63024d2da8530688d743be5fe476db642", size = 3080872, upload-time = "2026-07-03T01:42:38.053Z" },
+    { url = "https://files.pythonhosted.org/packages/d5/a7/33ab941888292abbb08df78bdd24db34d00df6df8384e89f698b411285d3/pyodcs-0.9.1-cp39-abi3-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:dcb9608a97cb544993c0042ce500baac0296958d80236a5a632ae09ab09056c1", size = 3290384, upload-time = "2026-07-03T01:42:39.743Z" },
+    { url = "https://files.pythonhosted.org/packages/42/42/a6098df9df5def4961433aef10b40a9031a9f0ba1afc9210f7ddf7c089be/pyodcs-0.9.1-cp39-abi3-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:04f8a288aa37c722fc6237dd0180ae235d791d6e95e59823b7f2bb7e56804ec4", size = 3670207, upload-time = "2026-07-03T01:42:41.454Z" },
+    { url = "https://files.pythonhosted.org/packages/45/4e/d5ec61e16f5fd44c29100c06d441f1311d3a795faac0d4a01238ece819c2/pyodcs-0.9.1-cp39-abi3-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:0a0ec7247a08ff641fb2aa6a8d6613bcfaa385db4a7039739b103deed600c864", size = 3957763, upload-time = "2026-07-03T01:42:43.224Z" },
+    { url = "https://files.pythonhosted.org/packages/d4/69/7565225b47818a395e791a743232ccae00df21b016809b314d1b137e7ad0/pyodcs-0.9.1-cp39-abi3-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:f8588f7db2abfd6c4d9795e5467c19bf188600d1ccc619147e706699d834f72b", size = 3514757, upload-time = "2026-07-03T01:42:45.029Z" },
+    { url = "https://files.pythonhosted.org/packages/2c/01/5ec2371ab4c0830a0426ba6cb324a1878225c38cc6b365db2f5feba77bf3/pyodcs-0.9.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0a01c5a2cd5a6a640d2e68bafd4a3f4aafc4eb1f6d1c360d98870418a23107cd", size = 3381055, upload-time = "2026-07-03T01:42:47.067Z" },
+    { url = "https://files.pythonhosted.org/packages/fa/90/22cae9bf09e48bddefbdd35ff4202147b3501e5cfd11f9d242ac7e61cbab/pyodcs-0.9.1-cp39-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:d020a57e77c8597ac64ab6360185aa941b99e67cf551d95429478e2a40a7fbb7", size = 3383738, upload-time = "2026-07-03T01:42:48.851Z" },
+    { url = "https://files.pythonhosted.org/packages/23/2c/0b788a49d51f44dbeb0a9f8686e069d5b32ae840cc2b1be608a7a7041b78/pyodcs-0.9.1-cp39-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:6b215fb40469b64ab4b50f0f9ed633228243c55e7855439f3c44180922e9a4ad", size = 3558082, upload-time = "2026-07-03T01:42:50.772Z" },
+    { url = "https://files.pythonhosted.org/packages/c5/c9/1711db31d6971a13ecb53048515aa91b3d13520f4a02c9731e91107d8853/pyodcs-0.9.1-cp39-abi3-musllinux_1_2_armv7l.whl", hash = "sha256:d9b6f2c8b1aa41f5f4620779f83082b9a3cd0b638d4b914b8798212449d58c60", size = 3552324, upload-time = "2026-07-03T01:42:52.425Z" },
+    { url = "https://files.pythonhosted.org/packages/7b/aa/9878eeb9021346281c3f7f7b1b217eec1027bb3c347f570bc33a4f81af19/pyodcs-0.9.1-cp39-abi3-musllinux_1_2_i686.whl", hash = "sha256:e3aae21e49823e4079a3af33856346ca25616e842f1ee43d42f41cc39f13a5bc", size = 3706811, upload-time = "2026-07-03T01:42:54.33Z" },
+    { url = "https://files.pythonhosted.org/packages/f9/03/bb2e1ba444abc7892556a5d721fcad3863cc62685de8093e9f568f1dbfb2/pyodcs-0.9.1-cp39-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:938e4e3f23d0e6c1a55e14bab2cb72244ac52b47e0c6e1a929354f8bf36befdb", size = 3673240, upload-time = "2026-07-03T01:42:56.362Z" },
+    { url = "https://files.pythonhosted.org/packages/c5/9e/ce8620c502f47fa136bd2e269b05cd6081da422114ceeec9398d237a334a/pyodcs-0.9.1-cp39-abi3-win32.whl", hash = "sha256:cda10203c02ec143e7d6527937a0af8017302a52895140953143ed035f185e41", size = 2675973, upload-time = "2026-07-03T01:42:58.086Z" },
+    { url = "https://files.pythonhosted.org/packages/2b/1d/09cc3e947941d9983656d47a5a1854187f3f2b3fc1fc804cba0856d29b9e/pyodcs-0.9.1-cp39-abi3-win_amd64.whl", hash = "sha256:eca7a71050a836298b2c8f21b8532641ade9bf768344fcb4844da645d8215981", size = 2983902, upload-time = "2026-07-03T01:42:59.927Z" },
+    { url = "https://files.pythonhosted.org/packages/c3/c2/92c13b088a52d1f99a0d23d0e5f5138684da12d378855ebc8af11bdb6524/pyodcs-0.9.1-cp39-abi3-win_arm64.whl", hash = "sha256:3f50503b16089d6088f41361d9e541397b019af70a0c6928ae59e9eb4e97a145", size = 2821057, upload-time = "2026-07-03T01:43:01.845Z" },
 ]
 
 [[package]]

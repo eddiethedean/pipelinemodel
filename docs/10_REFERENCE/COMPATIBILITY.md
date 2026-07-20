@@ -6,7 +6,7 @@ This table describes the declared compatibility of ETLantic 0.20.0.
 |---|---|
 | Python | 3.11, 3.12, 3.13 |
 | Pydantic | `>=2.12,<3` |
-| ContractModel | `>=0.1.2` |
+| ContractModel | `>=0.2,<0.3` (ODCS `v3.1.0`) |
 | DTCS specification | `3.0.0` (`dtcsVersion: "3.0.0"`; 2.0.0 / 1.0.0 remain readable) |
 | DTCS toolkit | `>=0.13,<1` |
 | DPCS toolkit | `>=0.13,<1` |

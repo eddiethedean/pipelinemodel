@@ -6,11 +6,11 @@ from dataclasses import dataclass
 
 from etlantic.diagnostics import Diagnostic, Severity, ValidationReport
 
-SUPPORTED_ODCS_VERSIONS: frozenset[str] = frozenset({"v3.0.0", "3.0.0", "v3.1.0", "3.1.0"})
+SUPPORTED_ODCS_VERSIONS: frozenset[str] = frozenset({"v3.1.0", "3.1.0"})
 SUPPORTED_DTCS_VERSIONS: frozenset[str] = frozenset({"1.0.0"})
 SUPPORTED_DPCS_VERSIONS: frozenset[str] = frozenset({"1.0.0"})
 
-DEFAULT_ODCS_VERSION = "v3.0.0"
+DEFAULT_ODCS_VERSION = "v3.1.0"
 DEFAULT_DTCS_VERSION = "1.0.0"
 DEFAULT_DPCS_VERSION = "1.0.0"
 
@@ -55,7 +55,7 @@ def check_odcs_version(
                     severity=Severity.ERROR,
                     message="ODCS document is missing apiVersion.",
                     path=path,
-                    help="Set apiVersion to a supported ODCS version such as v3.0.0.",
+                    help="Set apiVersion to a supported ODCS version such as v3.1.0.",
                 )
             ]
         )

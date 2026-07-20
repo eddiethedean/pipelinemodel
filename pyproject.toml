@@ -18,7 +18,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "contractmodel>=0.1.2",
+    "contractmodel>=0.2,<0.3",
     "pydantic>=2.12,<3",
     "packaging>=24",
     "dtcs>=0.13,<1",

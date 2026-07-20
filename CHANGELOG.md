@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Require ContractModel `>=0.2,<0.3` (ODCS `v3.1.0` only; aligns with CCM wire identity `contractmodel.ccm/1`)
+
 ## [0.20.0] - 2026-07-19
 
 ### Added
