@@ -272,84 +272,27 @@ class PlanningContext:
             else resolve_profile(profile, allow_adhoc_profile=allow_adhoc_profile)
         )
         caps = list(required_capabilities) if required_capabilities is not None else []
+        from etlantic.engines import get_engine_registry
+
+        engine_registry = get_engine_registry()
+        if not caps:
+            caps = engine_registry.default_capabilities(resolved)
         engine = resolved.dataframe_engine or "local"
         sql_engine = resolved.sql_engine
         spark_engine = resolved.spark_engine
-        if not caps and engine in {"polars", "pandas"}:
-            caps = ["dataframe", "eager"]
-            if engine == "polars":
-                caps.append("lazy")
-        if not caps and sql_engine == "sql":
-            caps = ["sql", "transactions", "sql_catalog_inspect"]
-            caps.extend(resolved.required_sql_capabilities)
-        if not caps and spark_engine in {"pyspark", "spark"}:
-            caps = ["spark", "lazy", "schema_inspection"]
-            caps.extend(resolved.required_spark_capabilities)
-            if resolved.spark_streaming:
-                caps.extend(["streaming", "spark_streaming"])
         reg = registry
         trust_records: list[dict[str, Any]] = []
         if reg is None:
             reg = builtin_stub_registry()
-            from etlantic.plugin_lifecycle import discover_evaluate_authorize_load
+            from etlantic.plugins.coordinator import discover_planning_plugins
 
-            if engine in {"polars", "pandas"}:
-                from etlantic.dataframe.discovery import (
-                    DATAFRAME_PLUGIN_ENTRY_POINT,
-                    register_discovered_plugins,
-                )
-
-                result = discover_evaluate_authorize_load(
-                    DATAFRAME_PLUGIN_ENTRY_POINT, profile=resolved
-                )
-                trust_records.extend(result.trust_records)
-                register_discovered_plugins(
-                    reg, plugins=result.loaded, profile=resolved
-                )
-            if sql_engine == "sql":
-                from etlantic.sql.discovery import (
-                    SQL_PLUGIN_ENTRY_POINT,
-                )
-                from etlantic.sql.discovery import (
-                    register_discovered_plugins as register_sql,
-                )
-
-                result = discover_evaluate_authorize_load(
-                    SQL_PLUGIN_ENTRY_POINT, profile=resolved
-                )
-                trust_records.extend(result.trust_records)
-                register_sql(reg, plugins=result.loaded, profile=resolved)
-            if spark_engine in {"pyspark", "spark"}:
-                from etlantic.spark.discovery import (
-                    SPARK_PLUGIN_ENTRY_POINT,
-                )
-                from etlantic.spark.discovery import (
-                    register_discovered_plugins as register_spark,
-                )
-
-                result = discover_evaluate_authorize_load(
-                    SPARK_PLUGIN_ENTRY_POINT, profile=resolved
-                )
-                trust_records.extend(result.trust_records)
-                register_spark(reg, plugins=result.loaded, profile=resolved)
-            if engine in {"polars", "pandas"} or spark_engine in {"pyspark", "spark"}:
-                from etlantic.transform.discovery import (
-                    TRANSFORM_COMPILER_ENTRY_POINT,
-                    register_discovered_compilers,
-                )
-                from etlantic.transform.discovery import (
-                    _key as transform_key,
-                )
-
-                result = discover_evaluate_authorize_load(
-                    TRANSFORM_COMPILER_ENTRY_POINT,
-                    profile=resolved,
-                    key_fn=transform_key,
-                )
-                trust_records.extend(result.trust_records)
-                register_discovered_compilers(
-                    reg, compilers=result.loaded, profile=resolved
-                )
+            trust_records, _plan_diags = discover_planning_plugins(
+                resolved,
+                reg,
+                dataframe_engine=engine,
+                sql_engine=sql_engine,
+                spark_engine=spark_engine,
+            )
         return cls(
             profile=resolved,
             registry=reg,

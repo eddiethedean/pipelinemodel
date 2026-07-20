@@ -140,29 +140,29 @@ def _build_plan(
         raise _selection_error("Selection produced an empty graph.")
 
     profile = context.profile
-    # Prefer Spark, then SQL, otherwise dataframe/local.
-    default_engine = (
-        profile.spark_engine
-        if profile.spark_engine
-        else (
-            profile.sql_engine
-            if profile.sql_engine
-            else (profile.dataframe_engine or "local")
-        )
-    )
+    default_engine = profile.primary_engine()
     security_domain = profile.security_domain
 
     # 4-5. Implementations + capabilities
     implementations = _select_implementations(
         pipeline_cls, graph, context, default_engine
     )
-    _assert_dataframe_engines_available(context, implementations, default_engine)
-    _assert_sql_engines_available(context, implementations, default_engine)
-    _assert_sql_write_capabilities(context, implementations, default_engine)
-    _assert_spark_engines_available(context, implementations, default_engine)
-    _assert_spark_capabilities(context, implementations, default_engine)
+    from etlantic.planning.capabilities import (
+        assert_capabilities_supported,
+        assert_dataframe_engines_available,
+        assert_spark_capabilities,
+        assert_spark_engines_available,
+        assert_sql_engines_available,
+        assert_sql_write_capabilities,
+    )
+
+    assert_dataframe_engines_available(context, implementations, default_engine)
+    assert_sql_engines_available(context, implementations, default_engine)
+    assert_sql_write_capabilities(context, implementations, default_engine)
+    assert_spark_engines_available(context, implementations, default_engine)
+    assert_spark_capabilities(context, implementations, default_engine)
     capability_decisions = _capability_records(context, default_engine)
-    _assert_capabilities_supported(capability_decisions, context, default_engine)
+    assert_capabilities_supported(capability_decisions, context, default_engine)
 
     # Bindings resolve early so source/sink engines follow providers, not only neighbors.
     bindings = _resolve_bindings(graph, context)
@@ -774,258 +774,6 @@ def _capability_records(context: PlanningContext, engine: str) -> list[dict[str,
     ]
 
 
-def _assert_dataframe_engines_available(
-    context: PlanningContext,
-    implementations: dict[str, ImplementationDescriptor],
-    default_engine: str,
-) -> None:
-    engines = {default_engine} | {impl.engine for impl in implementations.values()}
-    missing = sorted(
-        engine
-        for engine in engines
-        if _is_dataframe_engine(engine, context.registry.engines)
-        and engine not in context.registry.engines
-    )
-    if not missing:
-        return
-    diagnostics = [
-        Diagnostic(
-            code="PMPLAN410",
-            severity=Severity.ERROR,
-            message=(
-                f"Dataframe engine {engine!r} is not registered. Install "
-                f"etlantic-{engine} and ensure it is discoverable."
-            ),
-            path=("capability", engine),
-            phase="capability",
-        )
-        for engine in missing
-    ]
-    raise PipelineValidationError(
-        "Missing dataframe engine plugin(s).",
-        report=ValidationReport.from_diagnostics(diagnostics, phases=("capability",)),
-    )
-
-
-def _assert_sql_engines_available(
-    context: PlanningContext,
-    implementations: dict[str, ImplementationDescriptor],
-    default_engine: str,
-) -> None:
-    from etlantic.sql.protocol import SQL_ENGINES
-
-    engines = {default_engine} | {impl.engine for impl in implementations.values()}
-    missing = sorted(
-        engine
-        for engine in engines
-        if engine in SQL_ENGINES and engine not in context.registry.engines
-    )
-    if not missing:
-        return
-    diagnostics = [
-        Diagnostic(
-            code="PMPLAN412",
-            severity=Severity.ERROR,
-            message=(
-                f"SQL engine {engine!r} is not registered. Install "
-                "etlantic-sql and ensure it is discoverable."
-            ),
-            path=("capability", engine),
-            phase="capability",
-        )
-        for engine in missing
-    ]
-    raise PipelineValidationError(
-        "Missing SQL engine plugin(s).",
-        report=ValidationReport.from_diagnostics(diagnostics, phases=("capability",)),
-    )
-
-
-def _assert_sql_write_capabilities(
-    context: PlanningContext,
-    implementations: dict[str, ImplementationDescriptor],
-    default_engine: str,
-) -> None:
-    """Fail closed when profile requires unsupported SQL write semantics."""
-    from etlantic.sql.protocol import SQL_ENGINES
-
-    engines = {default_engine} | {impl.engine for impl in implementations.values()}
-    if not any(e in SQL_ENGINES for e in engines):
-        return
-    required = list(context.profile.required_sql_capabilities)
-    if not required:
-        return
-    for engine in engines:
-        if engine not in SQL_ENGINES:
-            continue
-        available = context.registry.engines.get(engine)
-        if available is None:
-            continue
-        unsupported = [req for req in required if not available.supports(req)]
-        if not unsupported:
-            continue
-        diagnostics = [
-            Diagnostic(
-                code="PMPLAN413",
-                severity=Severity.ERROR,
-                message=(
-                    f"SQL capability {req!r} unsupported by {engine!r}; "
-                    "failing before target mutation."
-                ),
-                path=("capability", req),
-                phase="capability",
-            )
-            for req in unsupported
-        ]
-        raise PipelineValidationError(
-            "Unsupported SQL write/publication capabilities.",
-            report=ValidationReport.from_diagnostics(
-                diagnostics, phases=("capability",)
-            ),
-        )
-
-
-def _assert_spark_engines_available(
-    context: PlanningContext,
-    implementations: dict[str, ImplementationDescriptor],
-    default_engine: str,
-) -> None:
-    from etlantic.spark.protocol import SPARK_ENGINES
-
-    engines = {default_engine} | {impl.engine for impl in implementations.values()}
-    missing = sorted(
-        engine
-        for engine in engines
-        if engine in SPARK_ENGINES and engine not in context.registry.engines
-    )
-    if not missing:
-        return
-    diagnostics = [
-        Diagnostic(
-            code="PMPLAN414",
-            severity=Severity.ERROR,
-            message=(
-                f"Spark engine {engine!r} is not registered. Install "
-                "etlantic-pyspark and ensure it is discoverable."
-            ),
-            path=("capability", engine),
-            phase="capability",
-        )
-        for engine in missing
-    ]
-    raise PipelineValidationError(
-        "Missing Spark engine plugin(s).",
-        report=ValidationReport.from_diagnostics(diagnostics, phases=("capability",)),
-    )
-
-
-def _assert_spark_capabilities(
-    context: PlanningContext,
-    implementations: dict[str, ImplementationDescriptor],
-    default_engine: str,
-) -> None:
-    """Fail closed when profile requires unsupported Spark capabilities."""
-    from etlantic.spark.protocol import SPARK_ENGINES
-
-    engines = {default_engine} | {impl.engine for impl in implementations.values()}
-    if not any(e in SPARK_ENGINES for e in engines):
-        return
-    required = list(context.profile.required_spark_capabilities)
-    if context.profile.spark_streaming:
-        required = [*required, "spark_streaming", "streaming"]
-    if not required:
-        return
-    for engine in engines:
-        if engine not in SPARK_ENGINES:
-            continue
-        available = context.registry.engines.get(engine)
-        if available is None:
-            continue
-        unsupported = [req for req in required if not available.supports(req)]
-        if not unsupported:
-            continue
-        diagnostics = [
-            Diagnostic(
-                code="PMPLAN415",
-                severity=Severity.ERROR,
-                message=(
-                    f"Spark capability {req!r} unsupported by {engine!r}; "
-                    "failing before execution."
-                ),
-                path=("capability", req),
-                phase="capability",
-            )
-            for req in unsupported
-        ]
-        raise PipelineValidationError(
-            "Unsupported Spark capabilities.",
-            report=ValidationReport.from_diagnostics(
-                diagnostics, phases=("capability",)
-            ),
-        )
-
-
-def _assert_capabilities_supported(
-    capability_decisions: list[dict[str, Any]],
-    context: PlanningContext,
-    engine: str,
-) -> None:
-    unsupported = [
-        item
-        for item in capability_decisions
-        if item.get("decision") == CapabilityDecision.UNSUPPORTED.value
-    ]
-    # Pandas must fail planning when lazy is required.
-    available = context.registry.engines.get(engine)
-    if (
-        available is not None
-        and engine == "pandas"
-        and "lazy" in context.required_capabilities
-        and not available.supports("lazy")
-    ):
-        unsupported.append(
-            {
-                "requirement": "lazy",
-                "engine": engine,
-                "decision": CapabilityDecision.UNSUPPORTED.value,
-                "message": "Pandas plugin does not support lazy execution.",
-            }
-        )
-    if not unsupported:
-        return
-    diagnostics = [
-        Diagnostic(
-            code="PMPLAN411",
-            severity=Severity.ERROR,
-            message=str(
-                item.get("message")
-                or f"Unsupported capability {item.get('requirement')!r} "
-                f"for engine {engine!r}."
-            ),
-            path=("capability", str(item.get("requirement"))),
-            phase="capability",
-        )
-        for item in unsupported
-    ]
-    raise PipelineValidationError(
-        "Unsupported dataframe capabilities.",
-        report=ValidationReport.from_diagnostics(diagnostics, phases=("capability",)),
-    )
-
-
-def _is_dataframe_engine(
-    engine: str,
-    engines: dict[str, PluginCapabilities] | None = None,
-) -> bool:
-    """Classify registered dataframe engines, falling back to legacy aliases."""
-    from etlantic.dataframe.protocol import DATAFRAME_ENGINES
-
-    capabilities = (engines or {}).get(engine)
-    if capabilities is not None:
-        return capabilities.dataframe
-    return engine in DATAFRAME_ENGINES
-
-
 def _collection_boundaries(
     graph: LogicalGraph,
     implementations: dict[str, ImplementationDescriptor],
@@ -1035,6 +783,8 @@ def _collection_boundaries(
     engines: dict[str, Any] | None = None,
 ) -> list[MaterializationBoundary]:
     """Declare explicit collection points for lazy dataframe engines."""
+    from etlantic.planning.capabilities import is_dataframe_engine
+
     engines = engines or {}
     region_engine = {r.identity: r.engine for r in regions}
     node_region = {
@@ -1045,7 +795,7 @@ def _collection_boundaries(
         if node.kind is not NodeKind.STEP:
             continue
         engine = _node_engine(node.name, implementations, default_engine)
-        if not _is_dataframe_engine(engine, engines):
+        if not is_dataframe_engine(engine, engines):
             continue
         caps = engines.get(engine)
         # Collection required before sink / cross-engine / durable boundaries.
@@ -1297,6 +1047,8 @@ def _materialization_boundaries(
     bindings: dict[str, BindingDescriptor] | None = None,
     engines: dict[str, PluginCapabilities] | None = None,
 ) -> list[MaterializationBoundary]:
+    from etlantic.planning.capabilities import is_dataframe_engine
+
     binding_map = bindings or {}
     engine_capabilities = engines or {}
     boundaries: list[MaterializationBoundary] = []
@@ -1324,9 +1076,9 @@ def _materialization_boundaries(
                 "consumer_node": edge.consumer_node,
                 "consumer_port": edge.consumer_port,
             }
-            if _is_dataframe_engine(
+            if is_dataframe_engine(
                 prod_engine, engine_capabilities
-            ) and _is_dataframe_engine(cons_engine, engine_capabilities):
+            ) and is_dataframe_engine(cons_engine, engine_capabilities):
                 descriptor = _interchange_descriptor(
                     producer_engine=prod_engine,
                     consumer_engine=cons_engine,

@@ -93,3 +93,27 @@ def test_runtime_development_allowlist_empty_loads(
     runtime.ensure_plugins_for_profile(profile)
     assert _LOAD_COUNT["value"] == 1
     assert len(runtime.dataframe_plugins) == 1
+
+
+def test_planning_context_with_shared_registry_skips_rediscovery(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """PlanningContext with an existing registry does not re-run discovery."""
+    fake = _fake_discovered(group="etlantic.dataframe_plugins", name="polars")
+
+    def _discover(group: str) -> tuple[list[DiscoveredPlugin], list]:
+        if group == "etlantic.dataframe_plugins":
+            return [fake], []
+        return [], []
+
+    monkeypatch.setattr("etlantic.plugin_lifecycle.discover_entry_points", _discover)
+    profile = Profile(
+        name="dev",
+        security_mode="development",
+        dataframe_engine="polars",
+    )
+    runtime = PipelineRuntime()
+    runtime.ensure_plugins_for_profile(profile)
+    loads_after_runtime = _LOAD_COUNT["value"]
+    PlanningContext.create(profile=profile, registry=runtime.registry)
+    assert _LOAD_COUNT["value"] == loads_after_runtime

@@ -48,6 +48,7 @@ from etlantic.reports.model import (
 )
 from etlantic.runtime.artifacts import ArtifactStore
 from etlantic.runtime.context import AttemptContext, RunContext, StepContext
+from etlantic.runtime.executors import get_executor_registry
 from etlantic.runtime.dataframe_exec import (
     execute_dataframe_step,
     is_dataframe_engine,
@@ -215,6 +216,7 @@ class LocalOrchestrator:
     run_id: str | None = field(default=None)
 
     def __post_init__(self) -> None:
+        self._executor_registry = get_executor_registry()
         if self.pipeline_cls is not None:
             self._index_transformations(self.pipeline_cls)
         if self.artifacts is None:
@@ -237,6 +239,9 @@ class LocalOrchestrator:
             xf = getattr(value, "transformation", None)
             if xf is not None:
                 self.transform_lookup[xf.identity()] = xf
+
+    def _resolve_executor(self, engine: str) -> Any | None:
+        return self._executor_registry.resolve(engine)
 
     def _strategy_for(self, node_name: str, port_name: str) -> ArtifactStrategy:
         if self.request.materialization is MaterializationPolicy.NONE:

@@ -70,11 +70,15 @@ def validate_pipeline(
     diagnostics.extend(_tag_phase(policy_diags, "policy"))
 
     # Phase 5: capability
-    capability = _phase_capability(pipeline_cls, context, resolved_policy)
+    from etlantic.validation.phases.capability import phase_capability
+
+    capability = phase_capability(pipeline_cls, context, resolved_policy)
     diagnostics.extend(_tag_phase(capability, "capability"))
 
     # Phase 6: plugin trust (production allowlist fail-closed)
-    trust = _phase_plugin_trust(context)
+    from etlantic.validation.phases.plugin_trust import phase_plugin_trust
+
+    trust = phase_plugin_trust(context)
     diagnostics.extend(_tag_phase(trust, "plugin_trust"))
 
     if resolved_policy.warnings_as_errors:
@@ -374,115 +378,6 @@ def _phase_policy(
                 )
             )
     return diagnostics
-
-
-def _phase_capability(
-    pipeline_cls: type[Pipeline],
-    context: PlanningContext,
-    policy: ValidationPolicy,
-) -> list[Diagnostic]:
-    from etlantic.capabilities import CapabilityDecision, negotiate_capabilities
-
-    diagnostics: list[Diagnostic] = []
-    engine_name = (
-        context.profile.spark_engine
-        if context.profile.spark_engine
-        else (
-            context.profile.sql_engine
-            if context.profile.sql_engine
-            else (context.profile.dataframe_engine or "local")
-        )
-    )
-    available = context.registry.engines.get(engine_name)
-    if available is None:
-        if context.profile.spark_engine:
-            engine_field = "spark_engine"
-        elif context.profile.sql_engine:
-            engine_field = "sql_engine"
-        else:
-            engine_field = "dataframe_engine"
-        diagnostics.append(
-            Diagnostic(
-                code="PMPLAN401",
-                severity=Severity.ERROR,
-                message=f"No plugin capabilities registered for engine {engine_name!r}.",
-                path=("profile", context.profile.name, engine_field),
-            )
-        )
-        return diagnostics
-
-    fallback = None
-    if context.fallback_engine:
-        fallback = context.registry.engines.get(context.fallback_engine)
-    allow_fallback = context.allow_capability_fallback or bool(
-        policy.allowed_capability_fallbacks
-    )
-    negotiations = negotiate_capabilities(
-        requirements=context.required_capabilities,
-        available=available,
-        fallback=fallback,
-        allow_fallback=allow_fallback,
-    )
-    for item in negotiations:
-        if item.decision is CapabilityDecision.UNSUPPORTED:
-            diagnostics.append(
-                Diagnostic(
-                    code="PMPLAN402",
-                    severity=Severity.ERROR,
-                    message=item.message
-                    or f"Unsupported capability {item.requirement!r}.",
-                    path=("capability", item.requirement),
-                    metadata=item.to_dict(),
-                )
-            )
-        elif item.decision is CapabilityDecision.FALLBACK:
-            diagnostics.append(
-                Diagnostic(
-                    code="PMPLAN403",
-                    severity=Severity.WARNING,
-                    message=item.message
-                    or f"Using fallback for capability {item.requirement!r}.",
-                    path=("capability", item.requirement),
-                    metadata=item.to_dict(),
-                )
-            )
-    return diagnostics
-
-
-def _phase_plugin_trust(context: PlanningContext) -> list[Diagnostic]:
-    """Enforce production plugin_allowlist fail-closed (empty list is an error).
-
-    Checks plugins selected by the profile engines (and their transform
-    compilers). Built-in ``local``/``null`` stubs are included only when those
-    engines are selected so unrelated installed plugins do not spuriously fail
-    local production templates.
-    """
-    from etlantic.plugin_trust import filter_plugins_by_allowlist
-    from etlantic.transform.discovery import discover_transform_compilers_for_profile
-
-    profile = context.profile
-    selected: dict[str, object] = {}
-    selected_engines = {
-        eng
-        for eng in (
-            profile.dataframe_engine,
-            profile.sql_engine,
-            profile.spark_engine,
-            profile.orchestrator,
-        )
-        if eng
-    }
-    for name, descriptor in context.registry.plugins.items():
-        engine = getattr(descriptor, "engine", None)
-        if name in selected_engines or engine in selected_engines:
-            selected[name] = descriptor
-
-    for engine, compiler in discover_transform_compilers_for_profile(profile).items():
-        if engine in selected_engines:
-            selected[f"transform_compiler:{engine}"] = compiler
-
-    _kept, diagnostics = filter_plugins_by_allowlist(selected, profile)
-    return list(diagnostics)
 
 
 def _validate_nested_subpipelines(

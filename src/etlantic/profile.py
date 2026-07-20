@@ -174,6 +174,32 @@ class Profile:
         object.__setattr__(self, "require_plugin_probe", bool(require_plugin_probe))
         object.__setattr__(self, "metadata", dict(metadata or {}))
 
+    def primary_engine(self) -> str:
+        """Resolve the profile's primary execution engine (spark → sql → dataframe)."""
+        from etlantic.engines import get_engine_registry
+
+        return get_engine_registry().primary_engine(self)
+
+    @property
+    def engine_profile(self) -> Any:
+        """Internal engine configuration view."""
+        from etlantic._profile.records import EngineProfile
+
+        return EngineProfile(
+            dataframe_engine=self.dataframe_engine,
+            sql_engine=self.sql_engine,
+            spark_engine=self.spark_engine,
+            orchestrator=self.orchestrator,
+            allow_trusted_sql=self.allow_trusted_sql,
+            spark_udf_policy=self.spark_udf_policy,
+            spark_streaming=self.spark_streaming,
+            required_sql_capabilities=self.required_sql_capabilities,
+            required_spark_capabilities=self.required_spark_capabilities,
+            required_orchestrator_capabilities=self.required_orchestrator_capabilities,
+            portable_transform_policy=self.portable_transform_policy,
+            implementation_overrides=dict(self.implementation_overrides),
+        )
+
     @property
     def assets(self) -> dict[str, str]:
         """Preferred public view of logical asset → provider resolution."""
