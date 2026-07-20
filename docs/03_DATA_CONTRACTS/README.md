@@ -2,7 +2,10 @@
 
 Data contracts are the foundation of every ETLantic pipeline.
 
-They describe the structure, constraints, and meaning of the data that flows through sources, transformations, and sinks. In ETLantic, data contracts are authored as **ContractModel-compatible Pydantic classes** and represented portably through the **Open Data Contract Standard (ODCS)**.
+They describe the structure, constraints, and meaning of the data that flows
+through extracts, transformations, and loads. In ETLantic, data contracts are
+authored as **ContractModel-compatible Pydantic classes** and represented
+portably through the **Open Data Contract Standard (ODCS)**.
 
 ## What This Section Covers
 
@@ -69,7 +72,7 @@ ETLantic consumes those contract classes and uses them to:
 - Generate pipeline-wide contract bundles
 - Build documentation and diagrams
 - Validate execution plans
-- Connect sources and sinks to declared data interfaces
+- Connect `Extract` / `Load` steps to declared data interfaces
 
 The division is intentional:
 
@@ -124,7 +127,7 @@ ETLantic can use those annotations to determine:
 
 ## Data Contracts in Pipelines
 
-Sources and sinks also reference data-contract classes:
+`Extract` and `Load` steps also reference data-contract classes:
 
 ```python
 from etlantic import Extract, Load, Pipeline
@@ -145,9 +148,9 @@ class CustomerPipeline(Pipeline):
     )
 ```
 
-The source declares the contract of incoming data.
+`Extract` declares the contract of incoming data.
 
-The sink declares the contract of published data.
+`Load` declares the contract of published data.
 
 The transformation connects those two typed boundaries.
 
@@ -185,10 +188,10 @@ The two workflows should interoperate without changing how transformations and p
 
 Data may be validated at several points:
 
-1. After a source reads data
+1. After an extract reads data
 2. Before a transformation receives data
 3. After a transformation produces data
-4. Before a sink writes or publishes data
+4. Before a load writes or publishes data
 
 ETLantic coordinates when validation occurs.
 

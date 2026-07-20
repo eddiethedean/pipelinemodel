@@ -5,7 +5,7 @@
     deprecated `Source`/`Sink` / `DataContractModel` authoring). Those samples
     are removed so they cannot be mistaken for ETLantic 0.18 APIs.
 
-    Prefer [Quickstart](../01_GETTING_STARTED/QUICKSTART.md) and `examples/quickstart.py`.
+    Prefer [Quickstart](../01_GETTING_STARTED/QUICKSTART.md) and `examples/memory_customers.py`.
 
     Authoritative surfaces: [Capabilities](../01_GETTING_STARTED/CAPABILITIES.md),
     runnable [Examples](README.md), and repository `examples/`.

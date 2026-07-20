@@ -58,12 +58,12 @@ jobs:
 
       - name: Runnable example
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
-        run: uv run python examples/quickstart.py
+        run: uv run python examples/memory_customers.py
 
       - name: CLI SARIF smoke
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
         run: |
-          uv run etlantic validate examples/quickstart.py:CustomerPipeline --format sarif > /tmp/etlantic.sarif
+          uv run etlantic validate examples/memory_customers.py:CustomerPipeline --format sarif > /tmp/etlantic.sarif
           python -c "import json; json.load(open('/tmp/etlantic.sarif')); print('sarif ok')"
 
       - name: MkDocs

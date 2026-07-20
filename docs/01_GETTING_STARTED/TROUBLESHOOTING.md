@@ -95,8 +95,9 @@ Compare distributions in the same interpreter:
 python -c "import importlib.metadata as m; print(m.version('etlantic')); print(m.version('etlantic-polars'))"
 ```
 
-Core **0.21.x** requires plugins from the **0.20** minor. Remove stale plugin versions
-and install matching pins, for example:
+Core **0.21.x** requires official plugins from the **same** minor
+(`0.21.x`). Do not mix `0.20` plugins with `0.21` core. Remove stale plugin
+versions and install matching pins, for example:
 
 ```bash
 python -m pip install --upgrade --force-reinstall \

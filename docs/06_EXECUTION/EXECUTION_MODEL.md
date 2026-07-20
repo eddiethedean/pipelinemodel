@@ -139,8 +139,8 @@ Users should not configure event loops or thread pools for ordinary use.
 The public API may expose:
 
 ```python
-CustomerPipeline.run(profile="local")
-await CustomerPipeline.arun(profile="local")
+CustomerPipeline.run(profile="development")
+await CustomerPipeline.arun(profile="development")
 ```
 
 Calling `run()` from an active async context should produce a clear error

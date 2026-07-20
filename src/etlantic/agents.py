@@ -5,9 +5,12 @@ from __future__ import annotations
 from pathlib import Path
 
 PUBLIC_CLI_COMMANDS = (
+    "init",
+    "doctor",
     "validate",
     "inspect",
     "plan",
+    "profile",
     "run",
     "compile",
     "generate",
@@ -91,8 +94,9 @@ description: Validate, plan, compile, and generate ETLantic pipelines safely.
 
 # ETLantic skill
 
-Use public CLI commands (`validate`, `inspect`, `plan`, `run`, `compile`,
-`generate`, `diff`, `plugin`, `schema`, `reliability`, `viz`, `report`) and
+Use public CLI commands (`init`, `doctor`, `validate`, `inspect`, `plan`,
+`profile`, `run`, `compile`, `generate`, `diff`, `plugin`, `schema`,
+`reliability`, `viz`, `report`) and
 public SDK imports (`etlantic.dataframe`, `.sql`, `.spark`, `.orchestration`,
 `.viz`, `.secrets`, `.testing`).
 

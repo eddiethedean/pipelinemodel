@@ -19,10 +19,10 @@ mkdir my-pipeline && cd my-pipeline
 etlantic init --with-toml
 ```
 
-This creates `pipeline.py`, `profiles/development.json`, sample `data/`, and
-`.etlantic/` workspace directories.
+This creates `pipeline.py` (`SamplePipeline`), `profiles/development.json`,
+sample `data/sample.json`, and `.etlantic/` workspace directories.
 
-## 3. Validate, plan, and run (separate invocations)
+## 3. Validate, plan, and run
 
 ```bash
 etlantic doctor --profile development
@@ -31,11 +31,33 @@ etlantic validate pipeline.py:SamplePipeline --profile development
 etlantic plan pipeline.py:SamplePipeline --profile development
 etlantic run pipeline.py:SamplePipeline --profile development
 etlantic report list
-etlantic report show <run_id>
 ```
 
 No Python-side `runtime.memory.seed()` is required: the generated profile maps
 assets to `json://data/...` paths.
+
+### Success criteria
+
+You should see a run status of `succeeded`. Inspect the written asset:
+
+```bash
+cat data/out.json
+```
+
+Expected shape (identity transform on sample rows):
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Ada"
+  },
+  {
+    "id": 2,
+    "name": "Grace"
+  }
+]
+```
 
 ## 4. Python SDK path (optional)
 
@@ -47,11 +69,15 @@ from pipeline import SamplePipeline
 report = SamplePipeline.validate(profile="development")
 report.raise_for_errors()
 SamplePipeline.plan(profile="development")
+SamplePipeline.run(profile="development")
 ```
 
-See [What's New in 0.21](WHATS_NEW_0_21.md) and the full
-[Installation](INSTALLATION.md) guide for optional engine packages.
+## Next steps
 
-For the in-repo runnable companion, see
-[`examples/quickstart.py`](https://github.com/eddiethedean/etlantic/blob/main/examples/quickstart.py)
-or run `uv run python examples/quickstart.py` from a checkout.
+- [First Pipeline](FIRST_PIPELINE.md) — evolve the generated project (contracts,
+  intentional errors, richer transforms)
+- [Installation](INSTALLATION.md) — optional engine packages
+- [What's New in 0.21](WHATS_NEW_0_21.md)
+
+For an in-memory SDK demo from a checkout (not this Quickstart), see
+[`examples/memory_customers.py`](https://github.com/eddiethedean/etlantic/blob/main/examples/memory_customers.py).

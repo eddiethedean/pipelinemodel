@@ -7,8 +7,10 @@
 
 | Recipe | Link |
 |---|---|
-| Five-minute local pipeline | [Quickstart](QUICKSTART.md) (paste); checkout: [`examples/quickstart.py`](https://github.com/eddiethedean/etlantic/blob/main/examples/quickstart.py) |
-| CLI inspect / validate / plan | [First Pipeline](FIRST_PIPELINE.md) |
+| Five-minute local pipeline | [Quickstart](QUICKSTART.md) (`etlantic init`) |
+| Evolve the generated project | [First Pipeline](FIRST_PIPELINE.md) |
+| Day-two habits | [Best practices](BEST_PRACTICES.md) |
+| In-memory SDK demo (checkout) | [`examples/memory_customers.py`](https://github.com/eddiethedean/etlantic/blob/main/examples/memory_customers.py) |
 | JSON and CSV storage | [File storage](../06_EXECUTION/FILE_STORAGE_TUTORIAL.md) |
 
 ## Engines

@@ -25,7 +25,7 @@
   <a href="https://etlantic.readthedocs.io/">Documentation</a> ·
   <a href="https://etlantic.readthedocs.io/en/latest/01_GETTING_STARTED/QUICKSTART/">Quickstart</a> ·
   <a href="https://etlantic.readthedocs.io/en/latest/01_GETTING_STARTED/CAPABILITIES/">Capabilities</a> ·
-  <a href="https://github.com/eddiethedean/etlantic/blob/main/ROADMAP.md">Roadmap</a>
+  <a href="https://etlantic.readthedocs.io/en/latest/11_DEVELOPMENT/ROADMAP_SUMMARY/">Roadmap</a>
 </p>
 
 ---
@@ -77,96 +77,24 @@ ETLantic requires Python 3.11 or newer.
 ```bash
 pip install etlantic==0.21.0
 etlantic --version
+
+mkdir my-pipeline && cd my-pipeline
+etlantic init --with-toml
+etlantic doctor --profile development
+etlantic validate pipeline.py:SamplePipeline --profile development
+etlantic plan pipeline.py:SamplePipeline --profile development
+etlantic run pipeline.py:SamplePipeline --profile development
+cat data/out.json
 ```
 
-```python
-from etlantic import (
-    Data,
-    Extract,
-    Input,
-    Load,
-    Output,
-    Pipeline,
-    PipelineRuntime,
-    Transformation,
-)
+You should see run status `succeeded` and JSON rows for Ada and Grace. The CLI
+defaults to `development` when `--profile` is omitted (or your project's
+`default_profile`). Prefer an explicit profile in scripts and CI.
 
-
-class RawCustomer(Data):
-    customer_id: int
-    first_name: str
-    last_name: str
-
-
-class Customer(Data):
-    customer_id: int
-    full_name: str
-
-
-class NormalizeCustomers(Transformation):
-    customers: Input[RawCustomer]
-    result: Output[Customer]
-
-
-@NormalizeCustomers.implementation("local")
-def normalize_customers(customers: list[RawCustomer]) -> list[Customer]:
-    return [
-        Customer(
-            customer_id=customer.customer_id,
-            full_name=f"{customer.first_name} {customer.last_name}",
-        )
-        for customer in customers
-    ]
-
-
-class CustomerPipeline(Pipeline):
-    raw: Extract[RawCustomer] = Extract(asset="customer_source")
-    normalized = NormalizeCustomers.step(customers=raw)
-    curated: Load[Customer] = Load(
-        input=normalized.result,
-        asset="customer_sink",
-    )
-
-
-def main() -> None:
-    validation = CustomerPipeline.validate(profile="development")
-    validation.raise_for_errors()
-    CustomerPipeline.plan(profile="development")
-
-    runtime = PipelineRuntime()
-    runtime.memory.seed(
-        "customer_source",
-        [
-            RawCustomer(customer_id=1, first_name="Ada", last_name="Lovelace"),
-            RawCustomer(customer_id=2, first_name="Grace", last_name="Hopper"),
-        ],
-    )
-    report = CustomerPipeline.run(profile="development", runtime=runtime)
-
-    print(report.status.value)
-    for customer in runtime.memory.get("customer_sink"):
-        print(customer.model_dump())
-
-
-if __name__ == "__main__":
-    main()
-```
-
-For an import-safe module and CLI workflow, use the tested
-[Quickstart](https://etlantic.readthedocs.io/en/latest/01_GETTING_STARTED/QUICKSTART/)
-or [examples/quickstart.py](https://github.com/eddiethedean/etlantic/blob/main/examples/quickstart.py).
-
-Save the Python example above as `pipeline.py` in an empty directory, then run:
-
-```bash
-etlantic inspect pipeline.py:CustomerPipeline --format json
-etlantic validate pipeline.py:CustomerPipeline --profile development
-etlantic plan pipeline.py:CustomerPipeline --profile development --format json
-etlantic validate pipeline.py:CustomerPipeline --format sarif
-```
-
-Pass `--profile development` on every CLI command above. The CLI defaults to
-`local` when `--profile` is omitted, which may not match tutorial pipelines.
+Full walkthrough: [Quickstart](https://etlantic.readthedocs.io/en/latest/01_GETTING_STARTED/QUICKSTART/).
+Next: [First Pipeline](https://etlantic.readthedocs.io/en/latest/01_GETTING_STARTED/FIRST_PIPELINE/)
+(evolve the generated project). From a checkout, an optional in-memory SDK demo
+is [`examples/memory_customers.py`](https://github.com/eddiethedean/etlantic/blob/main/examples/memory_customers.py).
 
 ## Engines and integrations
 
@@ -241,7 +169,7 @@ guides for precise guarantees and limitations.
 · [Engine selection](https://etlantic.readthedocs.io/en/latest/01_GETTING_STARTED/ENGINE_SELECTION/)
 · [Compare](https://etlantic.readthedocs.io/en/latest/01_GETTING_STARTED/COMPARE/)
 · [Security](https://etlantic.readthedocs.io/en/latest/02_FOUNDATIONS/SECURITY/)
-· [Roadmap](https://github.com/eddiethedean/etlantic/blob/main/ROADMAP.md)
+· [Roadmap](https://etlantic.readthedocs.io/en/latest/11_DEVELOPMENT/ROADMAP_SUMMARY/)
 · [Contributing](https://github.com/eddiethedean/etlantic/blob/main/CONTRIBUTING.md)
 
 MIT licensed.

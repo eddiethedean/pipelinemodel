@@ -43,7 +43,7 @@ documented and copy-paste runnable locally. Repository index:
 ### In-memory quickstart (CI)
 
 ```bash
-uv run python examples/quickstart.py
+uv run python examples/memory_customers.py
 ```
 
 ### Portable kernels and 0.17 families (docs / local)

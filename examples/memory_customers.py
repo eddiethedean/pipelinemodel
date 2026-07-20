@@ -1,8 +1,12 @@
-"""Smallest complete ETLantic local-runtime pipeline.
+"""In-memory CustomerPipeline demo (SDK seed + run).
 
-Run with:
+This is not the docs Quickstart. For the canonical first success, use:
 
-    uv run python examples/quickstart.py
+    etlantic init --with-toml
+
+Run this companion with:
+
+    uv run python examples/memory_customers.py
 """
 
 from etlantic import (
@@ -54,7 +58,7 @@ class CustomerPipeline(Pipeline):
 
 
 def run_example() -> tuple[PipelineRuntime, object]:
-    """Validate, plan, and run the in-memory quickstart (used by CI)."""
+    """Validate, plan, and run the in-memory demo (used by CI)."""
     validation = CustomerPipeline.validate(profile="development")
     validation.raise_for_errors()
     CustomerPipeline.plan(profile="development")

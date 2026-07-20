@@ -25,7 +25,7 @@ Work through the [Quickstart](../01_GETTING_STARTED/QUICKSTART.md), or run the
 repository example from a source checkout:
 
 ```bash
-python examples/quickstart.py
+python examples/memory_customers.py
 ```
 
 Confirm that the report succeeds and the two normalized customer rows are
@@ -50,10 +50,10 @@ paths.
 Use an importable `module:Class` or `path.py:Class` target:
 
 ```bash
-etlantic validate examples/quickstart.py:CustomerPipeline \
+etlantic validate examples/memory_customers.py:CustomerPipeline \
   --profile development --format json
 
-etlantic plan examples/quickstart.py:CustomerPipeline \
+etlantic plan examples/memory_customers.py:CustomerPipeline \
   --profile development --format json > pipeline-plan.json
 ```
 
@@ -94,11 +94,11 @@ selected providers are not already in the built-in or plugin registry. See
 ## 6. Publish SARIF and retain the plan
 
 ```bash
-etlantic validate examples/quickstart.py:CustomerPipeline \
+etlantic validate examples/memory_customers.py:CustomerPipeline \
   --profile profiles/pilot-production.json \
   --format sarif > etlantic.sarif
 
-etlantic plan examples/quickstart.py:CustomerPipeline \
+etlantic plan examples/memory_customers.py:CustomerPipeline \
   --profile profiles/pilot-production.json \
   --format json > pipeline-plan.json
 ```

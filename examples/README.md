@@ -1,10 +1,9 @@
 # Runnable Examples
 
-These examples use APIs and dependencies shipped in ETLantic **0.20.0**.
+These examples use APIs and dependencies shipped in ETLantic **0.21.0**.
 
 **Clone required.** The PyPI wheel does **not** include `examples/`. After
-`pip install etlantic==0.21.0`, use the paste-ready
-[Quickstart](../docs/01_GETTING_STARTED/QUICKSTART.md) (or open scripts on
+`pip install etlantic==0.21.0`, use the CLI [Quickstart](../docs/01_GETTING_STARTED/QUICKSTART.md) (`etlantic init`) (or open scripts on
 GitHub). Commands below assume a **repository checkout** with `uv sync` /
 `uv run`, after installing matching `==0.21.0` optional packages as needed.
 
@@ -12,14 +11,15 @@ GitHub). Commands below assume a **repository checkout** with `uv sync` /
 **(CI)** below. Scripts marked **(docs / local)** are copy-paste runnable and
 documented, but are not executed on every PR matrix job.
 
-## Quickstart (CI)
+## In-memory customers demo (CI)
 
 ```bash
-uv run python examples/quickstart.py
+uv run python examples/memory_customers.py
 ```
 
 Validates, plans, and runs with in-memory storage; prints `succeeded` and
-curated records (matches [Quickstart](../docs/01_GETTING_STARTED/QUICKSTART.md)).
+curated records. This is an in-memory SDK demo, **not** the docs Quickstart
+(`etlantic init`).
 
 ## Sample multi-file project (docs / local)
 

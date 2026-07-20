@@ -116,6 +116,7 @@ nav:
       - Troubleshooting: 01_GETTING_STARTED/TROUBLESHOOTING.md
       - Guides:
           - Cookbook: 01_GETTING_STARTED/COOKBOOK.md
+          - Best practices: 01_GETTING_STARTED/BEST_PRACTICES.md
           - Ops examples: 01_GETTING_STARTED/OPS_EXAMPLES.md
           - Portable failure cookbook: 01_GETTING_STARTED/PORTABLE_FAILURE_COOKBOOK.md
           - Interchange Gate A FAQ: 01_GETTING_STARTED/INTERCHANGE_GATE_A_FAQ.md
@@ -130,13 +131,14 @@ nav:
   - Release notes:
       - Changelog: CHANGELOG.md
       - What's new in 0.21: 01_GETTING_STARTED/WHATS_NEW_0_21.md
-      - What's new in 0.20: 01_GETTING_STARTED/WHATS_NEW_0_20.md
-      - What's new in 0.19: 01_GETTING_STARTED/WHATS_NEW_0_19.md
-      - What's new in 0.18: 01_GETTING_STARTED/WHATS_NEW_0_18.md
-      - What's new in 0.17: 01_GETTING_STARTED/WHATS_NEW_0_17.md
-      - What's new in 0.16: 01_GETTING_STARTED/WHATS_NEW_0_16.md
-      - What's new in 0.15: 01_GETTING_STARTED/WHATS_NEW_0_15.md
-      - What's new in 0.14: 01_GETTING_STARTED/WHATS_NEW_0_14.md
+      - Earlier releases:
+          - What's new in 0.20: 01_GETTING_STARTED/WHATS_NEW_0_20.md
+          - What's new in 0.19: 01_GETTING_STARTED/WHATS_NEW_0_19.md
+          - What's new in 0.18: 01_GETTING_STARTED/WHATS_NEW_0_18.md
+          - What's new in 0.17: 01_GETTING_STARTED/WHATS_NEW_0_17.md
+          - What's new in 0.16: 01_GETTING_STARTED/WHATS_NEW_0_16.md
+          - What's new in 0.15: 01_GETTING_STARTED/WHATS_NEW_0_15.md
+          - What's new in 0.14: 01_GETTING_STARTED/WHATS_NEW_0_14.md
   - Foundations:
       - Overview: 02_FOUNDATIONS/README.md
       - Documentation Status: 02_FOUNDATIONS/DOCUMENTATION_STATUS.md
@@ -285,6 +287,8 @@ nav:
       - Migration 0.18 → 0.19: 11_DEVELOPMENT/MIGRATION_0_18_TO_0_19.md
       - Migration 0.17 → 0.18: 11_DEVELOPMENT/MIGRATION_0_17_TO_0_18.md
       - Migration 0.16 → 0.17: 11_DEVELOPMENT/MIGRATION_0_16_TO_0_17.md
+      - Documentation audit 0.21: 11_DEVELOPMENT/DOCUMENTATION_AUDIT_0_21.md
+      - Documentation audit 0.20: 11_DEVELOPMENT/DOCUMENTATION_AUDIT_0_20.md
       - Documentation audit 0.18: 11_DEVELOPMENT/DOCUMENTATION_AUDIT_0_18.md
       - Documentation audit 0.17: 11_DEVELOPMENT/DOCUMENTATION_AUDIT_0_17.md
       - Support policy: 11_DEVELOPMENT/SUPPORT.md

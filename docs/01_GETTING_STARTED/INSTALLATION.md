@@ -115,7 +115,7 @@ git clone https://github.com/eddiethedean/etlantic.git
 cd etlantic
 uv sync
 uv run python -c "import etlantic; print(etlantic.__version__)"
-uv run python examples/quickstart.py
+uv run python examples/memory_customers.py
 ```
 
 `uv sync` creates `.venv`, installs editable core, and the `dev` group.

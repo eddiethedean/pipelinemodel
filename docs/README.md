@@ -51,8 +51,8 @@ then runs them locally or through optional engine plugins.
 
 !!! tip "Green path (start here only)"
     1. [Installation](01_GETTING_STARTED/INSTALLATION.md) — `pip install etlantic==0.21.0`
-    2. [Quickstart](01_GETTING_STARTED/QUICKSTART.md) — five-minute success
-    3. [First Pipeline](01_GETTING_STARTED/FIRST_PIPELINE.md) — contracts, validation, CLI
+    2. [Quickstart](01_GETTING_STARTED/QUICKSTART.md) — `etlantic init` (five-minute success)
+    3. [First Pipeline](01_GETTING_STARTED/FIRST_PIPELINE.md) — evolve the generated project
     4. [Engine selection](01_GETTING_STARTED/ENGINE_SELECTION.md) — then an engine tutorial
 
     Diligence (after first success): [Capabilities](01_GETTING_STARTED/CAPABILITIES.md),
@@ -64,79 +64,27 @@ then runs them locally or through optional engine plugins.
 
 ## Minimal working example
 
-```python
-from etlantic import (
-    Data,
-    Input,
-    Output,
-    Pipeline,
-    PipelineRuntime,
-    Load,
-    Extract,
-    Transformation,
-)
+The canonical first success is CLI-first:
 
-
-class RawCustomer(Data):
-    customer_id: int
-    first_name: str
-    last_name: str
-
-
-class Customer(Data):
-    customer_id: int
-    full_name: str
-
-
-class NormalizeCustomers(Transformation):
-    customers: Input[RawCustomer]
-    result: Output[Customer]
-
-
-@NormalizeCustomers.implementation("local")
-def normalize_customers(customers: list[RawCustomer]) -> list[Customer]:
-    return [
-        Customer(
-            customer_id=row.customer_id,
-            full_name=f"{row.first_name} {row.last_name}",
-        )
-        for row in customers
-    ]
-
-
-class CustomerPipeline(Pipeline):
-    raw: Extract[RawCustomer] = Extract(asset="customer_source")
-    normalized = NormalizeCustomers.step(customers=raw)
-    curated: Load[Customer] = Load(
-        input=normalized.result,
-        asset="customer_sink",
-    )
-
-
-def main() -> None:
-    CustomerPipeline.validate(profile="development").raise_for_errors()
-    CustomerPipeline.plan(profile="development")
-    runtime = PipelineRuntime()
-    runtime.memory.seed(
-        "customer_source",
-        [RawCustomer(customer_id=1, first_name="Ada", last_name="Lovelace")],
-    )
-    CustomerPipeline.run(profile="development", runtime=runtime)
-    print(runtime.memory.get("customer_sink"))
-
-
-if __name__ == "__main__":
-    main()
+```bash
+pip install 'etlantic==0.21.0'
+mkdir my-pipeline && cd my-pipeline
+etlantic init --with-toml
+etlantic validate pipeline.py:SamplePipeline --profile development
+etlantic plan pipeline.py:SamplePipeline --profile development
+etlantic run pipeline.py:SamplePipeline --profile development
+cat data/out.json
 ```
 
-Copy into a file and run with Python after `pip install 'etlantic==0.21.0'`.
-The PyPI wheel does **not** include `examples/`; from a checkout use
-[`examples/quickstart.py`](https://github.com/eddiethedean/etlantic/blob/main/examples/quickstart.py).
-Prefer the full [Quickstart](01_GETTING_STARTED/QUICKSTART.md) (includes
-`plan()`). From these declarations ETLantic can also generate
-ODCS / DTCS / DPCS contracts, Mermaid lineage, and a secret-free
-`PipelinePlan`. Optional plugins add Polars, Pandas, SQL, PySpark, and Airflow
-compilation.
+Follow the full [Quickstart](01_GETTING_STARTED/QUICKSTART.md), then
+[First Pipeline](01_GETTING_STARTED/FIRST_PIPELINE.md) to evolve the generated
+contracts. The PyPI wheel does **not** include `examples/`; from a checkout an
+optional in-memory SDK demo is
+[`examples/memory_customers.py`](https://github.com/eddiethedean/etlantic/blob/main/examples/memory_customers.py).
+
+From the same typed definitions ETLantic can also generate ODCS / DTCS / DPCS
+contracts, Mermaid lineage, and a secret-free `PipelinePlan`. Optional plugins
+add Polars, Pandas, SQL, PySpark, and Airflow compilation.
 
 The transformation implementation remains separate—register `"polars"`,
 `"sql"`, and other engines the same way after installing the matching plugin.
@@ -196,11 +144,12 @@ Follow the **Green path** above for first success. Optional persona forks:
 ### I want to run something in five minutes
 
 Same as the Green path: [Installation](01_GETTING_STARTED/INSTALLATION.md) →
-[Quickstart](01_GETTING_STARTED/QUICKSTART.md) → then
-[Capabilities](01_GETTING_STARTED/CAPABILITIES.md). Paste the Quickstart file,
-or from a checkout run
-[`examples/quickstart.py`](https://github.com/eddiethedean/etlantic/blob/main/examples/quickstart.py)
-/ [`file_storage.py`](https://github.com/eddiethedean/etlantic/blob/main/examples/file_storage.py).
+[Quickstart](01_GETTING_STARTED/QUICKSTART.md) (`etlantic init`) → then
+[Capabilities](01_GETTING_STARTED/CAPABILITIES.md). From a checkout, optional
+companions include
+[`examples/memory_customers.py`](https://github.com/eddiethedean/etlantic/blob/main/examples/memory_customers.py)
+and
+[`file_storage.py`](https://github.com/eddiethedean/etlantic/blob/main/examples/file_storage.py).
 
 ### I want to understand the idea
 
@@ -229,7 +178,7 @@ or from a checkout run
 
 ### I want runnable examples
 
-- [examples/quickstart.py](https://github.com/eddiethedean/etlantic/blob/main/examples/quickstart.py) — local runtime
+- [examples/memory_customers.py](https://github.com/eddiethedean/etlantic/blob/main/examples/memory_customers.py) — in-memory SDK demo
 - [examples/file_storage.py](https://github.com/eddiethedean/etlantic/blob/main/examples/file_storage.py) — JSON/CSV storage
 - [examples/dataframe_parity.py](https://github.com/eddiethedean/etlantic/blob/main/examples/dataframe_parity.py) — Polars/Pandas
 - [examples/sql_to_sql.py](https://github.com/eddiethedean/etlantic/blob/main/examples/sql_to_sql.py) — SQL (`etlantic-sql`)

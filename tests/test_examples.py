@@ -10,9 +10,9 @@ from pathlib import Path
 from etlantic import RunStatus
 
 
-def test_quickstart_example() -> None:
-    path = Path(__file__).parents[1] / "examples" / "quickstart.py"
-    spec = importlib.util.spec_from_file_location("etlantic_quickstart", path)
+def test_memory_customers_example() -> None:
+    path = Path(__file__).parents[1] / "examples" / "memory_customers.py"
+    spec = importlib.util.spec_from_file_location("etlantic_memory_customers", path)
     assert spec is not None
     assert spec.loader is not None
     module = importlib.util.module_from_spec(spec)

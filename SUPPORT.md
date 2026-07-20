@@ -1,6 +1,6 @@
 # Support
 
-ETLantic **0.20.0** is **stable** for documented single-tenant reference
+ETLantic **0.21.0** is **stable** for documented single-tenant reference
 deployments (not unrestricted enterprise production). Community support has
 **no formal SLA** or guaranteed response time.
 

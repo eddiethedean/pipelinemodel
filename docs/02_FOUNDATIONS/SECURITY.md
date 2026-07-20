@@ -4,13 +4,13 @@ ETLantic coordinates contracts, Python code, plugins, credentials, data
 artifacts, and external execution systems. Security is therefore a
 cross-cutting architectural constraint, not a feature delegated to one plugin.
 
-This chapter covers **implemented 0.19 controls** and the broader
+This chapter covers **implemented 0.20–0.21 controls** and the broader
 **proposed threat model**. ETLantic 0.21.0 is production/stable for documented
 single-tenant reference deployments. It does not provide unrestricted
 full multi-tenant control planes, compliance attestations, deployment-topology, or advanced
 supply-chain guarantees; those controls remain adopter-owned.
 
-## Implemented in 0.19–0.20
+## Implemented in 0.20–0.21
 
 - Secret-free plans and reports (`SecretRef` metadata only; resolve at runtime)
 - Explicit `Profile.security_mode` (`development` \| `test` \| `production`);
@@ -23,20 +23,27 @@ supply-chain guarantees; those controls remain adopter-owned.
 - Parameterized SQL reference paths and trusted-SQL gates
 - SARIF/JSON diagnostics for CI
 - Central redaction expectations for logs/reports (see run-report guidance)
+- SafeIoPolicy; outbound default-deny; unsafe-serialization prohibition
+- Artifact/cache isolation keys for the single-tenant reference envelope
+- Versioned `SecurityEvent` audit events
+- Release SBOM digests and GitHub build provenance attestations
 
 ## Required before an unrestricted production claim
 
-- Plugin provenance / supply-chain attestation
-- Artifact and cache isolation across tenants/security domains
-- Outbound destination controls
-- Complete unsafe-serialization policy enforcement
-- Denial-of-service budgets
-- Immutable audit evidence suitable for compliance programs
+- Cross-tenant / multi-tenant isolation guarantees (beyond single-tenant keys)
+- Formal denial-of-service capacity SLAs
+- Immutable audit evidence suitable for compliance programs (beyond operational reports)
+- Broader supply-chain provenance programs beyond allowlists, pins, and release attestations
 
 The sections below describe the full threat model. Where a control is only
 partially implemented, the evaluation table marks **Partial** or **Gap**.
-Illustrative `PMSEC*` diagnostic codes in later sections are **proposed**
-unless they appear in shipped diagnostics.
+Shipped diagnostic codes in source today include `PMSEC050`, `PMSEC051`, and
+`PMSEC060`. Other illustrative `PMSEC*` codes in later sections are
+**proposed** unless they appear in shipped diagnostics.
+
+Authoritative residual-risk summary for evaluators:
+[Evaluator Brief → Security posture](../01_GETTING_STARTED/EVALUATOR.md#security-posture)
+and [Production Readiness](../06_EXECUTION/PRODUCTION_READINESS.md).
 
 ## Principles
 

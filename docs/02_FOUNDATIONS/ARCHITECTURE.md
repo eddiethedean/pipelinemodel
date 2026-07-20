@@ -239,7 +239,7 @@ Region formation depends on:
 
 The core depends on public protocols rather than backend packages.
 
-Primary extension families are:
+**Shipped** extension families (0.21):
 
 | Extension | Responsibility |
 |---|---|
@@ -247,11 +247,17 @@ Primary extension families are:
 | Portable transformation compiler | Compile DTCS Transformation Plans to native backend operations |
 | SQL plugin and dialect | Compile and execute SQL-native regions |
 | PySpark plugin | Build and submit Spark-native regions |
-| Orchestrator plugin | Coordinate or compile pipeline execution |
-| Storage plugin | Read and write persistent datasets |
-| Resource provider | Acquire managed runtime dependencies |
-| Observability provider | Route logs, metrics, traces, and lifecycle events |
-| Notification provider | Deliver typed outbound events |
+| Orchestrator / scheduler plugin | Compile plans (Airflow) or execute plans (Prefect local MVP) |
+| Built-in storage bindings | Memory, callable, JSON, CSV, and no-write asset resolution |
+
+**Future design** (not shipped as public plugin protocols—see Design Proposals):
+
+| Extension | Responsibility |
+|---|---|
+| Storage plugin protocol catalog | Pluggable persistent dataset providers beyond built-ins |
+| Resource provider protocol | Acquire managed runtime dependencies |
+| Observability provider protocol | Route logs, metrics, traces, and lifecycle events |
+| Notification provider protocol | Deliver typed outbound events beyond built-in outbound policy |
 
 Plugins advertise capabilities. The planner selects them only when those
 capabilities satisfy the logical model.

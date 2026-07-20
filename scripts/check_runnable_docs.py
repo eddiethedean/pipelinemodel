@@ -8,7 +8,6 @@ from pathlib import Path
 ROOT = Path(__file__).parents[1]
 
 RUNNABLE_PAGES = {
-    "docs/01_GETTING_STARTED/QUICKSTART.md": "examples/quickstart.py",
     "docs/06_EXECUTION/FILE_STORAGE_TUTORIAL.md": "examples/file_storage.py",
     "docs/06_EXECUTION/POLARS_TUTORIAL.md": "examples/dataframe_parity.py",
     "docs/06_EXECUTION/PANDAS_TUTORIAL.md": "examples/dataframe_parity.py",

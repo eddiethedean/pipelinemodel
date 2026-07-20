@@ -80,21 +80,23 @@ Execution plugins own:
 
 ETLantic may validate data at four primary boundaries.
 
-### 1. Source output validation
+### 1. Extract output validation
 
-After a source reads data, the result may be validated against the source contract.
+After an extract reads data, the result may be validated against the extract
+contract.
 
 ```text
-External source
+External system
       │
       ▼
-Read plugin
+Read / storage binding
       │
       ▼
-Source contract validation
+Extract contract validation
 ```
 
-This confirms that incoming data satisfies the declared data contract before downstream transformations receive it.
+This confirms that incoming data satisfies the declared data contract before
+downstream transformations receive it.
 
 ### 2. Transformation input validation
 
@@ -128,11 +130,13 @@ An invalid output indicates that the implementation failed to satisfy its declar
 
 The recommended default is to fail the node.
 
-### 4. Sink input validation
+### 4. Load input validation
 
-Before a sink writes or publishes data, ETLantic may validate the input against the sink contract.
+Before a load writes or publishes data, ETLantic may validate the input against
+the load contract.
 
-This is the final publication boundary and should usually receive the strongest validation policy.
+This is the final publication boundary and should usually receive the strongest
+validation policy.
 
 ## Validation Lifecycle
 
@@ -142,7 +146,7 @@ A typical data path looks like this:
 Read
   │
   ▼
-Validate source output
+Validate extract output
   │
   ▼
 Validate transformation input
@@ -154,7 +158,7 @@ Execute transformation
 Validate transformation output
   │
   ▼
-Validate sink input
+Validate load input
   │
   ▼
 Write or publish
@@ -701,11 +705,11 @@ Suggested defaults:
 
 | Boundary | Default |
 |---|---|
-| Source output | Schema validation |
+| Extract output | Schema validation |
 | Transformation input | Compatibility plus schema validation |
 | Transformation output | Full validation |
-| Sink input | Full validation |
-| Invalid source/input records | Fail unless policy allows partial acceptance |
+| Load input | Full validation |
+| Invalid extract/input records | Fail unless policy allows partial acceptance |
 | Invalid transformation output | Fail node |
 | Unsupported required constraints | Fail planning |
 | Sensitive invalid values | Redact |
@@ -715,7 +719,7 @@ These defaults may evolve, but safety should be preferred over permissiveness.
 ## Recommended Practices
 
 - Validate transformation outputs before downstream use.
-- Validate sink inputs before publication.
+- Validate load inputs before publication.
 - Let ContractModel define contract semantics.
 - Let plugins optimize enforcement.
 - Require plugins to declare unsupported constraints.

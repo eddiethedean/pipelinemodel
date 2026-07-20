@@ -11,10 +11,7 @@ documentation, or repository automation are welcome.
 | Version | Support |
 |---|---|
 | 0.21.x | Current supported stable line; security fixes are released on this line |
-| 0.21.x | Not actively maintained; upgrade to 0.21.x |
-| 0.19.x | Not actively maintained; upgrade to 0.21.x |
-| 0.18.x | Not actively maintained; upgrade to 0.21.x |
-| 0.17.x and earlier | Not actively maintained; upgrade to 0.21.x |
+| 0.20.x and earlier | Not actively maintained; upgrade to 0.21.x |
 
 Backports to older minor lines are not provided. Upgrade to the latest 0.21.x
 patch before reporting an issue.

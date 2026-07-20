@@ -12,7 +12,7 @@ Use the documented reference envelope (see [Evaluator](EVALUATOR.md) and
 [Production readiness](../06_EXECUTION/PRODUCTION_READINESS.md)):
 
 1. Core + local/file storage ([Quickstart](QUICKSTART.md) paste, or checkout
-   [`examples/quickstart.py`](https://github.com/eddiethedean/etlantic/blob/main/examples/quickstart.py)
+   [`examples/memory_customers.py`](https://github.com/eddiethedean/etlantic/blob/main/examples/memory_customers.py)
    / [`file_storage.py`](https://github.com/eddiethedean/etlantic/blob/main/examples/file_storage.py))
 2. Optional one engine: Polars **or** Pandas **or** SQL **or** local PySpark
 3. Explicit production `Profile` JSON with `plugin_allowlist` (trim to engines you install)

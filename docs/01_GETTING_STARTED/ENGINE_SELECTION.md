@@ -23,9 +23,9 @@ Start with core local Python. Add one engine at a time.
 
 1. **One engine first.** Do not combine SQL + Spark + dataframes until a single
    engine path works under `validate` and `plan`.
-2. **Pin the minor in 0.x.** For ETLantic 0.19, keep core and every official
-   plugin on the same release (for example `etlantic==0.21.0` with
-   `etlantic-polars==0.21.0`). Do not mix 0.18 plugins with 0.19 core.
+2. **Pin the minor in 0.x.** Keep core and every official plugin on the same
+   release (for example `etlantic==0.21.0` with `etlantic-polars==0.21.0`).
+   Do not mix `0.20` plugins with `0.21` core.
 3. **Production profiles need allowlists.** Create `profiles/prod.json` from the
    embedded JSON in [Capabilities → CI starter](CAPABILITIES.md#ci-starter), or
    from [prod.example.json](prod.example.json) in a checkout. Trim the allowlist

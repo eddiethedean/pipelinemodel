@@ -1,190 +1,171 @@
 # Your First Pipeline
 
-> **Status: Available in ETLantic 0.21.0.** This tutorial uses the local
-> Python runtime and in-memory storage. It does not require a dataframe or SQL
-> plugin.
+> **Status: Available in ETLantic 0.21.0.** This tutorial extends the project
+> created by [Quickstart](QUICKSTART.md) (`etlantic init`). It uses the local
+> Python runtime and JSON asset bindings—no dataframe or SQL plugin required.
 
-This tutorial explains the pieces of the runnable quickstart and shows how to
-inspect the artifacts ETLantic creates.
+## Start from the init project
 
-Install the published release with Python 3.11+:
+If you have not already:
 
 ```bash
 python -m pip install 'etlantic==0.21.0'
+mkdir my-pipeline && cd my-pipeline
+etlantic init --with-toml
 ```
 
-## Define data contracts
+Open `pipeline.py`. The scaffold defines a typed `Row` contract, an `Identity`
+transformation, and `SamplePipeline` wired as Extract → step → Load.
+
+## Walk the generated pieces
+
+### Data contract
 
 ```python
-from etlantic import Data
-
-
-class RawCustomer(Data):
-    customer_id: int
-    first_name: str
-    last_name: str
-
-
-class Customer(Data):
-    customer_id: int
-    full_name: str
+class Row(Data):
+    id: int
+    name: str
 ```
 
-These models validate records and provide the source for generated ODCS
-artifacts.
+Records must match this shape when read from `json://data/sample.json` and when
+written to `json://data/out.json`.
 
-## Define a transformation contract
+### Transformation contract and local implementation
 
 ```python
-from etlantic import Input, Output, Transformation
+class Identity(Transformation):
+    rows: Input[Row]
+    result: Output[Row]
 
 
-class NormalizeCustomers(Transformation):
-    customers: Input[RawCustomer]
-    result: Output[Customer]
+@Identity.implementation("local")
+def identity_local(rows: list[Row]) -> list[Row]:
+    return list(rows)
 ```
 
-The class states what the transformation consumes and produces. It does not
-execute anything by itself.
+The class states what the transformation consumes and produces. The
+`@implementation("local")` function is the executable body for the development
+profile.
 
-## Register local executable code
+### Pipeline wiring
 
 ```python
-@NormalizeCustomers.implementation("local")
-def normalize_customers(customers: list[RawCustomer]) -> list[Customer]:
-    return [
-        Customer(
-            customer_id=row.customer_id,
-            full_name=f"{row.first_name} {row.last_name}",
-        )
-        for row in customers
-    ]
+class SamplePipeline(Pipeline):
+    raw: Extract[Row] = Extract(asset="rows")
+    step = Identity.step(rows=raw)
+    out: Load[Row] = Load(input=step.result, asset="out")
 ```
 
-The engine name must match an implementation the selected profile can use.
-The built-in development profile selects local Python implementations.
+Asset names (`rows`, `out`) are logical. `profiles/development.json` binds them
+to JSON paths.
 
-## Connect the pipeline
+## Validate, plan, and run (CLI)
 
-```python
-from etlantic import Extract, Load, Pipeline
-
-
-class CustomerPipeline(Pipeline):
-    raw: Extract[RawCustomer] = Extract(asset="customer_source")
-    normalized = NormalizeCustomers.step(customers=raw)
-    curated: Load[Customer] = Load(
-        input=normalized.result,
-        asset="customer_sink",
-    )
+```bash
+etlantic inspect pipeline.py:SamplePipeline --format json
+etlantic validate pipeline.py:SamplePipeline --profile development --format json
+etlantic plan pipeline.py:SamplePipeline --profile development --format json
+etlantic run pipeline.py:SamplePipeline --profile development
 ```
 
-Bindings are logical names. At runtime, a storage provider resolves each name.
+Prefer the same `--profile` for validate, plan, and run. If you omit
+`--profile`, the CLI defaults to `development` (or your project's
+`default_profile`).
 
-## Validate and inspect
+Expected run status: `succeeded`. `data/out.json` should mirror the sample
+rows (identity transform).
 
-```python
-report = CustomerPipeline.validate(profile="development")
-report.raise_for_errors()
+## Try an intentional wiring error
 
-graph = CustomerPipeline.inspect()
-print(CustomerPipeline.to_mermaid())
-```
-
-Validation returns structured diagnostics. Inspection and Mermaid generation
-do not execute transformation code.
-
-### Try an intentional wiring error
-
-In `CustomerPipeline`, change exactly this annotation:
+In `SamplePipeline`, change exactly this annotation:
 
 ```python
 # before
-curated: Load[Customer] = Load(
+out: Load[Row] = Load(
 
-# intentionally broken
-curated: Load[RawCustomer] = Load(
+# intentionally broken — invent a second contract first:
+class Other(Data):
+    id: int
+    name: str
+
+out: Load[Other] = Load(
 ```
 
 Then validate. ETLantic rejects the graph before it reads any data:
 
 ```bash
-etlantic validate pipeline.py:CustomerPipeline --profile development
+etlantic validate pipeline.py:SamplePipeline --profile development
 ```
 
 ```text
-PMPIPE210: The step "curated" expects RawCustomer on "input", but received Customer from "normalized.result".
+PMPIPE210: The step "out" expects Other on "input", but received Row from "step.result".
 ```
 
-Restore `Load[Customer]` before continuing.
+Restore `Load[Row]` before continuing.
 
-### Inspect, validate, and plan from the CLI
+## Evolve the transform
 
-With the complete quickstart saved as `pipeline.py`, run:
+Replace `Identity` with a real reshape so the tutorial teaches more than a
+passthrough. Example: upper-case names.
 
-```bash
-etlantic inspect pipeline.py:CustomerPipeline --format json
-etlantic validate pipeline.py:CustomerPipeline --profile development --format json
-etlantic plan pipeline.py:CustomerPipeline --profile development --format json
+```python
+class NamedRow(Data):
+    id: int
+    name: str
+
+
+class UpperName(Transformation):
+    rows: Input[Row]
+    result: Output[NamedRow]
+
+
+@UpperName.implementation("local")
+def upper_name(rows: list[Row]) -> list[NamedRow]:
+    return [NamedRow(id=row.id, name=row.name.upper()) for row in rows]
+
+
+class SamplePipeline(Pipeline):
+    raw: Extract[Row] = Extract(asset="rows")
+    step = UpperName.step(rows=raw)
+    out: Load[NamedRow] = Load(input=step.result, asset="out")
 ```
 
-!!! warning "CLI process boundaries"
-    These commands import definitions but do not inherit in-memory records
-    seeded by a different Python process. Prefer the same `--profile` for
-    validate, plan, and run (`development` here). If you omit `--profile`,
-    the CLI defaults to `development`.
+Re-run validate → plan → run. `data/out.json` should show `"ADA"` / `"GRACE"`.
 
 ## Generate portable contracts
 
 ```python
-CustomerPipeline.write_contracts("contracts/")
+from pipeline import SamplePipeline
+
+SamplePipeline.write_contracts("contracts/")
 ```
 
 This writes ODCS, DTCS, and DPCS artifacts derived from the same definitions.
-Generated filenames are deterministic; inspect the returned `ContractBundle`
-instead of depending on hand-written filename assumptions.
 
-## Plan
+## Plan from Python
 
 ```python
-plan = CustomerPipeline.plan(profile="development")
+from pipeline import SamplePipeline
+
+plan = SamplePipeline.plan(profile="development")
 print(plan.plan_id, plan.fingerprint)
-print(CustomerPipeline.explain_plan(profile="development"))
+print(SamplePipeline.explain_plan(profile="development"))
 ```
 
 Planning resolves implementations, bindings, capabilities, and execution
 regions without reading data or resolving secret values.
 
-## Run
+## Optional: in-memory SDK demo
 
-```python
-from etlantic import PipelineRuntime
+CLI `run` with JSON assets is the Quickstart path. For process-local memory
+seeding (no files), use a checkout companion:
 
-runtime = PipelineRuntime()
-runtime.memory.seed(
-    "customer_source",
-    [RawCustomer(customer_id=1, first_name="Ada", last_name="Lovelace")],
-)
-
-run_report = CustomerPipeline.run(
-    profile="development",
-    runtime=runtime,
-)
-print(run_report.status.value)
-
-customers = runtime.memory.get("customer_sink")
-print(customers[0].full_name)
+```bash
+uv run python examples/memory_customers.py
 ```
 
-Expected output:
-
-```text
-succeeded
-Ada Lovelace
-```
-
-Use `await CustomerPipeline.arun(...)` when calling ETLantic from an existing
-async application.
+That script validates, plans, seeds `PipelineRuntime.memory`, and prints
+`succeeded` plus curated customer records. It is **not** the Quickstart.
 
 ## Current boundary
 
@@ -195,18 +176,13 @@ CSV, and no-write storage. Optional plugins are available today:
 - SQL — `etlantic-sql`
 - PySpark batch — `etlantic-pyspark`
 - Airflow compile — `etlantic-airflow`
-- Prefect direct execution — `etlantic-prefect` (`ExecutionScheduler`, local MVP)
+- Prefect direct execution — `etlantic-prefect`
 - SparkForge adapter — `etlantic-sparkforge`
 
-Prefect direct execution shipped in 0.17; Prefect deployment/serve, Dagster
-compilers, and managed cloud Spark providers remain outside the shipped
-boundary. Keep core and optional plugin minors matched—for this guide, pin
-both to `0.21.0`. See [Capabilities](CAPABILITIES.md).
+Keep core and optional plugin minors matched—for this guide, pin both to
+`0.21.0`. See [Capabilities](CAPABILITIES.md).
 
-Continue with [Engine selection](ENGINE_SELECTION.md), or continue diligence
-with [Capabilities](CAPABILITIES.md). For a production profile starter, copy the
-JSON from [Production profile starter](prod.example.json) (or the embedded block
-in [Capabilities](CAPABILITIES.md#ci-starter)) into your own
-`profiles/prod.json`—that file is **not** installed with the PyPI package.
-From a git checkout, the companion script is
-[`examples/quickstart.py`](https://github.com/eddiethedean/etlantic/blob/main/examples/quickstart.py).
+Continue with [Engine selection](ENGINE_SELECTION.md). For a production profile
+starter, copy the JSON from
+[Production profile starter](prod.example.json) (or the embedded block in
+[Capabilities](CAPABILITIES.md#ci-starter)) into your own `profiles/prod.json`.

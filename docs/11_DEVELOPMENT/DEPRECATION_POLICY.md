@@ -8,7 +8,7 @@ be silent. See [Surface Inventory](../10_REFERENCE/SURFACE_INVENTORY.md).
 
 | Surface | Current promise |
 |---|---|
-| Documented 0.20 public imports | Supported for the 0.21.x line |
+| Documented 0.21 public imports | Supported for the 0.21.x line |
 | Versioned plugin protocols | Compatible within their documented protocol version |
 | Pipeline Plan schema | Governed by its schema version (`etlantic.plan/1`) |
 | Experimental APIs | May change in any 0.x release |

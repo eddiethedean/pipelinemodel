@@ -33,7 +33,7 @@ plugin, or executable behavior change.
 `NO_MKDOCS_2_WARNING=1` so Material's MkDocs 2.0 advisory does not appear
 (unrelated to this project's content).
 
-The example test imports and runs `examples/quickstart.py`. Documentation CI
+The example test imports and runs `examples/memory_customers.py`. Documentation CI
 also checks release-version consistency and rejects future-backend claims in
 the runnable examples index.
 
@@ -41,7 +41,7 @@ Pages labeled **Status: Available** and presented as runnable must identify a
 companion source file in `examples/`. Register the page/source pair in
 `scripts/check_runnable_docs.py`; the docs gate verifies that the file exists
 and **syntax-compiles** (`py_compile`). Core examples such as
-`examples/quickstart.py` also **execute** in CI. Optional-backend companions
+`examples/memory_customers.py` also **execute** in CI. Optional-backend companions
 are executed in their dependency-group jobs when marked as such—do not claim
 every companion is executed by the syntax gate alone.
 

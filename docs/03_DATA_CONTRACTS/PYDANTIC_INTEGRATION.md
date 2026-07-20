@@ -58,7 +58,7 @@ ContractModel owns:
 ETLantic owns:
 
 - Referencing data contracts from transformations
-- Referencing data contracts from sources and sinks
+- Referencing data contracts from `Extract` and `Load` steps
 - Validating pipeline wiring
 - Coordinating validation boundaries
 - Discovering contracts used by a pipeline

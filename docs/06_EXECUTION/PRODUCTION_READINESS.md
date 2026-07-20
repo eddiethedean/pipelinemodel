@@ -2,8 +2,9 @@
 
 ETLantic 0.21.0 is production/stable for the documented single-tenant reference
 deployment on this page. Experimental features remain experimental. Broader
-deployment topology, multi-tenancy, compliance/SBOM/signing, and advanced
-supply-chain controls remain adopter-owned.
+deployment topology, multi-tenancy, compliance attestations beyond shipped
+SBOM digests/GitHub attestations, and advanced supply-chain programs remain
+adopter-owned.
 
 ## Supported reference shape
 
@@ -55,24 +56,31 @@ engine wheels to workers.
 
 ## Boundaries on a general production claim
 
-- Supply-chain provenance beyond package allowlists and version pins
-- Cross-run and cross-tenant artifact/cache isolation guarantees
-- Outbound destination constraints
-- Planning and loading denial-of-service budgets
-- Formal unsafe-serialization prohibition across all plugins
+These remain outside the unrestricted enterprise envelope even when single-tenant
+reference controls are shipped:
+
+- Cross-tenant / multi-tenant isolation guarantees (beyond single-tenant keys)
+- Formal denial-of-service capacity SLAs (partial I/O budgets only)
+- Compliance-grade audit system of record (CLI reports are operational evidence)
 - Stable 1.0 compatibility and support windows
 - HA/DR, RPO/RTO, and compliance attestations (adopter-owned)
+- Broader supply-chain programs beyond package allowlists, pins, SBOM digests,
+  and GitHub attestations
 
-## Shipped / adopter-owned / gap
+## Shipped / adopter-owned / residual (0.21)
 
-| Concern | 0.20 status |
+| Concern | 0.21 status |
 |---|---|
-| Typed validate/plan/run | Shipped |
-| Polars kernel portable compile | Shipped |
-| Plugin allowlists | Shipped (selection, not sandbox) |
-| Durable multi-worker control plane | Gap |
-| Signed SBOM / provenance | Available (digests + GitHub attestations; OIDC preferred) |
-| Capacity / performance SLA | Gap — see benchmarks docs for local baselines only |
+| Typed validate/plan/run | **Shipped** |
+| Portable compilers (Polars/Pandas/SQL/PySpark) | **Shipped** |
+| Plugin allowlists | **Shipped** (selection, not sandbox) |
+| Safe I/O, outbound default-deny, serialization ban | **Shipped** |
+| Artifact/cache isolation keys (single-tenant) | **Shipped** |
+| Release SBOM digests + GitHub attestations | **Shipped** |
+| Durable multi-worker / multi-tenant control plane | **Residual / gap** |
+| Cross-tenant isolation guarantees | **Residual / adopter-owned** |
+| Capacity / performance SLA | **Gap** — local baselines only |
+| Compliance audit SoR | **Adopter-owned** |
 
 ## Deployment acceptance criteria
 

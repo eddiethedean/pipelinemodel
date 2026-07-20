@@ -34,10 +34,12 @@ semantics.
 git clone https://github.com/eddiethedean/etlantic.git
 cd etlantic
 git checkout -b topic/my-change
-uv sync
+uv sync --locked
 ```
 
-`uv sync` installs runtime dependencies, the editable workspace packages, and
+Always use `uv sync --locked` so your environment matches `uv.lock`.
+
+`uv sync --locked` installs runtime dependencies, the editable workspace packages, and
 the `dev` group (pytest, ruff, mkdocs). Optional groups: `dataframes`, `sql`,
 `pyspark`, `airflow`, `prefect`, `sparkforge`, `keyring`, `sqlmodel`. The
 workspace also includes experimental `etlantic-datafusion` (Alpha; not a
@@ -49,6 +51,29 @@ Use the supported Python versions documented in `pyproject.toml` (3.11+).
 PySpark real-cluster parity needs a JVM; default Spark tests use sparkless.
 Airflow tests need the `airflow` group. PostgreSQL SQL tests need a live URL
 via `ETLANTIC_SQL_URL` when not using the SQLite demo path.
+
+## Fail-closed contributor rules
+
+Mirror [AGENTS.md](https://github.com/eddiethedean/etlantic/blob/main/AGENTS.md):
+
+- Prefer public SDK imports; do not rely on private underscore modules.
+- Never embed secret values in plans, reports, contracts, or docs.
+- Production profiles require `plugin_allowlist` and fail closed.
+- Schema history stores fingerprints/metadata only—never source rows.
+- Medallion bronze/silver/gold stay in SparkForge / `etlantic-sparkforge`.
+
+## Minimal first PR (docs-only or tiny fix)
+
+```bash
+uv sync --locked
+uv run ruff check .
+uv run ruff format --check .
+uv run python scripts/check_docs.py
+uv run python scripts/check_agent_guidance.py
+```
+
+Then open a PR against `main`. Expand to the full CI-equivalent checklist below
+for core, plugin, or release-impacting changes.
 
 ## CI-equivalent checks
 
@@ -66,8 +91,8 @@ uv run python scripts/check_agent_guidance.py
 uv run python scripts/check_release.py
 uv run python scripts/check_surface_inventory.py
 uv run --group polars --group pandas --group sql --group pyspark python scripts/check_transform_compiler_drift.py
-uv run etlantic validate examples/quickstart.py:CustomerPipeline --format sarif > /tmp/etlantic.sarif
-uv run python examples/quickstart.py
+uv run etlantic validate examples/memory_customers.py:CustomerPipeline --format sarif > /tmp/etlantic.sarif
+uv run python examples/memory_customers.py
 uv run python scripts/build_docs.py
 ```
 

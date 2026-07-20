@@ -32,6 +32,7 @@ def main() -> None:
         ROOT / "docs/README.md",
         ROOT / "docs/01_GETTING_STARTED/CAPABILITIES.md",
         ROOT / "SECURITY.md",
+        ROOT / "SUPPORT.md",
     ]
     for path in current_markers:
         text = path.read_text(encoding="utf-8")
@@ -39,6 +40,13 @@ def main() -> None:
             raise SystemExit(
                 f"{path} does not mention current version {package_version}"
             )
+
+    support = (ROOT / "SUPPORT.md").read_text(encoding="utf-8")
+    support_opening = "\n".join(support.splitlines()[:8])
+    if f"**{package_version}**" not in support_opening or "stable" not in support_opening:
+        raise SystemExit(
+            f"SUPPORT.md opening must claim {package_version} is stable"
+        )
 
     examples_index = (ROOT / "docs/09_EXAMPLES/README.md").read_text(encoding="utf-8")
     if "complete working examples" in examples_index.lower():
@@ -73,6 +81,10 @@ def main() -> None:
         "In 0.19.0, a relational claim",
         "shipped in ETLantic 0.19.0",
         "0.19 plugins",
+        "requires plugins from the **0.20** minor",
+        "The CLI defaults to `local`",
+        "copy, run, see Ada Lovelace",
+        "Quickstart](QUICKSTART.md) (paste)",
         'python -m pip install -e ".[dev]"',
         "ETLantic 0.18.0 shipped portable coverage expansion",
         "not a ETLantic 0.11 API guide",
@@ -457,6 +469,20 @@ def main() -> None:
         raise SystemExit("ROADMAP_SUMMARY.md must mention 0.19.0 freeze")
     if "0.20.0" not in roadmap_summary:
         raise SystemExit("ROADMAP_SUMMARY.md must mention 0.20.0 trust/isolation")
+    if "0.21.0" not in roadmap_summary and "0.21" not in roadmap_summary:
+        raise SystemExit("ROADMAP_SUMMARY.md must mention 0.21")
+    quickstart = (ROOT / "docs/01_GETTING_STARTED/QUICKSTART.md").read_text(
+        encoding="utf-8"
+    )
+    if "etlantic init" not in quickstart:
+        raise SystemExit("QUICKSTART.md must document etlantic init")
+    if "data/out.json" not in quickstart:
+        raise SystemExit("QUICKSTART.md must include success criteria for data/out.json")
+    if "examples/quickstart.py" in quickstart:
+        raise SystemExit(
+            "QUICKSTART.md must not link examples/quickstart.py "
+            "(use memory_customers.py or omit)"
+        )
     if "non-blocking" not in roadmap_summary.lower():
         raise SystemExit("ROADMAP_SUMMARY.md must label DataFusion as non-blocking")
     interop = (
@@ -483,15 +509,25 @@ def main() -> None:
     security = (ROOT / "SECURITY.md").read_text(encoding="utf-8")
     # e.g. 0.14.0 → 0.14.x
     major_minor = ".".join(package_version.split(".")[:2])
-    if f"| {major_minor}.x |" not in security:
+    current_support_rows = [
+        line
+        for line in security.splitlines()
+        if f"| {major_minor}.x |" in line
+    ]
+    if len(current_support_rows) != 1:
         raise SystemExit(
-            f"SECURITY.md support table must list {major_minor}.x as current"
+            "SECURITY.md support table must have exactly one "
+            f"{major_minor}.x row (found {len(current_support_rows)})"
+        )
+    if "Not actively maintained" in current_support_rows[0]:
+        raise SystemExit(
+            f"SECURITY.md {major_minor}.x row must be the current supported line"
         )
 
     scrub_paths = [
         ROOT / "README.md",
         ROOT / "examples/README.md",
-        ROOT / "examples/quickstart.py",
+        ROOT / "examples/memory_customers.py",
         ROOT / "docs/README.md",
         ROOT / "docs/01_GETTING_STARTED/INSTALLATION.md",
         ROOT / "docs/01_GETTING_STARTED/TROUBLESHOOTING.md",
@@ -1041,6 +1077,16 @@ def main() -> None:
         raise SystemExit(
             f"UPGRADE.md must include {major_minor} configuration cheat sheet"
         )
+
+    # CLI.md must document every public CLI command (contract vs Typer surface).
+    sys.path.insert(0, str(ROOT / "src"))
+    from etlantic.agents import PUBLIC_CLI_COMMANDS  # noqa: E402
+
+    cli_md = (ROOT / "docs/10_REFERENCE/CLI.md").read_text(encoding="utf-8")
+    for cmd in PUBLIC_CLI_COMMANDS:
+        heading = f"## `{cmd}`"
+        if heading not in cli_md:
+            raise SystemExit(f"CLI.md missing section for public command: {heading}")
 
     subprocess.run(
         [sys.executable, str(ROOT / "scripts/check_runnable_docs.py")],

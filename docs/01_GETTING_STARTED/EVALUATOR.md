@@ -42,11 +42,28 @@ manager.
 - SQL plugins use structured compilation with identifier/parameter safety;
   untrusted raw SQL is out of scope
 - Spark session credentials resolve at acquire time and never embed in plans
-- Plugin allowlists / version pins are **available** in 0.9+ via
+- Plugin allowlists / version pins are **available** via
   `Profile.plugin_allowlist` (production profiles fail closed when empty)
-- Threat model documents residual Gaps (provenance, artifact/cache isolation,
-  DoS budgets, outbound constraints, unsafe-serialization prohibition)
+- **0.20–0.21 trust controls shipped:** SafeIoPolicy, pre-import allowlist +
+  manifests, artifact/cache isolation keys, outbound default-deny,
+  unsafe-serialization prohibition, versioned `SecurityEvent`, release SBOM
+  digests and GitHub attestations
 - Report vulnerabilities privately; security fixes are supported on 0.21.x
+
+### Shipped vs residual (0.21)
+
+| Concern | Status |
+|---|---|
+| Secret-free plans/reports; `security_mode` | **Shipped** |
+| Production plugin allowlist (selection, not sandbox) | **Shipped** |
+| Safe I/O, outbound default-deny, serialization ban | **Shipped** |
+| Artifact/cache isolation keys (single-tenant reference) | **Shipped** |
+| Release SBOM digests + GitHub attestations | **Shipped** |
+| Cross-tenant / multi-tenant isolation guarantees | **Residual / adopter-owned** |
+| Formal DoS capacity SLA | **Residual** (partial I/O budgets only) |
+| Compliance-grade audit system of record | **Adopter-owned** (CLI reports are operational evidence) |
+| HA/DR, SOC2/GDPR certs, identity/RBAC/SSO | **Adopter-owned / out of scope** |
+| In-process multi-tenancy | **Out of scope** — use process isolation |
 
 Read [Security](../02_FOUNDATIONS/SECURITY.md) and the repository
 [security policy](https://github.com/eddiethedean/etlantic/blob/main/SECURITY.md).
@@ -56,19 +73,17 @@ For the bounded reference topology and required controls, read
 ## Bounded production support (do not skip)
 
 **ETLantic 0.21.0 is production/stable for documented single-tenant reference
-deployments.** Plugin allowlists being “Available” do not make an arbitrary
+deployments.** Shipped trust controls do not make an arbitrary multi-tenant
 topology safe.
 
-The following residual gaps remain adopter-owned and block unrestricted
-multi-tenant or enterprise-wide production claims:
+Residual items that block **unrestricted** enterprise-wide production claims:
 
-| Gap (from Security Evaluation) | Why it matters |
+| Residual | Why it matters |
 |---|---|
-| Plugin provenance beyond allowlist/pins | Supply-chain attestation incomplete |
-| Artifact and cache isolation | Cross-run / cross-tenant exposure risk |
-| Outbound destination constraints | SSRF / exfiltration controls incomplete |
-| Denial-of-service budgets | Unbounded planning/load work |
-| Unsafe serialization prohibition | Deserialization attack surface |
+| Provenance beyond allowlist/pins + release attestations | Broader supply-chain programs remain adopter-owned |
+| Cross-tenant artifact/cache isolation | Single-tenant isolation keys are not a multi-tenant control plane |
+| Formal DoS budgets / capacity SLA | Partial I/O budgets only |
+| Compliance audit SoR | Durable/file reports are operational evidence, not compliance |
 | In-process multi-tenancy | Explicitly out of scope—use process isolation |
 
 Treat CLI run reports under `.etlantic/reports/` as operational evidence (not
@@ -115,7 +130,7 @@ Follow this path **after** the green path (Install → Quickstart → First Pipe
 → Engine selection), or as an enterprise diligence track:
 
 1. [Installation](INSTALLATION.md) — `pip install etlantic==0.21.0`
-2. [Quickstart](QUICKSTART.md) (paste-ready; `examples/` requires a checkout)
+2. [Quickstart](QUICKSTART.md) (`etlantic init`; `examples/` requires a checkout)
 3. [First Pipeline](FIRST_PIPELINE.md)
 4. [Engine selection](ENGINE_SELECTION.md)
 5. [Capabilities](CAPABILITIES.md)

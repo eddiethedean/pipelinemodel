@@ -61,7 +61,7 @@ Exits `0` when checks pass, `16` (`ENVIRONMENT_FAILURE`) when they fail.
 Validate without executing transformation code:
 
 ```bash
-etlantic validate examples/quickstart.py:CustomerPipeline \
+etlantic validate examples/memory_customers.py:CustomerPipeline \
   --profile development
 ```
 
@@ -79,8 +79,8 @@ Exit `0` when valid, `10` (`INVALID_MODEL`) on validation errors.
 Print the logical pipeline graph:
 
 ```bash
-etlantic inspect examples/quickstart.py:CustomerPipeline
-etlantic inspect examples/quickstart.py:CustomerPipeline --format json
+etlantic inspect examples/memory_customers.py:CustomerPipeline
+etlantic inspect examples/memory_customers.py:CustomerPipeline --format json
 ```
 
 ## `plan`
@@ -88,7 +88,7 @@ etlantic inspect examples/quickstart.py:CustomerPipeline --format json
 Resolve a deterministic `PipelinePlan`:
 
 ```bash
-etlantic plan examples/quickstart.py:CustomerPipeline \
+etlantic plan examples/memory_customers.py:CustomerPipeline \
   --profile development
 ```
 
@@ -104,10 +104,10 @@ The default output format is JSON. Selection options are:
 Explain resolution decisions with either form:
 
 ```bash
-etlantic plan explain examples/quickstart.py:CustomerPipeline \
+etlantic plan explain examples/memory_customers.py:CustomerPipeline \
   --profile development
 
-etlantic plan examples/quickstart.py:CustomerPipeline \
+etlantic plan examples/memory_customers.py:CustomerPipeline \
   --profile development --explain
 ```
 
@@ -174,9 +174,9 @@ Compile a planned pipeline to an external orchestrator artifact
 (requires the matching plugin, e.g. `etlantic-airflow`):
 
 ```bash
-etlantic compile examples/quickstart.py:CustomerPipeline \
+etlantic compile examples/memory_customers.py:CustomerPipeline \
   --target airflow -o dags/ --profile development
-etlantic compile examples/quickstart.py:CustomerPipeline \
+etlantic compile examples/memory_customers.py:CustomerPipeline \
   --target airflow -o dags/ --preview
 ```
 
@@ -187,8 +187,8 @@ etlantic compile examples/quickstart.py:CustomerPipeline \
 Generate ODCS/DTCS/DPCS contract bundles:
 
 ```bash
-etlantic generate examples/quickstart.py:CustomerPipeline -o contracts/
-etlantic generate examples/quickstart.py:CustomerPipeline --sqlmodel
+etlantic generate examples/memory_customers.py:CustomerPipeline -o contracts/
+etlantic generate examples/memory_customers.py:CustomerPipeline --sqlmodel
 ```
 
 `--sqlmodel` requires `etlantic-sqlmodel`.
@@ -256,9 +256,9 @@ etlantic reliability env-diff LEFT.json RIGHT.json
 ## `viz`
 
 ```bash
-etlantic viz dot examples/quickstart.py:CustomerPipeline -o pipeline.dot
-etlantic viz html examples/quickstart.py:CustomerPipeline -o lineage.html
-etlantic viz lineage examples/quickstart.py:CustomerPipeline --format json
+etlantic viz dot examples/memory_customers.py:CustomerPipeline -o pipeline.dot
+etlantic viz html examples/memory_customers.py:CustomerPipeline -o lineage.html
+etlantic viz lineage examples/memory_customers.py:CustomerPipeline --format json
 ```
 
 ## `report`

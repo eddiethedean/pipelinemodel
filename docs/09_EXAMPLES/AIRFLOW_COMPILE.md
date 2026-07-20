@@ -23,7 +23,7 @@ uv run python examples/airflow_compile.py
 Or via CLI after planning:
 
 ```bash
-uv run etlantic compile examples/quickstart.py:CustomerPipeline \
+uv run etlantic compile examples/memory_customers.py:CustomerPipeline \
   --target airflow -o /tmp/etlantic-dags
 ```
 
