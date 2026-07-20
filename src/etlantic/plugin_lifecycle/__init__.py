@@ -14,7 +14,7 @@ from etlantic.plugin_manifest import (
     PluginManifest,
     load_manifest_from_distribution,
 )
-from etlantic.plugin_trust import is_production_profile, plugin_allowed
+from etlantic.plugin_trust import is_production_profile
 from etlantic.profile import Profile
 from etlantic.runtime.events import SecurityEvent
 

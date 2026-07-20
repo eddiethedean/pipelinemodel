@@ -78,11 +78,13 @@ def _seed(runtime: PipelineRuntime) -> None:
 def test_run_without_explicit_context_uses_discovered_plugins() -> None:
     """Default Pipeline.run must use runtime-discovered plugins (no context=)."""
     pytest.importorskip("polars")
+    profile = Profile(name="polars-default", dataframe_engine="polars")
     runtime = PipelineRuntime()
+    runtime.ensure_plugins_for_profile(profile)
     assert "polars" in runtime.dataframe_plugins
     _seed(runtime)
     report = CustomerPipeline.run(
-        profile=Profile(name="polars-default", dataframe_engine="polars"),
+        profile=profile,
         runtime=runtime,
     )
     assert report.status is RunStatus.SUCCEEDED
@@ -94,12 +96,14 @@ def test_discovery_without_manual_register() -> None:
     pytest.importorskip("polars")
     found = discover_dataframe_plugins()
     assert "polars" in found
+    profile = Profile(name="discovered", dataframe_engine="polars")
     runtime = PipelineRuntime()
+    runtime.ensure_plugins_for_profile(profile)
     # Do not call register_dataframe_plugin; discovery alone must plan/run.
     assert "polars" in runtime.registry.engines
     _seed(runtime)
     report = CustomerPipeline.run(
-        profile=Profile(name="discovered", dataframe_engine="polars"),
+        profile=profile,
         runtime=runtime,
     )
     assert report.status is RunStatus.SUCCEEDED

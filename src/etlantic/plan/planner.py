@@ -8,7 +8,6 @@ from typing import Any
 
 from etlantic._version import __version__
 from etlantic.capabilities import (
-    CapabilityDecision,
     PluginCapabilities,
     negotiate_capabilities,
 )

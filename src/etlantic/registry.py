@@ -280,10 +280,21 @@ class PlanningContext:
         engine = resolved.dataframe_engine or "local"
         sql_engine = resolved.sql_engine
         spark_engine = resolved.spark_engine
-        reg = registry
+        reg = registry if registry is not None else builtin_stub_registry()
         trust_records: list[dict[str, Any]] = []
-        if reg is None:
-            reg = builtin_stub_registry()
+
+        def _needs_planning_discovery() -> bool:
+            if registry is None:
+                return True
+            if engine in {"polars", "pandas"} and engine not in reg.engines:
+                return True
+            if sql_engine == "sql" and "sql" not in reg.engines:
+                return True
+            return spark_engine in {"pyspark", "spark"} and not (
+                "pyspark" in reg.engines or "spark" in reg.engines
+            )
+
+        if _needs_planning_discovery():
             from etlantic.plugins.coordinator import discover_planning_plugins
 
             trust_records, _plan_diags = discover_planning_plugins(

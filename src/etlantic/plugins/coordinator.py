@@ -155,8 +155,10 @@ class PluginDiscoveryCoordinator:
         if include_transform_compilers:
             from etlantic.transform.discovery import (
                 TRANSFORM_COMPILER_ENTRY_POINT,
-                _key as transform_key,
                 register_discovered_compilers,
+            )
+            from etlantic.transform.discovery import (
+                _key as transform_key,
             )
 
             try:
@@ -274,15 +276,19 @@ def discover_planning_plugins(
         )
         trust_records.extend(lifecycle.trust_records)
         diagnostics.extend(lifecycle.diagnostics)
-        from etlantic.spark.discovery import register_discovered_plugins as register_spark
+        from etlantic.spark.discovery import (
+            register_discovered_plugins as register_spark,
+        )
 
         register_spark(registry, plugins=lifecycle.loaded, profile=profile)
 
     if include_compilers:
         from etlantic.transform.discovery import (
             TRANSFORM_COMPILER_ENTRY_POINT,
-            _key as transform_key,
             register_discovered_compilers,
+        )
+        from etlantic.transform.discovery import (
+            _key as transform_key,
         )
 
         lifecycle = discover_evaluate_authorize_load(

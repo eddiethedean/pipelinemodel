@@ -48,13 +48,13 @@ from etlantic.reports.model import (
 )
 from etlantic.runtime.artifacts import ArtifactStore
 from etlantic.runtime.context import AttemptContext, RunContext, StepContext
-from etlantic.runtime.executors import get_executor_registry
 from etlantic.runtime.dataframe_exec import (
     execute_dataframe_step,
     is_dataframe_engine,
     resolve_dataframe_plugin,
 )
 from etlantic.runtime.events import LifecycleEvent, SecurityEvent
+from etlantic.runtime.executors import get_executor_registry
 from etlantic.runtime.invoke import maybe_await
 from etlantic.runtime.logging import RunLogger, redact_message
 from etlantic.runtime.request import MaterializationPolicy, RunRequest
