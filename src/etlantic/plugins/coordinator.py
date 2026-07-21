@@ -49,6 +49,34 @@ def _provider_key(item: Any, plugin: Any) -> str:
     return str(getattr(getattr(plugin, "info", None), "name", None) or item.name)
 
 
+_NON_ENGINE = frozenset({"local", "null", ""})
+
+
+def should_discover_dataframe_plugins(dataframe_engine: str) -> bool:
+    """True when a non-local dataframe engine is configured for planning."""
+    return bool(dataframe_engine) and dataframe_engine not in _NON_ENGINE
+
+
+def should_discover_sql_plugins(sql_engine: str | None) -> bool:
+    """True when a non-local SQL engine is configured for planning."""
+    return bool(sql_engine) and sql_engine not in _NON_ENGINE
+
+
+def should_discover_spark_plugins(spark_engine: str | None) -> bool:
+    """True when any Spark engine is configured for planning."""
+    return bool(spark_engine)
+
+
+def should_include_transform_compilers(
+    dataframe_engine: str,
+    spark_engine: str | None,
+) -> bool:
+    """True when a non-local dataframe or any Spark engine needs compilers."""
+    return should_discover_dataframe_plugins(dataframe_engine) or (
+        should_discover_spark_plugins(spark_engine)
+    )
+
+
 _RUNTIME_GROUPS: tuple[PluginGroupSpec, ...] = (
     PluginGroupSpec(
         entry_point_group="etlantic.dataframe_plugins",
@@ -234,10 +262,9 @@ def discover_planning_plugins(
 ) -> tuple[list[dict[str, Any]], list[Diagnostic]]:
     """Discover plugins required for planning based on profile engines."""
     coordinator = PluginDiscoveryCoordinator()
-    include_compilers = dataframe_engine in {"polars", "pandas"} or spark_engine in {
-        "pyspark",
-        "spark",
-    }
+    include_compilers = should_include_transform_compilers(
+        dataframe_engine, spark_engine
+    )
     result = coordinator.discover_for_profile(
         profile,
         registry=registry,
@@ -250,7 +277,7 @@ def discover_planning_plugins(
 
     from etlantic.plugin_lifecycle import discover_evaluate_authorize_load
 
-    if dataframe_engine in {"polars", "pandas"}:
+    if should_discover_dataframe_plugins(dataframe_engine):
         lifecycle = discover_evaluate_authorize_load(
             "etlantic.dataframe_plugins", profile=profile, key_fn=_df_key
         )
@@ -260,7 +287,7 @@ def discover_planning_plugins(
 
         register_discovered_plugins(registry, plugins=lifecycle.loaded, profile=profile)
 
-    if sql_engine == "sql":
+    if should_discover_sql_plugins(sql_engine):
         lifecycle = discover_evaluate_authorize_load(
             "etlantic.sql_plugins", profile=profile, key_fn=_generic_key
         )
@@ -270,7 +297,7 @@ def discover_planning_plugins(
 
         register_sql(registry, plugins=lifecycle.loaded, profile=profile)
 
-    if spark_engine in {"pyspark", "spark"}:
+    if should_discover_spark_plugins(spark_engine):
         lifecycle = discover_evaluate_authorize_load(
             "etlantic.spark_plugins", profile=profile, key_fn=_generic_key
         )

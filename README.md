@@ -65,7 +65,7 @@ ETLantic does not replace dataframe engines, databases, Spark, schedulers,
 storage systems, catalogs, or secret managers. It gives them one typed pipeline
 model and one inspectable validation lifecycle.
 
-> **Status:** ETLantic **0.21.0** ships a cohesive CLI journey with durable
+> **Status:** ETLantic **0.22.0** ships a cohesive CLI journey with durable
 > local workspaces. Stable for documented single-tenant reference deployments, not unrestricted enterprise production. Structured
 > Streaming remains experimental. See [Capabilities](https://etlantic.readthedocs.io/en/latest/01_GETTING_STARTED/CAPABILITIES/)
 > and [Production readiness](https://etlantic.readthedocs.io/en/latest/06_EXECUTION/PRODUCTION_READINESS/).
@@ -75,7 +75,7 @@ model and one inspectable validation lifecycle.
 ETLantic requires Python 3.11 or newer.
 
 ```bash
-pip install etlantic==0.21.0
+pip install etlantic==0.22.0
 etlantic --version
 
 mkdir my-pipeline && cd my-pipeline
@@ -143,7 +143,7 @@ boundaries, security domains, and logical attribution.
 
 ## Capability boundary
 
-| Capability | 0.21 |
+| Capability | 0.22 |
 |---|---|
 | Cohesive CLI (`init`, `doctor`, durable reports) | Available |
 | Typed contracts, graph validation, deterministic planning | Available |

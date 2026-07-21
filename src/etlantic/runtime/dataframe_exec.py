@@ -8,7 +8,6 @@ from typing import Any
 from etlantic.capabilities import PluginCapabilities
 from etlantic.dataframe.discovery import load_dataframe_plugin
 from etlantic.dataframe.protocol import (
-    DATAFRAME_ENGINES,
     ArtifactOwnership,
     DataframeExecutionContext,
     DataframeOutputBundle,
@@ -37,19 +36,24 @@ _DECISION_RANK = {
 
 
 def is_dataframe_engine(engine: str, *, registry: Any | None = None) -> bool:
-    """Return whether an engine is a built-in or registered dataframe engine."""
-    if engine in DATAFRAME_ENGINES:
-        return True
-    if registry is None:
-        return False
-    capabilities = getattr(registry, "engines", {}).get(engine)
-    registered_kind = any(
-        descriptor.engine == engine and descriptor.kind == "dataframe"
-        for descriptor in getattr(registry, "plugins", {}).values()
-    )
-    return bool(
-        (capabilities is not None and capabilities.dataframe) or registered_kind
-    )
+    """Return whether an engine is a registered or known builtin dataframe engine.
+
+    Checks registry capabilities / plugin kind first, then falls back to
+    ``DATAFRAME_ENGINES`` for known first-party names (non-exclusive compat).
+    """
+    from etlantic.engines import get_engine_registry
+
+    if registry is not None:
+        registered_kind = any(
+            descriptor.engine == engine and descriptor.kind == "dataframe"
+            for descriptor in getattr(registry, "plugins", {}).values()
+        )
+        if registered_kind:
+            return True
+        return get_engine_registry().is_dataframe_engine(
+            engine, getattr(registry, "engines", None)
+        )
+    return get_engine_registry().is_dataframe_engine(engine)
 
 
 def resolve_dataframe_plugin(

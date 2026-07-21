@@ -29,6 +29,10 @@ A pipeline is declared using ordinary Python.
 ```python
 from etlantic import Extract, Load, Pipeline
 
+# Recommended 0.22+ style (equivalent objects):
+# import etlantic as etl
+# class MyPipeline(etl.Pipeline): ...
+
 
 class CustomerPipeline(Pipeline):
     raw: Extract[RawCustomer] = Extract(asset="customer_source")

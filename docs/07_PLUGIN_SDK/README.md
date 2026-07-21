@@ -21,20 +21,35 @@ ETLantic is intentionally designed around a small, stable core and a rich
 plugin ecosystem. The SDK defines the public interfaces, lifecycle, and
 conformance requirements for building those plugins.
 
-## Public imports (0.21)
+## Public imports (0.22)
 
-Also available: `etlantic.transform` for portable authoring.
+Recommended application and tutorial style:
 
-Third-party plugins and tools should import only these public surfaces:
+```python
+import etlantic as etl
+```
 
-- `etlantic.dataframe` — dataframe protocol + discovery
-- `etlantic.sql` — SQL protocol + discovery
-- `etlantic.spark` — Spark protocol + discovery
-- `etlantic.orchestration` — orchestrator protocol + `compile_plan`
-- `etlantic.secrets` — secret refs / providers
-- `etlantic.viz` — Graphviz DOT / HTML / lineage export
-- `etlantic.testing` — conformance suites (dataframe, SQL, orchestrator,
-  secrets, write-semantics, portable transform)
+Curated root symbols include `etl.Data`, `etl.Transformation`, `etl.Pipeline`,
+`etl.Extract`, `etl.Load`, `etl.Input`, `etl.Output`, `etl.Parameter`,
+`etl.Profile`, `etl.PipelineRuntime`, plus plan/report helpers. Lazy namespaces
+stay import-safe until accessed:
+
+- `etl.dataframe` / `etlantic.dataframe` — dataframe protocol + discovery
+- `etl.sql` / `etlantic.sql` — SQL protocol + discovery
+- `etl.spark` / `etlantic.spark` — Spark protocol + discovery
+- `etl.orchestration` / `etlantic.orchestration` — orchestrator protocol + `compile_plan`
+- `etl.transform` / `etlantic.transform` — portable authoring
+- `etl.secrets` / `etlantic.secrets` — secret refs / providers
+- `etl.viz` / `etlantic.viz` — Graphviz DOT / HTML / lineage export
+- `etl.testing` / `etlantic.testing` — conformance suites (dataframe, SQL, Spark,
+  orchestrator, scheduler, secrets, write-semantics, portable transform)
+
+`from etlantic import Data, Pipeline` remains supported. Specialist root
+exports demoted in 0.22 remain as pre-1.0 compatibility aliases (warn once).
+
+Also see [Capability Vocabulary](CAPABILITY_VOCABULARY.md),
+[Protocol Evolution](PROTOCOL_EVOLUTION.md), and
+[`etlantic plugin compatibility`](../10_REFERENCE/CLI.md).
 
 Production profiles should set `Profile.plugin_allowlist` (names + optional
 version pins). Discovery fails closed when the allowlist rejects a plugin.
@@ -150,7 +165,9 @@ Read this section in the following order:
 2. [Overview](OVERVIEW.md)
 3. The protocol page for your plugin category
 4. [Testing Plugins](TESTING_PLUGINS.md)
-5. [Distribution](DISTRIBUTION.md)
+5. [Capability Vocabulary](CAPABILITY_VOCABULARY.md)
+6. [Protocol Evolution](PROTOCOL_EVOLUTION.md)
+7. [Distribution](DISTRIBUTION.md)
 
 ## Key Principles
 

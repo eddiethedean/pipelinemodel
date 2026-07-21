@@ -12,9 +12,9 @@ adopter-owned.
 ## Pin matrix
 
 ```bash
-pip install 'etlantic==0.21.0'
+pip install 'etlantic==0.22.0'
 # Only the engines you need:
-pip install 'etlantic-polars==0.21.0'   # or pandas / sql / pyspark / airflow / prefect
+pip install 'etlantic-polars==0.22.0'   # or pandas / sql / pyspark / airflow / prefect
 ```
 
 Record the exact versions in your lockfile. Production profiles should pin

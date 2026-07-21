@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from etlantic.engines.family import ExecutionFamily
 from etlantic.engines.protocol import EngineFamily
 from etlantic.profile import Profile
 
@@ -34,6 +35,9 @@ class _BuiltinFamily:
         return caps
 
 
+# Known first-party names for profile primary resolution / defaults only.
+# Not a privilege allowlist — third-party engines register via discovery and
+# are classified through capabilities (see resolve_execution_family).
 _LOCAL = _BuiltinFamily("local", frozenset({"local", "null"}), None, ())
 _DATAFRAME = _BuiltinFamily(
     "dataframe",
@@ -64,6 +68,40 @@ _BUILTIN_FAMILIES: tuple[_BuiltinFamily, ...] = (
 # spark → sql → dataframe/local (single priority implementation)
 _PRIORITY: tuple[_BuiltinFamily, ...] = (_SPARK, _SQL, _DATAFRAME, _LOCAL)
 
+_FAMILY_TO_EXECUTION: dict[str, ExecutionFamily] = {
+    "local": ExecutionFamily.LOCAL,
+    "dataframe": ExecutionFamily.DATAFRAME,
+    "sql": ExecutionFamily.SQL,
+    "spark": ExecutionFamily.SPARK,
+}
+
+
+def _capability_flag(capabilities: Any, name: str) -> bool:
+    return bool(getattr(capabilities, name, False))
+
+
+def _plugins_with_kind(engines: Any, engine: str, kind: str) -> bool:
+    """Return True when ``engines`` looks like a registry with matching plugins."""
+    plugins = getattr(engines, "plugins", None)
+    if plugins is None and isinstance(engines, dict):
+        return False
+    if not isinstance(plugins, dict):
+        return False
+    return any(
+        getattr(descriptor, "engine", None) == engine
+        and getattr(descriptor, "kind", None) == kind
+        for descriptor in plugins.values()
+    )
+
+
+def _engines_map(engines: dict[str, Any] | Any | None) -> dict[str, Any]:
+    if engines is None:
+        return {}
+    if isinstance(engines, dict):
+        return engines
+    nested = getattr(engines, "engines", None)
+    return nested if isinstance(nested, dict) else {}
+
 
 class EngineRegistry:
     """Resolve engine families and profile-primary engines."""
@@ -71,11 +109,68 @@ class EngineRegistry:
     def __init__(self, families: tuple[EngineFamily, ...] | None = None) -> None:
         self._families = families or _BUILTIN_FAMILIES
 
-    def resolve_family(self, engine: str) -> EngineFamily | None:
+    def resolve_family(
+        self,
+        engine: str,
+        engines: dict[str, Any] | Any | None = None,
+    ) -> EngineFamily | None:
+        """Resolve builtin family aliases, or capability-backed family when present."""
+        caps_map = _engines_map(engines)
+        capabilities = caps_map.get(engine)
+        if capabilities is not None:
+            if _capability_flag(capabilities, "spark"):
+                return _SPARK
+            if _capability_flag(capabilities, "sql"):
+                return _SQL
+            if _capability_flag(capabilities, "dataframe"):
+                return _DATAFRAME
         for family in self._families:
             if family.matches(engine):
                 return family
         return None
+
+    def resolve_execution_family(
+        self,
+        engine: str,
+        engines: dict[str, Any] | Any | None = None,
+    ) -> ExecutionFamily | None:
+        """Classify an engine via capabilities / registration, then builtin aliases."""
+        from etlantic.capabilities import PluginCapabilities
+
+        caps_map = _engines_map(engines)
+        capabilities = caps_map.get(engine)
+        if isinstance(capabilities, PluginCapabilities) or capabilities is not None:
+            if _capability_flag(capabilities, "spark"):
+                return ExecutionFamily.SPARK
+            if _capability_flag(capabilities, "sql"):
+                return ExecutionFamily.SQL
+            if _capability_flag(capabilities, "orchestration"):
+                return ExecutionFamily.ORCHESTRATION
+            if _capability_flag(capabilities, "secret_provider"):
+                return ExecutionFamily.SECRET
+            if _capability_flag(capabilities, "dataframe"):
+                return ExecutionFamily.DATAFRAME
+        if _plugins_with_kind(engines, engine, "spark"):
+            return ExecutionFamily.SPARK
+        if _plugins_with_kind(engines, engine, "sql"):
+            return ExecutionFamily.SQL
+        if _plugins_with_kind(engines, engine, "dataframe"):
+            return ExecutionFamily.DATAFRAME
+        if _plugins_with_kind(engines, engine, "orchestrator"):
+            return ExecutionFamily.ORCHESTRATION
+        if _plugins_with_kind(engines, engine, "scheduler"):
+            return ExecutionFamily.SCHEDULER
+        if _plugins_with_kind(engines, engine, "secret"):
+            return ExecutionFamily.SECRET
+        if _plugins_with_kind(engines, engine, "transform_compiler"):
+            return ExecutionFamily.TRANSFORM_COMPILER
+
+        family = self.resolve_family(engine)
+        if family is None:
+            if engine in {"local", "null", ""}:
+                return ExecutionFamily.LOCAL
+            return None
+        return _FAMILY_TO_EXECUTION.get(family.name)
 
     def primary_family(self, profile: Profile) -> EngineFamily:
         if profile.spark_engine:
@@ -106,26 +201,62 @@ class EngineRegistry:
     def is_dataframe_engine(
         self,
         engine: str,
-        engines: dict[str, Any] | None = None,
+        engines: dict[str, Any] | Any | None = None,
     ) -> bool:
+        """Return True when capabilities/registration say dataframe, else builtin fallback.
+
+        ``DATAFRAME_ENGINES`` is a non-privileged compat fallback for known
+        first-party names during transition — not an allowlist.
+        """
         from etlantic.capabilities import PluginCapabilities
         from etlantic.dataframe.protocol import DATAFRAME_ENGINES
 
-        capabilities = (engines or {}).get(engine)
+        caps_map = _engines_map(engines)
+        capabilities = caps_map.get(engine)
         if isinstance(capabilities, PluginCapabilities) and capabilities.dataframe:
             return True
-        if capabilities is not None and getattr(capabilities, "dataframe", False):
+        if capabilities is not None and _capability_flag(capabilities, "dataframe"):
+            return True
+        if _plugins_with_kind(engines, engine, "dataframe"):
             return True
         return engine in DATAFRAME_ENGINES
 
-    def is_sql_engine(self, engine: str) -> bool:
+    def is_sql_engine(
+        self,
+        engine: str,
+        engines: dict[str, Any] | Any | None = None,
+    ) -> bool:
+        """Return True when capabilities/registration say sql, else builtin fallback."""
+        from etlantic.capabilities import PluginCapabilities
         from etlantic.sql.protocol import SQL_ENGINES
 
+        caps_map = _engines_map(engines)
+        capabilities = caps_map.get(engine)
+        if isinstance(capabilities, PluginCapabilities) and capabilities.sql:
+            return True
+        if capabilities is not None and _capability_flag(capabilities, "sql"):
+            return True
+        if _plugins_with_kind(engines, engine, "sql"):
+            return True
         return engine in SQL_ENGINES
 
-    def is_spark_engine(self, engine: str) -> bool:
+    def is_spark_engine(
+        self,
+        engine: str,
+        engines: dict[str, Any] | Any | None = None,
+    ) -> bool:
+        """Return True when capabilities say spark; ``SPARK_ENGINES`` aliases as fallback."""
+        from etlantic.capabilities import PluginCapabilities
         from etlantic.spark.protocol import SPARK_ENGINES
 
+        caps_map = _engines_map(engines)
+        capabilities = caps_map.get(engine)
+        if isinstance(capabilities, PluginCapabilities) and capabilities.spark:
+            return True
+        if capabilities is not None and _capability_flag(capabilities, "spark"):
+            return True
+        if _plugins_with_kind(engines, engine, "spark"):
+            return True
         return engine in SPARK_ENGINES
 
     def normalize_spark_alias(self, engine: str) -> str:

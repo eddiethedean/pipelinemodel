@@ -5,13 +5,14 @@ and first-party plugins to the **same minor** after upgrading.
 
 ## Current target
 
-**ETLantic 0.21.0** — choose your guide:
+**ETLantic 0.22.0** — choose your guide:
 
 | Current version | Start here |
 |---|---|
-| 0.20.x | [Migration 0.20 → 0.21](../11_DEVELOPMENT/MIGRATION_0_20_TO_0_21.md) |
-| 0.19.x | [Migration 0.19 → 0.20](../11_DEVELOPMENT/MIGRATION_0_19_TO_0_20.md), then [0.20 → 0.21](../11_DEVELOPMENT/MIGRATION_0_20_TO_0_21.md) |
-| 0.18.x | [Migration 0.18 → 0.19](../11_DEVELOPMENT/MIGRATION_0_18_TO_0_19.md), then follow the chain to 0.21 |
+| 0.21.x | [Migration 0.21 → 0.22](../11_DEVELOPMENT/MIGRATION_0_21_TO_0_22.md) |
+| 0.20.x | [Migration 0.20 → 0.21](../11_DEVELOPMENT/MIGRATION_0_20_TO_0_21.md), then [0.21 → 0.22](../11_DEVELOPMENT/MIGRATION_0_21_TO_0_22.md) |
+| 0.19.x | [Migration 0.19 → 0.20](../11_DEVELOPMENT/MIGRATION_0_19_TO_0_20.md), then follow the chain to 0.22 |
+| 0.18.x | [Migration 0.18 → 0.19](../11_DEVELOPMENT/MIGRATION_0_18_TO_0_19.md), then follow the chain to 0.22 |
 | ≤ 0.17 | Follow the [migration chain](#migration-chain-newest-first) below |
 
 Regenerate reviewed plans after upgrades that change plan fingerprints or
@@ -22,6 +23,7 @@ interchange descriptors. Review
 
 | From → To | Guide |
 |---|---|
+| 0.21 → 0.22 | [MIGRATION_0_21_TO_0_22](../11_DEVELOPMENT/MIGRATION_0_21_TO_0_22.md) |
 | 0.20 → 0.21 | [MIGRATION_0_20_TO_0_21](../11_DEVELOPMENT/MIGRATION_0_20_TO_0_21.md) |
 | 0.19 → 0.20 | [MIGRATION_0_19_TO_0_20](../11_DEVELOPMENT/MIGRATION_0_19_TO_0_20.md) |
 | 0.18 → 0.19 | [MIGRATION_0_18_TO_0_19](../11_DEVELOPMENT/MIGRATION_0_18_TO_0_19.md) |
@@ -77,6 +79,18 @@ See [Migration 0.19 → 0.20](../11_DEVELOPMENT/MIGRATION_0_19_TO_0_20.md) for e
 
 See [Migration 0.20 → 0.21](../11_DEVELOPMENT/MIGRATION_0_20_TO_0_21.md) for CLI and workspace details.
 
+## 0.22 configuration cheat sheet
+
+| Change | Use instead |
+|---|---|
+| Broad root `from etlantic import …` specialist helpers | Prefer `import etlantic as etl` curated facade + lazy namespaces |
+| Engine name frozensets as privilege allowlists | Capability-driven discovery / `PluginCapabilities` |
+| Unversioned capability claims | `etlantic.capabilities/1` + implication rules |
+| Private underscore conformance helpers | Public `etlantic.testing` suites only |
+| Manual protocol pin guessing | `etlantic plugin compatibility` |
+
+See [Migration 0.21 → 0.22](../11_DEVELOPMENT/MIGRATION_0_21_TO_0_22.md).
+
 ## Checklist
 
 1. Pin `etlantic==X.Y.Z` and matching `etlantic-*==X.Y.Z` plugins
@@ -84,6 +98,7 @@ See [Migration 0.20 → 0.21](../11_DEVELOPMENT/MIGRATION_0_20_TO_0_21.md) for C
 3. Run `etlantic validate … --format sarif` in CI
 4. Regenerate and re-review `etlantic plan … --format json`
 5. Confirm production profiles set `security_mode="production"` and a non-empty `plugin_allowlist`
+6. Run `etlantic plugin compatibility` for third-party plugins
 
 ## Related
 

@@ -12,7 +12,6 @@ from etlantic.runtime.logging import redact_message
 from etlantic.runtime.state import FailureStage
 from etlantic.spark.discovery import load_spark_plugin, load_spark_provider
 from etlantic.spark.protocol import (
-    SPARK_ENGINES,
     CompiledSparkPlan,
     DatasetRef,
     ExpressionStrategy,
@@ -37,8 +36,26 @@ from etlantic.spark.provider import (
 from etlantic.transformation import ImplementationRecord
 
 
-def is_spark_engine(engine: str) -> bool:
-    return engine in SPARK_ENGINES
+def is_spark_engine(engine: str, *, registry: Any | None = None) -> bool:
+    """Return whether an engine is Spark via capabilities/registry, else aliases.
+
+    ``SPARK_ENGINES`` is used only as a non-privileged alias fallback for
+    known first-party names (``pyspark`` / ``spark``).
+    """
+    from etlantic.engines import get_engine_registry
+
+    engine_registry = get_engine_registry()
+    if registry is not None:
+        registered_kind = any(
+            descriptor.engine == engine and descriptor.kind == "spark"
+            for descriptor in getattr(registry, "plugins", {}).values()
+        )
+        if registered_kind:
+            return True
+        return engine_registry.is_spark_engine(
+            engine, getattr(registry, "engines", None)
+        )
+    return engine_registry.is_spark_engine(engine)
 
 
 def resolve_spark_plugin(

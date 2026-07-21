@@ -6,6 +6,13 @@ Structured Streaming APIs are **experimental**; see :data:`~etlantic.spark.STREA
 
 from __future__ import annotations
 
+from etlantic.protocol_meta import (
+    CompileArtifactMeta,
+    ExecutionContextMeta,
+    ExtensionMetadata,
+    coerce_compile_meta,
+    coerce_context_meta,
+)
 from etlantic.spark.discovery import (
     SPARK_PLUGIN_ENTRY_POINT,
     SPARK_PROVIDER_ENTRY_POINT,
@@ -68,9 +75,12 @@ __all__ = [
     "SPARK_PROTOCOL_VERSION",
     "SPARK_PROVIDER_ENTRY_POINT",
     "STREAMING_STABILITY",
+    "CompileArtifactMeta",
     "CompiledSparkPlan",
     "DatasetRef",
+    "ExecutionContextMeta",
     "ExpressionStrategy",
+    "ExtensionMetadata",
     "FieldMapping",
     "LateEventPolicy",
     "ResourceContext",
@@ -100,6 +110,8 @@ __all__ = [
     "StreamingQuerySpec",
     "StreamingTrigger",
     "WatermarkSpec",
+    "coerce_compile_meta",
+    "coerce_context_meta",
     "compare_types",
     "discover_spark_plugins",
     "discover_spark_providers",

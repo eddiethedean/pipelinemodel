@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.22.0] - 2026-07-21
+
+### Added
+- Capability-driven engine identity (`ExecutionFamily`) — third-party engines no longer need first-party name privileges
+- Versioned capability vocabulary `etlantic.capabilities/1` with implication/conflict validation
+- Typed protocol metadata: `ExecutionContextMeta`, `CompileArtifactMeta`, extension-namespace bags
+- Public Spark conformance suite (`run_spark_conformance_suite`) and capability-truthfulness helpers
+- `etlantic plugin compatibility` report CLI (`PMPLUG44x` findings)
+- Curated `import etlantic as etl` root facade with lazy namespaces and typed stub
+- Out-of-monorepo reference plugin `etlantic-plugin-echo` + CI clone/conformance workflow
+- Docs: What's New 0.22, Migration 0.21→0.22, Exit Gate 0.22, Capability Vocabulary, Protocol Evolution
+
+### Changed
+- Official package versions align at 0.22.0; plugins require `etlantic>=0.22.0,<0.23`
+- Root `__all__` slimmed to curated stable symbols + lazy namespaces; demoted specialists warn once
+- Dataframe conformance suite is capability-driven (removed `engine == "pandas"` special cases)
+- Surface inventory bidirectional ownership check for curated facade
+- Plugin SDK docs recommend `import etlantic as etl`
+
+### Deprecated
+- Specialist root imports demoted to pre-1.0 compatibility aliases (prefer owning namespace / lazy attribute)
+
 ## [0.21.0] - 2026-07-20
 
 ### Added
@@ -805,6 +827,7 @@ See `docs/11_DEVELOPMENT/MIGRATION_0_16_TO_0_17.md`.
 - uv + ruff toolchain, MkDocs documentation site, shared GitHub Actions
   checks, and tag-triggered PyPI release
 
+[0.22.0]: https://github.com/eddiethedean/etlantic/releases/tag/v0.22.0
 [0.21.0]: https://github.com/eddiethedean/etlantic/releases/tag/v0.21.0
 [0.20.0]: https://github.com/eddiethedean/etlantic/releases/tag/v0.20.0
 [0.19.0]: https://github.com/eddiethedean/etlantic/releases/tag/v0.19.0

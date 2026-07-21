@@ -206,6 +206,7 @@ def _build_plan(
         default_engine,
         security_domain,
         bindings=bindings,
+        engines=context.registry.engines,
     )
     if profile.spark_streaming:
         regions = [
@@ -878,13 +879,24 @@ def _node_engine(
     return impl.engine if impl is not None else default_engine
 
 
-def _provider_engine(provider: str | None, default_engine: str) -> str | None:
+def _provider_engine(
+    provider: str | None,
+    default_engine: str,
+    engines: dict[str, Any] | None = None,
+) -> str | None:
     """Map a binding provider to an execution engine when unambiguous."""
-    if provider == "sql":
-        return "sql"
-    if provider in {"pyspark", "spark", "delta"}:
-        return "pyspark" if provider == "delta" else provider
-    if provider in {"polars", "pandas"}:
+    from etlantic.engines import get_engine_registry
+
+    if provider is None:
+        return None
+    registry = get_engine_registry()
+    if registry.is_sql_engine(provider, engines):
+        return provider
+    if provider == "delta":
+        return "pyspark"
+    if registry.is_spark_engine(provider, engines):
+        return provider
+    if registry.is_dataframe_engine(provider, engines):
         return provider
     if provider in {"memory", "json", "csv", "callable", "null", "no_write"}:
         return "local"
@@ -898,11 +910,12 @@ def _resolved_io_engine(
     implementations: dict[str, ImplementationDescriptor],
     default_engine: str,
     bindings: dict[str, BindingDescriptor],
+    engines: dict[str, Any] | None = None,
 ) -> str:
     """Resolve source/sink engine from binding provider, else neighbor, else default."""
     binding = bindings.get(node.name)
     if binding is not None:
-        mapped = _provider_engine(binding.provider, default_engine)
+        mapped = _provider_engine(binding.provider, default_engine, engines)
         if mapped is not None:
             return mapped
     if node.kind is NodeKind.SOURCE:
@@ -923,6 +936,7 @@ def _form_regions(
     security_domain: str,
     *,
     bindings: dict[str, BindingDescriptor] | None = None,
+    engines: dict[str, Any] | None = None,
 ) -> list[ExecutionRegion]:
     """Form one region per (security_domain, engine); never merge across engines."""
     binding_map = bindings or {}
@@ -935,6 +949,7 @@ def _form_regions(
                 implementations=implementations,
                 default_engine=default_engine,
                 bindings=binding_map,
+                engines=engines,
             )
         else:
             engine = _node_engine(node.name, implementations, default_engine)
@@ -1095,6 +1110,7 @@ def _materialization_boundaries(
                 implementations=implementations,
                 default_engine=default_engine,
                 bindings=binding_map,
+                engines=engine_capabilities,
             )
         return _node_engine(name, implementations, default_engine)
 

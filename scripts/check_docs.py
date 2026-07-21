@@ -472,6 +472,8 @@ def main() -> None:
         raise SystemExit("ROADMAP_SUMMARY.md must mention 0.20.0 trust/isolation")
     if "0.21.0" not in roadmap_summary and "0.21" not in roadmap_summary:
         raise SystemExit("ROADMAP_SUMMARY.md must mention 0.21")
+    if "0.22.0" not in roadmap_summary and "0.22" not in roadmap_summary:
+        raise SystemExit("ROADMAP_SUMMARY.md must mention 0.22")
     quickstart = (ROOT / "docs/01_GETTING_STARTED/QUICKSTART.md").read_text(
         encoding="utf-8"
     )

@@ -1,6 +1,6 @@
 # Command-Line Interface
 
-> **Status: Available in ETLantic 0.21.0.** This page documents the commands
+> **Status: Available in ETLantic 0.22.0.** This page documents the commands
 > implemented by the installed package.
 
 ```bash
@@ -207,10 +207,19 @@ etlantic diff PREV CURRENT --kind data --format sarif
 ```bash
 etlantic plugin list --profile ./profiles/prod.json --format json
 etlantic plugin info polars --kind dataframe
+etlantic plugin compatibility etlantic-polars --format json
+etlantic plugin compatibility --format human
 ```
 
 Supported `--kind` values today: `dataframe`, `sql`, `spark`, `orchestrator`,
 `scheduler`, `transform_compiler`.
+
+`plugin compatibility` evaluates installed plugin packages (static
+`etlantic-plugin-manifest.json` plus packaging metadata) against the core
+version, protocol ranges, capability vocabulary (`etlantic.capabilities/1`),
+plan schema (`etlantic.plan/1`), Requires-Python, the plugin's `etlantic`
+pin, and (when `--profile` is given) allowlist status. Pass/fail findings use
+`PMPLUG44x` codes. Exit code is non-zero when any plugin fails.
 
 Production profiles honor `Profile.plugin_allowlist` (fail closed). When trust
 diagnostics include severity `error` (for example empty allowlist /

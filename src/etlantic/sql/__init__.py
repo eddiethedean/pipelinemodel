@@ -6,6 +6,13 @@ reference plugin.
 
 from __future__ import annotations
 
+from etlantic.protocol_meta import (
+    CompileArtifactMeta,
+    ExecutionContextMeta,
+    ExtensionMetadata,
+    coerce_compile_meta,
+    coerce_context_meta,
+)
 from etlantic.sql.discovery import (
     SQL_PLUGIN_ENTRY_POINT,
     discover_sql_plugins,
@@ -61,9 +68,12 @@ __all__ = [
     "CallExpr",
     "CaseWhenExpr",
     "ColumnRef",
+    "CompileArtifactMeta",
     "CompiledSql",
     "ConcatExpr",
     "CteDef",
+    "ExecutionContextMeta",
+    "ExtensionMetadata",
     "JoinClause",
     "LiteralExpr",
     "OrderByItem",
@@ -83,6 +93,8 @@ __all__ = [
     "WriteIntentKind",
     "alias",
     "append",
+    "coerce_compile_meta",
+    "coerce_context_meta",
     "col",
     "concat",
     "discover_sql_plugins",

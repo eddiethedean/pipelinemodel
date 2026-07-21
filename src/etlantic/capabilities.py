@@ -6,6 +6,8 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any
 
+CAPABILITY_VOCABULARY_VERSION = "etlantic.capabilities/1"
+
 
 class CapabilityDecision(StrEnum):
     """Outcome of comparing required vs available capabilities."""
@@ -25,6 +27,7 @@ class PluginCapabilities:
     """
 
     engine: str
+    vocabulary_version: str = CAPABILITY_VOCABULARY_VERSION
     async_execution: bool = False
     streaming: bool = False
     transactions: bool = False
@@ -134,6 +137,7 @@ class PluginCapabilities:
         """Serialize capabilities."""
         return {
             "engine": self.engine,
+            "vocabulary_version": self.vocabulary_version,
             "async_execution": self.async_execution,
             "streaming": self.streaming,
             "transactions": self.transactions,
@@ -183,6 +187,9 @@ class PluginCapabilities:
         interchange_mechanisms = data.get("interchange_mechanisms") or ()
         return cls(
             engine=str(data["engine"]),
+            vocabulary_version=str(
+                data.get("vocabulary_version", CAPABILITY_VOCABULARY_VERSION)
+            ),
             async_execution=bool(data.get("async_execution", False)),
             streaming=bool(data.get("streaming", False)),
             transactions=bool(data.get("transactions", False)),
@@ -295,3 +302,84 @@ def negotiate_capabilities(
             )
         )
     return results
+
+
+def capability_implications() -> dict[str, frozenset[str]]:
+    """Return capability names that must also be claimed when a flag is set.
+
+    Specialized SQL, Spark, and orchestration flags imply their family root.
+    Dataframe-oriented execution and interchange flags imply ``dataframe``.
+    """
+    sql_family = frozenset({"sql"})
+    spark_family = frozenset({"spark"})
+    orch_family = frozenset({"orchestration"})
+    dataframe_family = frozenset({"dataframe"})
+    return {
+        "sql_merge": sql_family,
+        "sql_cte": sql_family,
+        "sql_returning": sql_family,
+        "sql_transactional_ddl": sql_family,
+        "sql_atomic_rename": sql_family,
+        "sql_catalog_inspect": sql_family,
+        "sql_trusted_fragments": sql_family,
+        "spark_delta": spark_family,
+        "spark_merge": spark_family,
+        "spark_streaming": spark_family,
+        "spark_native_exprs": spark_family,
+        "spark_udf": spark_family,
+        "spark_cache": spark_family,
+        "spark_checkpoint": spark_family,
+        "orch_scheduling": orch_family,
+        "orch_retries": orch_family,
+        "orch_timeouts": orch_family,
+        "orch_parallel": orch_family,
+        "orch_sensors": orch_family,
+        "orch_artifacts_only_xcom": orch_family,
+        "lazy": dataframe_family,
+        "arrow_import": dataframe_family,
+        "arrow_export": dataframe_family,
+        "zero_copy": dataframe_family,
+        "invalid_row_separation": dataframe_family,
+    }
+
+
+def capability_conflicts() -> list[tuple[str, str]]:
+    """Return pairs of capability names that must not both be claimed.
+
+    Vocabulary ``/1`` has no hard mutual exclusions; ``eager`` and ``lazy`` may
+    both be true for engines that support both execution modes.
+    """
+    return []
+
+
+def validate_capability_claims(caps: PluginCapabilities) -> list[str]:
+    """Return human-readable findings for inconsistent capability claims.
+
+    Currently reports missing implied capabilities. Conflict pairs from
+    :func:`capability_conflicts` are also checked when defined.
+    """
+    findings: list[str] = []
+    for claim, required in capability_implications().items():
+        if not bool(getattr(caps, claim, False)):
+            continue
+        for req in sorted(required):
+            if not bool(getattr(caps, req, False)):
+                findings.append(
+                    f"Capability {claim!r} implies {req!r}, but {req!r} is not claimed."
+                )
+    for left, right in capability_conflicts():
+        if bool(getattr(caps, left, False)) and bool(getattr(caps, right, False)):
+            findings.append(
+                f"Capabilities {left!r} and {right!r} conflict and cannot both be claimed."
+            )
+    return findings
+
+
+def vocabulary_major_compatible(version: str) -> bool:
+    """Return True when ``version`` shares major ``/1`` with this vocabulary."""
+    prefix = "etlantic.capabilities/"
+    if not version.startswith(prefix):
+        return False
+    major = version[len(prefix) :].split(".", 1)[0]
+    current_major = CAPABILITY_VOCABULARY_VERSION[len(prefix) :].split(".", 1)[0]
+    return major == current_major and major == "1"

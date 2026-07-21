@@ -1,4 +1,4 @@
-# Public Surface Inventory (0.21)
+# Public Surface Inventory (0.22)
 
 Machine-readable companion: [`surface-inventory.json`](https://github.com/eddiethedean/etlantic/blob/main/src/etlantic/schemas/surface-inventory.json)
 (also packaged under `etlantic.schemas`).
@@ -7,30 +7,58 @@ Stability classes:
 
 | Class | Meaning |
 |---|---|
-| `stable` | Supported within the documented 0.21 reference envelope |
+| `stable` | Supported within the documented 0.22 reference envelope |
 | `provisional` | Public but may change with migration notes before 1.0 |
 | `experimental` | May change or be removed without 1.0 obligation |
+| `compatibility` | Pre-1.0 root alias (warn once); prefer the owning namespace |
 | `private` | Underscore modules / internal helpers — do not import |
 
-## SDK (root)
+## Recommended import style
+
+```python
+import etlantic as etl
+```
+
+`from etlantic import Data, Pipeline` and public submodule imports remain
+supported. Specialist helpers demoted off the root in 0.22 stay importable as
+compatibility aliases (DeprecationWarning once per process) — prefer
+`etl.sql`, `etl.spark`, etc.
+
+## SDK (root curated)
 
 | Symbol | Class |
 |---|---|
 | `Data`, `Transformation`, `Pipeline`, `Extract`, `Load` | stable |
 | `Input`, `Output`, `Parameter`, `Profile`, `PipelineRuntime` | stable |
 | `PipelinePlan`, `plan_pipeline`, `explain_plan` | stable |
-| `verify_plan_fingerprint`, `deep_freeze` (via `etlantic.plan`) | stable |
 | `ValidationReport`, `PipelineRunReport` | stable |
-| `SecretRef`, `compile_plan` | stable |
+| `SecretRef`, `compile_plan`, `__version__` | stable |
 | `DataContractModel` | provisional (deprecated alias of `Data`) |
+| Demoted former root symbols (`col`, `SqlQuery`, …) | compatibility |
 | Structured Streaming APIs | experimental |
 | `etlantic._*` | private |
+
+## Lazy namespaces
+
+| Attribute | Module | Class |
+|---|---|---|
+| `etl.transform` | `etlantic.transform` | stable |
+| `etl.dataframe` | `etlantic.dataframe` | stable |
+| `etl.sql` | `etlantic.sql` | stable |
+| `etl.spark` | `etlantic.spark` | stable |
+| `etl.orchestration` | `etlantic.orchestration` | stable |
+| `etl.viz` | `etlantic.viz` | stable |
+| `etl.secrets` | `etlantic.secrets` | stable |
+| `etl.testing` | `etlantic.testing` | stable |
+
+Plan helpers `verify_plan_fingerprint` / `deep_freeze` remain stable via
+`etlantic.plan`. `resolve_profile` remains stable via `etlantic.profile`.
 
 ## CLI
 
 `init`, `doctor`, `validate`, `inspect`, `plan`, `profile`, `run`, `compile`,
 `generate`, `diff`, `plugin`, `schema`, `reliability`, `viz`, `report` —
-**stable** within 0.21.
+**stable** within 0.22.
 
 `--allow-adhoc-profile` on validate/plan/run — **stable** (opt-in fail-open for
 unknown bare profile names; default is fail-closed `PMCFG100`).
@@ -42,9 +70,10 @@ fail-closed `PMCFG111`). `--workspace`, `--ephemeral`, and `--preview`
 
 | Schema ID | Class |
 |---|---|
-| `etlantic.plan/1` | stable (nested defs tightening through 0.21) |
+| `etlantic.plan/1` | stable |
 | `etlantic.run_report/1` | stable |
 | `etlantic.interchange/1` | stable (Gate A) |
+| `etlantic.capabilities/1` | stable |
 | Profile JSON + `security_mode` | stable |
 | IDE command/result JSON | provisional |
 
@@ -65,5 +94,5 @@ fail-closed `PMCFG111`). `--workspace`, `--ephemeral`, and `--preview`
 `PM*`, `PMPLUG*`, `PMCFG*`, `PMXFORM*` — **stable** codes; new codes may be
 added. See [Diagnostics](DIAGNOSTICS.md).
 
-CI drift: `scripts/check_surface_inventory.py` (optional) compares this
-inventory to `etlantic.__all__`.
+CI drift: `scripts/check_surface_inventory.py` bidirectionally compares this
+inventory to the curated `etlantic.__all__` and namespace ownership table.

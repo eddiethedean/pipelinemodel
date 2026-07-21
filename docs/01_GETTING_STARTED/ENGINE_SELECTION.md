@@ -8,7 +8,7 @@ Start with core local Python. Add one engine at a time.
 
 | Goal | Install | Profile hint | Guide |
 |---|---|---|---|
-| Learn the model in memory | `etlantic==0.21.0` | `development` | [Quickstart](QUICKSTART.md) |
+| Learn the model in memory | `etlantic==0.22.0` | `development` | [Quickstart](QUICKSTART.md) |
 | JSON / CSV files | core only | file storage bindings | [File storage](../06_EXECUTION/FILE_STORAGE_TUTORIAL.md) |
 | Fast local dataframes | `etlantic[polars]==0.21.0` | `dataframe_engine="polars"` | [Polars tutorial](../06_EXECUTION/POLARS_TUTORIAL.md) |
 | Pandas compatibility | `etlantic[pandas]==0.21.0` | `dataframe_engine="pandas"` | [Pandas tutorial](../06_EXECUTION/PANDAS_TUTORIAL.md) |
@@ -24,7 +24,7 @@ Start with core local Python. Add one engine at a time.
 1. **One engine first.** Do not combine SQL + Spark + dataframes until a single
    engine path works under `validate` and `plan`.
 2. **Pin the minor in 0.x.** Keep core and every official plugin on the same
-   release (for example `etlantic==0.21.0` with `etlantic-polars==0.21.0`).
+   release (for example `etlantic==0.22.0` with `etlantic-polars==0.22.0`).
    Do not mix `0.20` plugins with `0.21` core.
 3. **Production profiles need allowlists.** Create `profiles/prod.json` from the
    embedded JSON in [Capabilities → CI starter](CAPABILITIES.md#ci-starter), or

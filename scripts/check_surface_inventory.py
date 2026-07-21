@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Drift check for public surface inventory vs etlantic.__all__."""
+"""Bidirectional drift check for public surface inventory vs etlantic facade."""
 
 from __future__ import annotations
 
@@ -16,23 +16,49 @@ def main() -> int:
     import etlantic
 
     payload = json.loads(INVENTORY.read_text(encoding="utf-8"))
-    documented = (
-        set(payload.get("sdk_root_stable", []))
-        | set(payload.get("sdk_root_provisional", []))
-        | set(payload.get("sdk_root_experimental", []))
-    )
+    stable = set(payload.get("sdk_root_stable", []))
+    namespaces = set(payload.get("sdk_root_namespaces", []))
+    provisional = set(payload.get("sdk_root_provisional", []))
+    experimental = set(payload.get("sdk_root_experimental", []))
+    documented = stable | provisional | experimental
     exported = set(etlantic.__all__) - {"__version__"}
-    # Core exports may include helpers not listed as "root stable"; warn only
-    # when inventory stable symbols disappear from __all__.
-    missing_from_export = sorted(documented - exported)
-    if missing_from_export:
+
+    missing_from_export = sorted(documented - exported - provisional)
+    # Provisional aliases (e.g. DataContractModel) may live only on __getattr__.
+    extra_stable_required = sorted(stable - exported)
+    if missing_from_export or extra_stable_required:
         print("Surface inventory lists symbols missing from etlantic.__all__:")
-        for name in missing_from_export:
+        for name in sorted(set(missing_from_export) | set(extra_stable_required)):
             print(f"  - {name}")
         return 1
+
+    # Bidirectional for curated ownership: every root export must be inventoried
+    # as stable (namespaces are lazy attributes, not __all__ entries).
+    unexpected = sorted(exported - stable)
+    if unexpected:
+        print("etlantic.__all__ contains symbols not in surface inventory:")
+        for name in unexpected:
+            print(f"  - {name}")
+        return 1
+
+    ownership = payload.get("namespace_ownership") or {}
+    for ns in sorted(namespaces):
+        expected = ownership.get(ns)
+        if not expected:
+            print(f"Namespace {ns!r} missing from namespace_ownership table.")
+            return 1
+        module = getattr(etlantic, ns)
+        if module.__name__ != expected:
+            print(
+                f"Namespace {ns!r} resolved to {module.__name__!r}, "
+                f"expected {expected!r}."
+            )
+            return 1
+
     print(
-        f"Surface inventory OK: {len(documented)} inventoried root symbols "
-        f"present in __all__ ({len(exported)} total exports)."
+        f"Surface inventory OK: {len(stable)} stable in __all__ + "
+        f"{len(namespaces)} lazy namespaces verified "
+        f"({len(exported)} curated exports)."
     )
     return 0
 

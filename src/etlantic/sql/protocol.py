@@ -11,8 +11,16 @@ from enum import StrEnum
 from typing import Any, Protocol, runtime_checkable
 
 from etlantic.capabilities import PluginCapabilities
+from etlantic.protocol_meta import (
+    CompileArtifactMeta,
+    ExecutionContextMeta,
+    coerce_compile_meta,
+    coerce_context_meta,
+)
 
 SQL_PROTOCOL_VERSION = "etlantic.sql/1"
+# Known first-party engine names for defaults/aliases; not a privilege allowlist.
+# Third-party engines register via discovery.
 SQL_ENGINES = frozenset({"sql"})
 
 
@@ -390,6 +398,11 @@ class CompiledSql:
     logical_nodes: tuple[str, ...] = ()
     metadata: Mapping[str, Any] = field(default_factory=dict)
 
+    @property
+    def artifact_meta(self) -> CompileArtifactMeta:
+        """Typed interoperability view of ``metadata`` (ExtensionMetadata-compatible)."""
+        return coerce_compile_meta(self.metadata)
+
     def to_dict(self) -> dict[str, Any]:
         # Never serialize private keys (e.g. live bound parameter values).
         public_meta = {
@@ -490,6 +503,11 @@ class SqlExecutionContext:
     allow_trusted_sql: bool = False
     capture_explain: bool = False
     metadata: Mapping[str, Any] = field(default_factory=dict)
+
+    @property
+    def context_meta(self) -> ExecutionContextMeta:
+        """Typed interoperability view of ``metadata`` (ExtensionMetadata-compatible)."""
+        return coerce_context_meta(self.metadata)
 
 
 @runtime_checkable

@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://etlantic.dev/schemas/capability-vocabulary-1.json",
+  "title": "ETLantic Capability Vocabulary /1",
+  "description": "Documents the etlantic.capabilities/1 vocabulary version string and known boolean capability names on PluginCapabilities.",
+  "type": "object",
+  "required": ["vocabulary_version"],
+  "properties": {
+    "vocabulary_version": {
+      "type": "string",
+      "const": "etlantic.capabilities/1",
+      "description": "Independent vocabulary version. Major segment must match /1 for compatibility."
+    },
+    "capabilities": {
+      "type": "object",
+      "description": "Known boolean capability field names from PluginCapabilities.",
+      "additionalProperties": false,
+      "properties": {
+        "async_execution": { "type": "boolean" },
+        "streaming": { "type": "boolean" },
+        "transactions": { "type": "boolean" },
+        "checkpoints": { "type": "boolean" },
+        "sql": { "type": "boolean" },
+        "spark": { "type": "boolean" },
+        "dataframe": { "type": "boolean" },
+        "secret_provider": { "type": "boolean" },
+        "eager": { "type": "boolean" },
+        "lazy": { "type": "boolean" },
+        "arrow_import": { "type": "boolean" },
+        "arrow_export": { "type": "boolean" },
+        "zero_copy": { "type": "boolean" },
+        "schema_inspection": { "type": "boolean" },
+        "invalid_row_separation": { "type": "boolean" },
+        "cancellation": { "type": "boolean" },
+        "thread_safe": { "type": "boolean" },
+        "sql_merge": { "type": "boolean" },
+        "sql_cte": { "type": "boolean" },
+        "sql_returning": { "type": "boolean" },
+        "sql_transactional_ddl": { "type": "boolean" },
+        "sql_atomic_rename": { "type": "boolean" },
+        "sql_catalog_inspect": { "type": "boolean" },
+        "sql_trusted_fragments": { "type": "boolean" },
+        "spark_delta": { "type": "boolean" },
+        "spark_merge": { "type": "boolean" },
+        "spark_streaming": { "type": "boolean" },
+        "spark_native_exprs": { "type": "boolean" },
+        "spark_udf": { "type": "boolean" },
+        "spark_cache": { "type": "boolean" },
+        "spark_checkpoint": { "type": "boolean" },
+        "orchestration": { "type": "boolean" },
+        "orch_scheduling": { "type": "boolean" },
+        "orch_retries": { "type": "boolean" },
+        "orch_timeouts": { "type": "boolean" },
+        "orch_parallel": { "type": "boolean" },
+        "orch_sensors": { "type": "boolean" },
+        "orch_artifacts_only_xcom": { "type": "boolean" }
+      }
+    }
+  },
+  "additionalProperties": true
+}

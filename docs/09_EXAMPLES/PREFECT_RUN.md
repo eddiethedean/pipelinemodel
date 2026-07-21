@@ -18,7 +18,7 @@ uv run python examples/prefect_run.py
 For an application install, keep core and plugin on the same minor line:
 
 ```bash
-pip install 'etlantic==0.21.0' 'etlantic-prefect==0.21.0'
+pip install 'etlantic==0.22.0' 'etlantic-prefect==0.22.0'
 ```
 
 The example creates a process-local `PipelineRuntime`, seeds an in-memory

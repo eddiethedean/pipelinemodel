@@ -8,13 +8,15 @@ from enum import StrEnum
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 from etlantic.capabilities import PluginCapabilities
+from etlantic.protocol_meta import ExecutionContextMeta, coerce_context_meta
 
 if TYPE_CHECKING:
     from etlantic.interchange.tabular import InterchangeDescriptor
 
 DATAFRAME_PROTOCOL_VERSION = "etlantic.dataframe/1"
 
-# Engines that execute through the dataframe protocol (not local record callables).
+# Known first-party engine names for defaults/aliases; not a privilege allowlist.
+# Third-party engines register via discovery.
 DATAFRAME_ENGINES = frozenset({"polars", "pandas"})
 
 
@@ -125,6 +127,11 @@ class DataframeExecutionContext:
     )
     metadata: Mapping[str, Any] = field(default_factory=dict)
     interchange: InterchangeDescriptor | None = None
+
+    @property
+    def context_meta(self) -> ExecutionContextMeta:
+        """Typed interoperability view of ``metadata`` (ExtensionMetadata-compatible)."""
+        return coerce_context_meta(self.metadata)
 
 
 @dataclass

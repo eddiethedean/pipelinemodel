@@ -1,7 +1,7 @@
 # Roadmap Summary
 
-ETLantic **0.21.0** ships the cohesive CLI and authoring experience. Milestones describe
-capability order, not release-date commitments.
+ETLantic **0.22.0** ships the **Plugin SDK Release Candidate**. Milestones
+describe capability order, not release-date commitments.
 
 ## Shipped: 0.15 through 0.20
 
@@ -44,11 +44,21 @@ ETLantic **0.21.0** shipped **Cohesive CLI and Authoring Experience**:
 [What's New in 0.21](../01_GETTING_STARTED/WHATS_NEW_0_21.md) and
 [Exit gate 0.21](EXIT_GATE_0_21.md).
 
+## Shipped: 0.22
+
+ETLantic **0.22.0** shipped the **Plugin SDK Release Candidate**:
+capability-driven engine identity, `etlantic.capabilities/1`, hardened
+public conformance (including Spark), curated `import etlantic as etl`,
+`etlantic plugin compatibility`, and out-of-monorepo
+`etlantic-plugin-echo`. Protocol `/1` is freeze-eligible, not frozen. See
+[What's New in 0.22](../01_GETTING_STARTED/WHATS_NEW_0_22.md) and
+[Exit gate 0.22](EXIT_GATE_0_22.md).
+
 ## Toward 1.0
 
 The 1.0 goal is a stable foundation with frozen contracts (0.19), completed
 trust/isolation gates (**0.20.0**), cohesive CLI (**0.21.0**), and
-plugin SDK RC (0.22).
+Plugin SDK with frozen `/1` protocols (post-0.22 RC feedback).
 TransformationModel incubation is deferred to post-1.0 phases.
 
 > **Production use is supported only within the documented reference

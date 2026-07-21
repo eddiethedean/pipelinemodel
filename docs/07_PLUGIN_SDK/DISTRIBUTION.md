@@ -141,10 +141,27 @@ Plugin authors should:
 - Ensure secret-provider packages pass redaction, rotation, lease, and
   sentinel-leak conformance tests.
 
+## Compatibility report
+
+Independently installed plugins can check compatibility without private
+modules:
+
+```bash
+etlantic plugin compatibility etlantic-polars --format json
+etlantic plugin compatibility --format human
+```
+
+The report compares the plugin's static `etlantic-plugin-manifest.json` and
+packaging metadata against the installed core: protocol ranges, capability
+vocabulary (`etlantic.capabilities/1`), plan schema (`etlantic.plan/1`),
+Requires-Python, the plugin's `etlantic` pin, and (with `--profile`) allowlist
+status. Findings use `PMPLUG44x` codes and fail closed on mismatch.
+
 ## Best Practices
 
 - Keep plugins independently releasable.
 - Publish clear compatibility metadata.
+- Run `etlantic plugin compatibility` in plugin CI against the supported core range.
 - Use semantic versioning.
 - Ship documentation with every release.
 - Maintain changelogs.

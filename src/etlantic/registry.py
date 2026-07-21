@@ -261,12 +261,12 @@ class PlanningContext:
     ) -> PlanningContext:
         """Build a planning context from a profile name/object.
 
-        When ``dataframe_engine`` is ``polars`` or ``pandas`` and no custom
+        When a non-local ``dataframe_engine`` is configured and no custom
         registry is supplied, discovered entry-point plugins are registered
         onto a stub registry so plan-only paths work without a runtime.
-        When ``sql_engine`` is ``sql``, discovered SQL plugins are registered
-        the same way. When ``spark_engine`` is ``pyspark``/``spark``,
-        discovered Spark plugins are registered the same way.
+        When a non-local ``sql_engine`` is configured, discovered SQL plugins
+        are registered the same way. When ``spark_engine`` is set, discovered
+        Spark plugins are registered the same way.
         """
         resolved = (
             profile
@@ -287,15 +287,31 @@ class PlanningContext:
         plan_diags: tuple[Diagnostic, ...] = ()
 
         def _needs_planning_discovery() -> bool:
+            from etlantic.plugins.coordinator import (
+                should_discover_dataframe_plugins,
+                should_discover_spark_plugins,
+                should_discover_sql_plugins,
+            )
+
             if registry is None:
                 return True
-            if engine in {"polars", "pandas"} and engine not in reg.engines:
+            if should_discover_dataframe_plugins(engine) and engine not in reg.engines:
                 return True
-            if sql_engine == "sql" and "sql" not in reg.engines:
+            if (
+                should_discover_sql_plugins(sql_engine)
+                and sql_engine not in reg.engines
+            ):
                 return True
-            return spark_engine in {"pyspark", "spark"} and not (
-                "pyspark" in reg.engines or "spark" in reg.engines
-            )
+            if should_discover_spark_plugins(spark_engine):
+                assert spark_engine is not None
+                if spark_engine in reg.engines:
+                    return False
+                # First-party spark/pyspark aliases share registration.
+                aliased = spark_engine in {"pyspark", "spark"} and (
+                    "pyspark" in reg.engines or "spark" in reg.engines
+                )
+                return not aliased
+            return False
 
         if _needs_planning_discovery():
             from etlantic.plugins.coordinator import discover_planning_plugins

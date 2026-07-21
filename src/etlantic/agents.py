@@ -58,7 +58,9 @@ surfaces; fail closed on secrets, plugin trust, and schema mutations.
 
 ## Public SDK imports
 
-{imports}
+Recommended: `import etlantic as etl` (curated root + lazy namespaces).
+
+Also supported: {imports}
 
 ## Security
 
@@ -97,6 +99,7 @@ description: Validate, plan, compile, and generate ETLantic pipelines safely.
 Use public CLI commands (`init`, `doctor`, `validate`, `inspect`, `plan`,
 `profile`, `run`, `compile`, `generate`, `diff`, `plugin`, `schema`,
 `reliability`, `viz`, `report`) and
+prefer `import etlantic as etl` (curated root + lazy namespaces) or
 public SDK imports (`etlantic.dataframe`, `.sql`, `.spark`, `.orchestration`,
 `.viz`, `.secrets`, `.testing`).
 
@@ -116,7 +119,7 @@ globs:
 
 # ETLantic
 
-- Use public imports only: dataframe, sql, spark, orchestration, viz, secrets, testing.
+- Prefer `import etlantic as etl`; also use public imports: dataframe, sql, spark, orchestration, viz, secrets, testing.
 - CLI: validate → plan → compile/generate; prefer `--format json` or `sarif` in CI.
 - Airflow compile requires optional `etlantic-airflow`.
 - Fail closed: secrets, production plugin allowlists, schema history without rows.

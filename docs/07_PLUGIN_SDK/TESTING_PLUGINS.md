@@ -11,11 +11,37 @@ they implement the public protocols correctly.
 |---|---|---|
 | Dataframe conformance | `etlantic.testing.run_conformance_suite` | Polars/Pandas-style plugins |
 | SQL conformance | `etlantic.testing.run_sql_conformance_suite` | `SqlPlugin` |
+| Spark conformance | `etlantic.testing.run_spark_conformance_suite` | `SparkPlugin` (session-free compile + capability truthfulness) |
 | Orchestrator conformance | `etlantic.testing.run_orchestrator_conformance_suite` | `OrchestratorPlugin` |
+| Scheduler conformance | `etlantic.testing.run_scheduler_conformance_suite` | `ExecutionScheduler` |
 | Secret conformance | `etlantic.testing.run_secret_conformance_suite` | `SecretProvider` |
 | Write-semantics parity | `etlantic.testing.run_write_semantics_parity_suite` | Cross-engine write modes |
 | Portable transform compiler | `etlantic.testing.run_portable_transform_conformance_suite` | `TransformCompiler` plugins |
 | Tabular interchange smoke (Gate A) | `etlantic.testing.run_tabular_interchange_conformance_smoke` | Producer/consumer `PluginCapabilities` for `etlantic.interchange/1` |
+
+### Capability truthfulness
+
+All suites assert that advertised capabilities are internally consistent with
+the versioned capability vocabulary (`etlantic.capabilities/1`): a claim that
+implies a family root (for example `sql_merge` ⇒ `sql`, `spark_merge` ⇒ `spark`)
+fails closed when the root is missing, and an unknown vocabulary major is
+rejected. Use the shared helpers directly to probe behaviour against claims:
+
+```python
+from etlantic.testing import (
+    assert_capability_claims_consistent,
+    assert_capability_matches_behavior,
+)
+
+assert_capability_claims_consistent(plugin.info.capabilities)
+assert_capability_matches_behavior(
+    plugin.info.capabilities, "lazy", probe=lambda: has_lazy_frames()
+)
+```
+
+Overstated capabilities raise `AssertionError` with an actionable, secret-free
+finding. Suites are **capability-driven**: no engine name is special-cased, so a
+third-party engine name behaves identically to a first-party one.
 
 Example:
 

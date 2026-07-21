@@ -8,19 +8,19 @@
 Prefer exact pins for a controlled pilot:
 
 ```bash
-pip install 'etlantic==0.21.0'
-pip install 'etlantic-polars==0.21.0'
-pip install 'etlantic-pandas==0.21.0'
-pip install 'etlantic-sql==0.21.0'
-pip install 'etlantic-pyspark==0.21.0'
-pip install 'etlantic-airflow==0.21.0'
-pip install 'etlantic-prefect==0.21.0'
+pip install 'etlantic==0.22.0'
+pip install 'etlantic-polars==0.22.0'
+pip install 'etlantic-pandas==0.22.0'
+pip install 'etlantic-sql==0.22.0'
+pip install 'etlantic-pyspark==0.22.0'
+pip install 'etlantic-airflow==0.22.0'
+pip install 'etlantic-prefect==0.22.0'
 pip install 'etlantic-keyring==0.21.0'
 pip install 'etlantic-sqlmodel==0.21.0'
 pip install 'etlantic-sparkforge==0.21.0'
 ```
 
-Official first-party plugins declare `etlantic>=0.21.0,<0.22`.
+Official first-party plugins declare `etlantic>=0.22.0,<0.23`.
 Keep core and plugins on the same minor (for 0.21.x pilots, pin all to
 `0.21.0`). Cross-minor mixes are unsupported and commonly fail plugin
 discovery.

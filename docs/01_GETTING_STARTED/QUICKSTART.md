@@ -1,6 +1,6 @@
 # 5–10 Minute Quickstart
 
-> **Status: Available in ETLantic 0.21.0.** Use `etlantic init` for the
+> **Status: Available in ETLantic 0.22.0.** Use `etlantic init` for the
 > recommended CLI-first path with durable reports and declarative assets.
 
 ## 1. Install
@@ -8,7 +8,7 @@
 ETLantic requires Python 3.11 or newer.
 
 ```bash
-python -m pip install 'etlantic==0.21.0'
+python -m pip install 'etlantic==0.22.0'
 python -m etlantic --version
 ```
 
@@ -77,7 +77,7 @@ SamplePipeline.run(profile="development")
 - [First Pipeline](FIRST_PIPELINE.md) — evolve the generated project (contracts,
   intentional errors, richer transforms)
 - [Installation](INSTALLATION.md) — optional engine packages
-- [What's New in 0.21](WHATS_NEW_0_21.md)
+- [What's New in 0.21](WHATS_NEW_0_22.md)
 
 For an in-memory SDK demo from a checkout (not this Quickstart), see
 [`examples/memory_customers.py`](https://github.com/eddiethedean/etlantic/blob/main/examples/memory_customers.py).

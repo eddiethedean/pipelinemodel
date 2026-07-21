@@ -12,7 +12,7 @@ Create an isolated Python 3.11–3.13 environment and pin core plus only the
 plugins the pilot needs:
 
 ```bash
-python -m pip install "etlantic==0.21.0" "etlantic-polars==0.21.0"
+python -m pip install "etlantic==0.22.0" "etlantic-polars==0.22.0"
 etlantic --help
 ```
 

@@ -18,7 +18,7 @@
    explicit `--profile` in CI.
 2. Production profiles require a non-empty `plugin_allowlist` with exact pins.
 3. Set `security_mode` explicitly (`development` | `test` | `production`).
-4. Pin matching minors: `etlantic==0.21.0` with `etlantic-polars==0.21.0`, etc.
+4. Pin matching minors: `etlantic==0.22.0` with `etlantic-polars==0.22.0`, etc.
 
 ## Secrets and artifacts
 

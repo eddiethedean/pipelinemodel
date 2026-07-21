@@ -11,8 +11,16 @@ from enum import StrEnum
 from typing import Any, Protocol, runtime_checkable
 
 from etlantic.capabilities import PluginCapabilities
+from etlantic.protocol_meta import (
+    CompileArtifactMeta,
+    ExecutionContextMeta,
+    coerce_compile_meta,
+    coerce_context_meta,
+)
 
 SPARK_PROTOCOL_VERSION = "etlantic.spark/1"
+# Known first-party engine names for defaults/aliases; not a privilege allowlist.
+# Third-party engines register via discovery.
 SPARK_ENGINES = frozenset({"pyspark", "spark"})
 STREAMING_STABILITY = "experimental"  # 0.7 exit: streaming APIs are experimental
 
@@ -275,6 +283,11 @@ class CompiledSparkPlan:
     logical_identities: Mapping[str, str] = field(default_factory=dict)
     metadata: dict[str, Any] = field(default_factory=dict)
 
+    @property
+    def artifact_meta(self) -> CompileArtifactMeta:
+        """Typed interoperability view of ``metadata`` (ExtensionMetadata-compatible)."""
+        return coerce_compile_meta(self.metadata)
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "region_id": self.region_id,
@@ -304,6 +317,11 @@ class SparkCompilationContext:
     required_capabilities: tuple[str, ...] = ()
     metadata: Mapping[str, Any] = field(default_factory=dict)
 
+    @property
+    def context_meta(self) -> ExecutionContextMeta:
+        """Typed interoperability view of ``metadata`` (ExtensionMetadata-compatible)."""
+        return coerce_context_meta(self.metadata)
+
 
 @dataclass(frozen=True, slots=True)
 class SparkExecutionContext:
@@ -321,6 +339,11 @@ class SparkExecutionContext:
     session_handle_id: str | None = None
     allow_udfs: bool = True
     metadata: Mapping[str, Any] = field(default_factory=dict)
+
+    @property
+    def context_meta(self) -> ExecutionContextMeta:
+        """Typed interoperability view of ``metadata`` (ExtensionMetadata-compatible)."""
+        return coerce_context_meta(self.metadata)
 
 
 @dataclass(frozen=True, slots=True)

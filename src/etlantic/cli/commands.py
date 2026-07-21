@@ -205,6 +205,59 @@ def register_commands(
         )
         emit_payload(payload, fmt=fmt)
 
+    @plugin_app.command("compatibility")
+    def plugin_compatibility_cmd(
+        ctx: typer.Context,
+        plugins: list[str] | None = typer.Argument(  # noqa: B008
+            None,
+            help=(
+                "Installed plugin package names (e.g. etlantic-polars). "
+                "When omitted, report all packages that ship an "
+                "etlantic-plugin-manifest.json."
+            ),
+        ),
+        profile: str | None = typer.Option(None, "--profile", "-p"),
+        allow_adhoc_profile: bool = typer.Option(
+            False,
+            "--allow-adhoc-profile",
+            help="Allow unknown bare profile names (fail-closed by default).",
+        ),
+        fmt: str = typer.Option(
+            "json",
+            "--format",
+            help="json|human",
+        ),
+    ) -> None:
+        """Report protocol/vocabulary/pin compatibility for installed plugins."""
+        from etlantic.plugin_compatibility import (
+            build_compatibility_report,
+            render_compatibility_human,
+        )
+        from etlantic.plugin_manifest import MANIFEST_FILENAME
+
+        resolved, _ = get_cli_context(ctx).resolve_profile(
+            profile, allow_adhoc_profile=allow_adhoc_profile
+        )
+        allowlist = list(resolved.plugin_allowlist) if resolved is not None else None
+        package_names = list(plugins or [])
+        if not package_names:
+            from importlib.metadata import distributions
+
+            for dist in distributions():
+                try:
+                    if dist.read_text(MANIFEST_FILENAME) is not None:
+                        package_names.append(str(dist.metadata["Name"]))
+                except Exception:
+                    continue
+            package_names = sorted(set(package_names), key=str.lower)
+        report = build_compatibility_report(package_names, allowlist=allowlist)
+        if fmt == "human":
+            typer.echo(render_compatibility_human(report))
+        else:
+            emit_payload(report.to_dict(), fmt="json")
+        if not report.ok:
+            raise typer.Exit(ec.ENVIRONMENT_FAILURE)
+
     def _history_root(ctx: typer.Context, path: str | None) -> Path:
         if path:
             return Path(path)

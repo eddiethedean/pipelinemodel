@@ -23,7 +23,7 @@ Start with a core range matching the minor release you test:
 name = "etlantic-acme"
 version = "0.1.0"
 requires-python = ">=3.11"
-dependencies = ["etlantic>=0.21.0,<0.22", "acme-frame>=2,<3"]
+dependencies = ["etlantic>=0.22.0,<0.23", "acme-frame>=2,<3"]
 
 [project.entry-points."etlantic.transform_compilers"]
 acme = "etlantic_acme:create_transform_compiler"
@@ -228,7 +228,7 @@ than `fail`).
 myengine = "my_compiler.plugin:create_transform_compiler"
 ```
 
-Depend on a matching ETLantic minor (`etlantic>=0.21.0,<0.22` for official
+Depend on a matching ETLantic minor (`etlantic>=0.22.0,<0.23` for official
 0.20 plugins).
 
 ## 3. Run the public conformance suite

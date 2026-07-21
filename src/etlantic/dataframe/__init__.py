@@ -30,6 +30,11 @@ from etlantic.dataframe.protocol import (
     DataframeValidationPolicy,
     ValidationDecision,
 )
+from etlantic.protocol_meta import (
+    ExecutionContextMeta,
+    ExtensionMetadata,
+    coerce_context_meta,
+)
 
 __all__ = [
     "DATAFRAME_ENGINES",
@@ -44,8 +49,11 @@ __all__ = [
     "DataframePluginInfo",
     "DataframeValidationOutcome",
     "DataframeValidationPolicy",
+    "ExecutionContextMeta",
+    "ExtensionMetadata",
     "ValidationDecision",
     "arrow_available",
+    "coerce_context_meta",
     "discover_dataframe_plugins",
     "from_arrow_table",
     "records_to_arrow_table",

@@ -306,15 +306,27 @@ controlled fakes.
 
 ## Type-Checking Tests
 
-ETLantic ships `py.typed`, but 0.17 does not contain committed
-`tests/typing/pass` or `tests/typing/fail` directories and does not enforce a
-static type-checker in CI. Positive and negative typing fixtures remain a
-future contributor improvement, not a current test command.
+ETLantic ships `py.typed` and a typed root facade stub
+(`src/etlantic/__init__.pyi`). Positive fixtures live under
+`tests/typing/pass/`; negative fixtures under `tests/typing/fail/` document
+demoted root imports. CI does not yet fail the build on a dedicated pyright
+fail-suite run — treat these as contributor anchors and expand them when the
+typing gate lands.
 
 ```text
-tests/typing/pass/
-tests/typing/fail/
+tests/typing/pass/etl_facade.py
+tests/typing/fail/demoted_root_import.py
 ```
+
+Recommended application import style:
+
+```python
+import etlantic as etl
+```
+
+Curated root symbols and lazy namespaces (`etl.sql`, `etl.testing`, …) are
+covered by `tests/unit/test_root_facade.py` and
+`scripts/check_surface_inventory.py`.
 
 ## Coverage
 

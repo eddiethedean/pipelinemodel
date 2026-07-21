@@ -4,9 +4,11 @@ from __future__ import annotations
 
 from typing import Any
 
-from etlantic import Data, Extract, Input, Load, Output, Pipeline, Transformation
+from etlantic.contracts import Data
 from etlantic.lifecycle.runtime import PipelineRuntime
+from etlantic.pipeline import Extract, Load, Pipeline
 from etlantic.plan.planner import plan_pipeline
+from etlantic.ports import Input, Output
 from etlantic.profile import Profile
 from etlantic.registry import PlanningContext
 from etlantic.runtime.logging import redact_message
@@ -18,6 +20,7 @@ from etlantic.runtime.scheduler import (
     SchedulingContext,
 )
 from etlantic.runtime.state import RunStatus
+from etlantic.transformation import Transformation
 
 
 class _RawCustomer(Data):

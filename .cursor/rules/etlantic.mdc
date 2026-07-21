@@ -6,7 +6,7 @@ globs:
 
 # ETLantic
 
-- Use public imports only: dataframe, sql, spark, orchestration, viz, secrets, testing.
+- Prefer `import etlantic as etl`; also use public imports: dataframe, sql, spark, orchestration, viz, secrets, testing.
 - CLI: validate → plan → compile/generate; prefer `--format json` or `sarif` in CI.
 - Airflow compile requires optional `etlantic-airflow`.
 - Fail closed: secrets, production plugin allowlists, schema history without rows.

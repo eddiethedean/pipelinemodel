@@ -11,7 +11,9 @@ surfaces; fail closed on secrets, plugin trust, and schema mutations.
 
 ## Public SDK imports
 
-`etlantic.dataframe`, `etlantic.sql`, `etlantic.spark`, `etlantic.orchestration`, `etlantic.viz`, `etlantic.secrets`, `etlantic.testing`
+Recommended: `import etlantic as etl` (curated root + lazy namespaces).
+
+Also supported: `etlantic.dataframe`, `etlantic.sql`, `etlantic.spark`, `etlantic.orchestration`, `etlantic.viz`, `etlantic.secrets`, `etlantic.testing`
 
 ## Security
 

@@ -1,7 +1,7 @@
 {
   "schema": "etlantic.surface-inventory/1",
-  "version": "0.21.0",
-  "classes": ["stable", "provisional", "experimental", "private"],
+  "version": "0.22.0",
+  "classes": ["stable", "provisional", "experimental", "private", "compatibility"],
   "sdk_root_stable": [
     "Data",
     "Transformation",
@@ -21,6 +21,26 @@
     "SecretRef",
     "compile_plan"
   ],
+  "sdk_root_namespaces": [
+    "transform",
+    "dataframe",
+    "sql",
+    "spark",
+    "orchestration",
+    "viz",
+    "secrets",
+    "testing"
+  ],
+  "namespace_ownership": {
+    "transform": "etlantic.transform",
+    "dataframe": "etlantic.dataframe",
+    "sql": "etlantic.sql",
+    "spark": "etlantic.spark",
+    "orchestration": "etlantic.orchestration",
+    "viz": "etlantic.viz",
+    "secrets": "etlantic.secrets",
+    "testing": "etlantic.testing"
+  },
   "plan_helpers_stable": [
     "verify_plan_fingerprint",
     "deep_freeze",
@@ -31,6 +51,7 @@
   ],
   "sdk_root_provisional": ["DataContractModel"],
   "sdk_root_experimental": [],
+  "sdk_root_compatibility": "Demoted pre-1.0 root aliases (warn once); prefer owning namespace. See MIGRATION_0_21_TO_0_22.md.",
   "cli_stable": [
     "init",
     "doctor",
@@ -51,7 +72,8 @@
   "wire_schemas": {
     "etlantic.plan/1": "stable",
     "etlantic.run_report/1": "stable",
-    "etlantic.interchange/1": "stable"
+    "etlantic.interchange/1": "stable",
+    "etlantic.capabilities/1": "stable"
   },
   "protocols": {
     "etlantic.dataframe/1": "stable",
